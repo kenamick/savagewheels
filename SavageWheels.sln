@@ -1,0 +1,31 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SavageWheels", "SavageWheels.vcproj", "{C23A8227-B443-42AE-914C-FC6AE275AEBB}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "intro", "tools\intro\intro.vcproj", "{35385370-8BE0-4E8D-BD3F-698A34E3AB30}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{C23A8227-B443-42AE-914C-FC6AE275AEBB}.Debug.ActiveCfg = Debug|Win32
+		{C23A8227-B443-42AE-914C-FC6AE275AEBB}.Debug.Build.0 = Debug|Win32
+		{C23A8227-B443-42AE-914C-FC6AE275AEBB}.Release.ActiveCfg = Release|Win32
+		{C23A8227-B443-42AE-914C-FC6AE275AEBB}.Release.Build.0 = Release|Win32
+		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Debug.ActiveCfg = Debug|Win32
+		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Debug.Build.0 = Debug|Win32
+		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Release.ActiveCfg = Release|Win32
+		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

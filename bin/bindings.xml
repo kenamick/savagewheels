@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<bindings>
+
+<!--
+	SDLK_BACKSPACE
+	SDLK_TAB
+	SDLK_RETURN	
+	SDLK_SPACE
+	SDLK_0
+	SDLK_1
+	SDLK_2
+	SDLK_3
+	SDLK_4
+	SDLK_5
+	SDLK_6
+	SDLK_7
+	SDLK_8				
+	SDLK_9				
+	SDLK_COLON			
+	SDLK_SEMICOLON		
+	SDLK_LESS			
+	SDLK_GREATER		
+	SDLK_LEFTBRACKET	
+	SDLK_RIGHTBRACKET	
+	SDLK_a				
+	SDLK_b				
+	SDLK_c				
+	SDLK_d				
+	SDLK_e				
+	SDLK_f				
+	SDLK_h				
+	SDLK_i				
+	SDLK_j				
+	SDLK_k				
+	SDLK_l				
+	SDLK_m				
+	SDLK_n				
+	SDLK_o				
+	SDLK_p				
+	SDLK_q				
+	SDLK_r				
+	SDLK_s				
+	SDLK_t				
+	SDLK_u				
+	SDLK_v				
+	SDLK_w				
+	SDLK_x				
+	SDLK_y				
+	SDLK_z				
+	SDLK_DELETE			
+	SDLK_KP0			
+	SDLK_KP1			
+	SDLK_KP2			
+	SDLK_KP3			
+	SDLK_KP4			
+	SDLK_KP5			
+	SDLK_KP6			
+	SDLK_KP7			
+	SDLK_KP8			
+	SDLK_KP9			
+	SDLK_KP_PERIOD		
+	SDLK_KP_DIVIDE		
+	SDLK_KP_MULTIPLY	
+	SDLK_KP_PLUS		
+	SDLK_KP_ENTER		
+	SDLK_UP				
+	SDLK_DOWN			
+	SDLK_RIGHT			
+	SDLK_LEFT			
+	SDLK_INSERT			
+	SDLK_HOME			
+	SDLK_END			
+	SDLK_PAGEUP			
+	SDLK_PAGEDOWN		
+	SDLK_RSHIFT			
+	SDLK_LSHIFT			
+	SDLK_RCTRL			
+	SDLK_LCTRL			
+	SDLK_RALT			
+	SDLK_LALT			
+-->
+
+<player1>
+	<left>SDLK_LEFT</left>
+	<right>SDLK_RIGHT</right>
+	<accelerate>SDLK_UP</accelerate>
+	<break>SDLK_DOWN</break>
+	<laymine>SDLK_RALT</laymine>
+	<honk>SDLK_RCTRL</honk>
+	<self-destruct>SDLK_DELETE</self-destruct>
+</player1>
+
+<player2>
+	<left>SDLK_a</left>
+	<right>SDLK_d</right>
+	<accelerate>SDLK_w</accelerate>
+	<break>SDLK_s</break>
+	<laymine>SDLK_LSHIFT</laymine>
+	<honk>SDLK_SPACE</honk>
+	<self-destruct>SDLK_TAB</self-destruct>
+</player2>
+
+</bindings>

@@ -1,0 +1,60 @@
+----------------------------------------
+       SAVAGE WHEELS - history
+----------------------------------------
+
+v1.04 Patch
+ - fixed crash on exit the game
+
+
+
+v1.03 Patch
+ - no more sound-conflicts that caused the game to crash under win2k and XP systems
+ - game now uses Fmod® sound engine
+ - added -hw command line for greater video cards
+ 
+ 
+v1.02 Patch
+ - fixed a bug that caused campaigns to start from level 2  
+ - fixed a bug that caused vehicles going back, do enormous damage
+ - fixed time-left blitting
+ - When playing 2v2 teams for 'Time-limit' the winning score is now determined by the sum of the
+   frags of the team-mates
+ - The frag-giving bug now has to be kept 6 seconds instead of 8
+ - Landmines now do more damage
+ 
+ 
+v1.0 Final - Release
+ - fixed Physics
+ - optimized PP collision detection
+ - optimized shadow casting
+ - upgraded vehicle AI
+ - added better menu graphics
+ - added bonus identificators
+ - added timer
+ - added more vehicles
+ - added gamemodes
+ - added one more track to the soundtrack 
+
+
+v0.9 (beta)
+ - added shadow-casting
+ - added additional bonuses
+ - added vehicle AI
+ - added main-menu
+ - added terrains
+ - added vehicle modules
+ - added beta-sfx
+ - added menu & game_music
+ - fixed menu-game prelude
+
+
+v0.1
+ - added Bonuses and Animations
+ - upgraded SDL class
+
+
+
+
+
+ 
+

@@ -1,0 +1,260 @@
+// CVehicle.h - 
+
+
+#ifndef __CVEHICLE
+#define __CVEHICLE
+
+////classes//////////////
+class CGame;
+class CWaypoint;
+class CVehicle;
+/////////////////////////
+
+
+#define MAX_ROTATION_FRAMES		36
+#define HALF_ROTATION_FRAMES    18
+#define TIRETRAILS_TIME			3500
+#define ANGEREXPIRE_TIME		180
+#define SPEEDEXPIRE_TIME		8000
+#define GOALEXPIRE_TIME			5000
+#define NO_ATTACKER				10
+
+#define MIN_DAMAGE_VELOCITY		45
+#define SAFE_WARP_DISTANCE		6400 // 80 pixels
+#define WAYPOINT_RADIUS			900  //30pixels
+#define NO_WAYPOINT			    -1
+#define WAYPOINT_VEHICLE		1
+#define WAYPOINT_BONUS  		2
+#define ACTIONS					5
+#define ACTION_ATTACK			1
+#define ACTION_TAKEBONUS		2
+#define ACTION_DROPMINE			3
+
+// game difficulty constants
+enum CONST_DIFFICULTY
+{
+	DIFF_EASY = 6,
+	DIFF_NORMAL = 7,
+	DIFF_HARD = 8
+};
+
+
+typedef enum CONST_VEHICLE_TYPE 
+{
+  VT_KAMION = 0,
+  VT_FERRARI,
+  VT_MERCEDES,
+  VT_BUGGY
+};
+
+
+typedef enum CONST_VEHICLE_MOVEMENT 
+{
+  VM_NONE = 0,
+  VM_FORWARD,
+  VM_BACKWARD
+};
+
+
+typedef enum CONST_VEHICLE_ROTATION 
+{
+  VR_NONE = 0,
+  VR_LEFT,
+  VR_RIGHT
+};
+
+
+typedef enum CONST_VEHICLE_CONTROL 
+{
+  VC_PLAYER1 = 0,
+  VC_PLAYER2,
+  //VC_PLAYER3,
+  VC_AI,
+  VC_NONE
+};
+
+
+typedef enum CONST_TIRETRAILS 
+{
+  VTT_NONE,
+  VTT_TIRES,
+  VTT_BLOOD
+};
+
+
+typedef enum CONST_AI_VEHICLE_TYPE 
+{
+	AVT_WARRIOR,
+	AVT_EXPLORER
+};
+
+
+
+class CWaypoint 
+{
+public:
+
+	CWaypoint()
+		: x(0), y(0), index(0U), goal_type(0U), static_pos(false), reached(false), do_precalculate(false), do_reverse(false)
+	{
+	};
+
+	~CWaypoint()
+	{
+	};
+
+	float			x,y;
+	Uint32			index;
+	Uint16			goal_type;
+	bool			static_pos;				// dvijeshta se cel ?
+	bool			reached;				// flag -> za dostiganata cel
+	bool			do_precalculate;		// ako avtomobila e otklonen, da se preizchisli posokata mu na dvijenie
+	bool			do_reverse;				// ako imame za cel da udarim drug avtomobil i sme go udarili, to da se dade na zaden za nov udar
+	//CONST_DEADTOYS  toy_kind;
+
+};
+
+
+class CVehicle {
+ 
+private:
+
+	CGame		 *_game;
+
+	Uint32		 myIndex;		// class index
+	bool		 visible;		// is the car warped and ready
+	bool		 released;		// is class released
+
+	//int          vel,max_vel;	// skorost, maksimalna
+	int          max_vel;	// skorost, maksimalna
+	float		 vel;
+	int          acc, dec_acc;  // uskorenie i dec_uskorenie na spirane
+	int			 hit_vel;
+
+	int			 speed_bonus;   // bonus-kym skorostta
+	Uint32		 speed_time;	// vreme na bonus-skorost
+
+	int			 lbs;			// kolko teji 
+	int			 rot_speed;		// rotation speed
+	SDL_Rect     rCollide;		// kvadrat na zasichane
+	Uint16		 center_x, center_y;
+	//SDL_Rect	 rFrame;
+	float	     x,y;			// poziciq
+	float		 x_acc, y_acc;  // ugly na uskorenie pri udar
+	float		 rep_frame;		// kadyr na udrqshtiqt ni avtomobil
+	float 	     display_frame;	// kadyr za rendirane
+	float		 motion_frame;  // kadyr za ygyla na dvijenie
+	float		 tire_frame;	// kadyr na dvijenie na gumite
+	Uint16		 tire_frames;	 // kadri za vyrtqshti se gumi
+
+	int			 max_hitpoints;
+	int 	     hit_points;
+	int			 hit_points_crash;
+	bool		 bcrashlook;
+	int			 frags;			// kills
+	Uint32		 goal_time;		// vreme za koeto zadryjame goal-a +3 frags 
+	bool		 has_the_goal;  // v tazi mashina li e goal-a
+
+	int			 landmines;		// kolko mini ima v nalichnost...
+	Uint16		 damage;
+	int   		 anger;
+	Uint32		 anger_time;
+	bool		 bputmine, bputminekey;
+
+	bool		 i_self_destruct;
+	bool		 self_destruct;
+	bool		 self_destruction;
+	Uint32		 destruct_time;
+	Uint32		 warning_time;
+
+	SDL_Surface  **sprite;			// current image-pointer
+	SDL_Surface	 **sprite_norm; 
+	SDL_Surface  **sprite_crash;
+	int 		 **mask, **mask_norm, **mask_crash;
+	SDL_Surface  *driver_name;
+	//SDL_Surface	 ***sprite_norm; //*sprite_norm[36];  // car faces
+	//SDL_Surface  ***sprite_crash; //*sprite_crash[36]; // car crashed-faces
+	
+	CONST_VEHICLE_TYPE		me;
+	CONST_VEHICLE_CONTROL   control;
+	CONST_VEHICLE_MOVEMENT  vmove;
+	CONST_VEHICLE_ROTATION	vrot;
+
+	CONST_TIRETRAILS		tire_trails;
+	Uint32					trails_time;
+
+	// AI
+	CONST_AI_VEHICLE_TYPE	avt;
+	CWaypoint				waypoint;
+	float					ai_cur_angle;
+	float					ai_dest_angle;
+	CONST_VEHICLE_ROTATION	ai_turning;				// poskoa na zavivane na avtomobila
+	int						ai_maxvel;
+	float					ai_final_frame;
+	bool					ai_putmine;
+	
+	Uint32					ai_stucktime;			// car-stuck timer
+	bool					ai_stuck;
+
+	Uint16					team;					// vehicle Team
+
+	bool					set_stop;
+
+private:
+	//void Repulse( int, int );
+	void DoMotion();
+	void Move( CONST_VEHICLE_MOVEMENT mvt );
+    void Rotate( CONST_VEHICLE_ROTATION rot );
+	
+	void   AI_Update();
+	void   AI_GenerateWaypoint();
+	void   AI_ProcessWaypoint();
+	Uint16 AI_doFSM( Uint16 *proActions, Uint16 max_actions );
+
+	//void AI_AddWaypoint();
+
+public:
+	CVehicle();  
+    ~CVehicle();
+	
+	void Repulse( int, int );
+	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
+	int	 Initialize( CGame *game, SWV_HEADER *swv, Uint16 carIndex );
+	void Release();
+	void Create();
+	void GetFrameRect( SDL_Rect *rect );
+	void DoDamage( Uint16 car_damage, Uint32 car_attacker );
+	void Update();
+	void UpdateStops();
+	void AddFrags( int fragnum ) { frags += fragnum; }; 
+
+	SDL_Surface*	GetCurrentFrame() { return sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
+	int*			GetCurrentFrameMask() { return mask[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
+	SDL_Surface*	GetDriverNameSurface() { return driver_name; }; 
+	Uint16  GetX() { return center_x; };
+	Uint16  GetY() { return center_y; };
+
+	// ...
+  	//Uint16  GetXT() { return (Uint16)x + g_dirx[(int)display_frame]; };
+	//Uint16  GetYT() { return (Uint16)y + g_diry[(int)display_frame]; };  
+
+	bool	GetVisible() { return visible; };
+	//Uint32	GetIndex() { return myIndex; };
+	Uint16	GetAnger() { return anger; }; // {!}
+	bool	GetPossessTheGoal() { return has_the_goal; };
+	int		GetFrags() { return frags; };
+	float   GetMotionFrame() { return motion_frame; };
+	float   GetMotionFrameMirror();
+	int	    GetCompareVal() { return lbs; }; //abs(vel); };
+	float   GetVelocity() { return vel; };
+	void    SetVelocity( float setvel ) { vel = setvel; };
+	int		GetHitPoints() { return max_hitpoints; };
+	CONST_VEHICLE_CONTROL GetControl() { return control; };
+	Uint16	GetTeam() { return team; };
+	
+	void    SetControl( CONST_VEHICLE_CONTROL vcontrol );
+	void    SetAttirbs( CONST_DIFFICULTY diff );
+	void    SetTeam( Uint16 team_index ) { team = team_index; };
+};
+
+#endif
