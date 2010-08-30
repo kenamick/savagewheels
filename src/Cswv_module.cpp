@@ -1,7 +1,7 @@
 // Cswm_module.cpp - 
 
 
-#include "main.h"
+#include "Main.h"
 #ifdef LINUX_BUILD
 #	include <dirent.h>
 #	include <sys/stat.h>

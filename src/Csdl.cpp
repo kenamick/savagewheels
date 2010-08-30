@@ -1,6 +1,6 @@
 // CSdl.cpp  - 
 
-#include "main.h"
+#include "Main.h"
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -870,6 +870,8 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	}
 	else
 	{
+		bsound_initialized = true;
+
 
 		if( !FSOUND_Init(44100, 32, FSOUND_INIT_USEDEFAULTMIDISYNTH) )
 		{
@@ -877,7 +879,6 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 			bsound_initialized = false;
 		}
 
-		bsound_initialized = true;
 
 		LOG( "FMod Driver: " << FSOUND_GetDriverName( FSOUND_GetDriver() ) << " " << FSOUND_GetOutputRate() << " " << FSOUND_GetMaxChannels() );
 

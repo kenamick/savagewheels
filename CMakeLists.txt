@@ -1,0 +1,68 @@
+cmake_minimum_required (VERSION 2.6)
+project(savagewheels) 
+
+### check for required libs
+
+find_package(SDL REQUIRED)
+
+#include_directories( ${SDL_INCLUDES} )
+#add_definitions( ${SDL_DEFINITIONS} )
+
+### required libs for compilation
+
+#add_subdirectory(src)
+
+include_directories(src/)
+include_directories(tinyxml/)
+#include_directories(fmod/linux/api)
+include_directories(fmod/linux/api/inc)
+
+set (
+        SOURCES
+        src/Bindings.cpp 
+	src/CDeadToy.cpp 
+	src/CKdf.cpp 
+	src/Csdl.cpp 
+	src/Cswv_module.cpp 
+	src/Cvehicle.cpp 
+	src/Utils.cpp 
+	src/CAnimation.cpp 
+	src/Cgame.cpp 
+	src/CMainMenu.cpp 
+	src/CSounds.cpp
+	src/CTimer.cpp
+	src/Main.cpp
+	tinyxml/tinystr.cpp
+	tinyxml/tinyxml.cpp
+	tinyxml/tinyxmlerror.cpp
+	tinyxml/tinyxmlparser.cpp	
+)
+
+
+link_libraries (
+	${SDL_LIBRARY}
+	SDLmain
+#	fmod/linux/api/libfmod-3.75
+)
+
+
+set( FMOD_LIB_NAME "libfmod-3.75.so" )
+
+   find_library( FMOD_LIBRARY
+        NAMES ${FMOD_LIB_NAME}
+        PATHS "./fmod/linux/api" )
+
+   message( STATUS "Fmod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}" )
+
+
+add_definitions(`sdl-config --cflags --libs`)
+add_definitions(-DLINUX_BUILD)
+
+add_executable (	
+	savagewheels 	
+	${SOURCES}
+)
+
+target_link_libraries(savagewheels ${FMOD_LIBRARY})
+
+

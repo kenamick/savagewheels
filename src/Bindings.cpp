@@ -1,6 +1,6 @@
 // Bindings.cpp -
 
-#include "main.h"
+#include "Main.h"
 
 
 CBindings::CBindings(void)

@@ -1,6 +1,6 @@
 // CMainMenu.cpp -
 
-#include "main.h"
+#include "Main.h"
 
 extern int attribACC[3];
 extern int attribSPEED[5];

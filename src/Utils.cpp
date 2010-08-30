@@ -1,6 +1,6 @@
 // Utils.cpp -
 
-#include "main.h"
+#include "Main.h"
 
 #ifdef LINUX_BUILD
 #	include <sys/timeb.h>

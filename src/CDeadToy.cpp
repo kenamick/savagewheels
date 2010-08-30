@@ -1,7 +1,7 @@
 // CDeadToy.cpp - bonus toys class
 
 
-#include "main.h"
+#include "Main.h"
 
 
 Uint16 dt_values[DT_MAX_DEADTOYS]		= { 1, 66, 75, 1, 3 }; //bear,anger,hp,speed,landmine

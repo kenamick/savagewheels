@@ -1,7 +1,7 @@
 // CTimer.cpp -
 
 
-#include "main.h"
+#include "Main.h"
 
 
 // define time-counter

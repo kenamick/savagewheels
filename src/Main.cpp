@@ -23,7 +23,7 @@
 
 */
 
-#include "main.h"
+#include "Main.h"
 
 
 int main( int argc, char *argv[] )
@@ -36,6 +36,7 @@ int main( int argc, char *argv[] )
 	//CloseLog();
 	//return 1;
 
+#if 0
 	// startirai...
 	if ( argc > 1 )
 	{
@@ -45,7 +46,10 @@ int main( int argc, char *argv[] )
 			game.Execute( true, true );
 	}
 	else
-		game.Execute(false); //{!}
+		game.Execute(true); //{!}
+#endif
+
+			game.Execute( true, true );
 		
 	game.Close();
 

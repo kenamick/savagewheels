@@ -1,6 +1,6 @@
 // CVehicle.cpp -  class za 'prevoznoto sredstvo'
 
-#include "main.h"
+#include "Main.h"
 
 /*	 
  frags	     x:105 y:430  x:265 y:430  	x:425 y:430   x:585 y:430
@@ -678,7 +678,7 @@ void CVehicle::DoMotion()
 				motion_frame = tmp_mf;
 				display_frame = tmp_mf;
 
-				DBG( "MyInde: " << this->myIndex );
+				//DBG( String("MyInde: ") << this->myIndex );
 				
 				// spri tozi class
 				if ( hit_vel != 0 )

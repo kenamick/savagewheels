@@ -1,6 +1,6 @@
 // CAnimation.cpp  -  class container za animaciite
 
-#include "main.h"
+#include "Main.h"
 
 ///////////////////////////////////////////////////////////////////////
 // Ime: CAnimations()
