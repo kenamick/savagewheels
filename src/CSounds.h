@@ -8,7 +8,7 @@
 #define NUM_MUSIX  4 
 
 
-typedef enum CONST_MUSIC
+enum CONST_MUSIC
 {
 	MUS_MENU = 0,
 	MUS_INGAME1,
@@ -17,7 +17,7 @@ typedef enum CONST_MUSIC
 };
 
 
-typedef enum CONST_SOUNDS
+enum CONST_SOUNDS
 {
 	SND_CRASHLIGHT1 = 0,
 	SND_CRASHLIGHT2 = 1,

@@ -390,12 +390,25 @@ int CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////
 // Ime: BlitShadow() 
 // Opisanie: shadow from surface 50/50 trans using MASK 
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf )
+{
+    if ( bytes_per_color == 2 )
+      BlitShadow16(x, y, mask, rsurf);
+    else
+      BlitShadow32(x, y, mask, rsurf);
+      
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Ime: BlitShadow16() 
+// Opisanie: 16bit shadow from surface 50/50 trans using MASK 
+///////////////////////////////////////////////////////////////////////
+void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 {
 
 	if ( ! _game->game_shadows ) 
@@ -407,7 +420,7 @@ void CSdl::BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf )
 
 	_Slock( screen );
 
-	x *= 2;   // 2 bytes per pixel =16bpp
+	x *= bytes_per_color;   // 2 bytes per pixel =16bpp
 	Uint16 *pixel1 = (Uint16 *)((Uint8 *)screen->pixels + y * screen->pitch + x );
 
 	for ( j = rsurf->y; j < rsurf->h; j++ )
@@ -419,13 +432,54 @@ void CSdl::BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf )
  			dst_color = *pixel1;
 
 			if ( *mask_val )
-				*pixel1 =  ((dst_color & 0xF7DE) >> 1);
+				*pixel1 =  ((dst_color & shadow_mask) >> 1);
+// 				*pixel1 =  ((dst_color & 0xF7DE) >> 1);
 				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
 			pixel1++;
 		}
 
 		// premseti pad-a
 		pixel1 = (Uint16 *)((Uint8 *)screen->pixels + x + (y + j) * screen->pitch );
+	}
+
+	_Sunlock( screen );
+}
+
+///////////////////////////////////////////////////////////////////////
+// Ime: BlitShadow32() 
+// Opisanie: 32 bit shadow from surface 50/50 trans using MASK 
+///////////////////////////////////////////////////////////////////////
+void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
+{
+
+	if ( ! _game->game_shadows ) 
+		return;
+
+	register Uint16		i = 0U, j = 0U;
+	register Uint32		dst_color = 0U;
+	int			*mask_val = NULL;
+
+	_Slock( screen );
+
+	//x *= bytes_per_color; 
+	Uint32 *pixel1 = ((Uint32 *)screen->pixels + y * (screen->pitch/4) + x);
+
+	for ( j = rsurf->y; j < rsurf->h; j++ )
+	{
+		mask_val = &mask[j*rsurf->w];
+
+		for ( i = rsurf->x; i < rsurf->w; i++, mask_val++ )
+		{
+ 			dst_color = *pixel1;
+
+			if ( *mask_val )
+				*pixel1 =  SDL_MapRGB(screen->format, 0,0,0);//((dst_color & SHADOW_MASK888) >> 1);
+
+			pixel1++;
+		}
+
+		// premseti pad-a
+		pixel1 = ((Uint32 *)screen->pixels + (y + j) * (screen->pitch/4) + x);
 	}
 
 	_Sunlock( screen );
@@ -769,7 +823,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	AppendToLog("SDL Status: Opening Simple DirectMedia Layer® ... " );
+	AppendToLog("SDL Status: Opening Simple DirectMedia Layerï¿½ ... " );
 
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
@@ -813,11 +867,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 
 	LOG( "SDL Status: Switching video mode to " << nWidth << "x" << nHeight << "x" << nBpp );
 
-#define CHK_VMODE( w, h, b, f ) { \
-	int vd = SDL_VideoModeOK( w, h, b, f ); \
-	LOG( "SDL_VideoModeOK() returns " << vd << "." ); }
-
-#ifndef LINUX_BUILD
+// #ifndef LINUX_BUILD
 	//if ( bHardware )
 	//{
 	//	CHK_VMODE( nWidth, nHeight, nBpp, flags );
@@ -831,33 +881,47 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 		////screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, SDL_FULLSCREEN | SDL_SWSURFACE | SDL_ANYFORMAT );
 	}
 
-#else
-	flags = SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
-#endif
+// #else
+// 	flags = SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
+// #endif
 
-	CHK_VMODE( nWidth, nHeight, nBpp, flags );
-	screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, flags );
-
-	SDL_SetClipRect( screen, NULL );
-	SDL_WM_SetCaption( "Savage Wheels - KenamicK Entertainment", "None" );
-	SDL_ShowCursor( SDL_DISABLE );
-
-	// w sluchai na oseraciq go zatwori										  
-	if ( screen == NULL )
+	int vd = SDL_VideoModeOK( nWidth, nHeight, nBpp, flags ); 
+	LOG( "SDL_VideoModeOK() recommends " << vd << " bit mode." );
+	if ( vd == 24 )
+	{
+		LOG( "Savage Wheels does not support 24 bit video mode !" );
+		return false;	  
+	}
+	
+	if ( NULL == (screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, flags )) )
 	{
 		LOG( "SDL Error: Setting video mode : " << SDL_GetError() );
 		return false;
 	}
+	
+	SDL_SetClipRect( screen, NULL );
+	SDL_WM_SetCaption( "Savage Wheels - KenamicK Entertainment", "None" );
+	SDL_ShowCursor( SDL_DISABLE );	
 
 	// 16bit-mode-check
-	if ( screen->format->BytesPerPixel == 2 )
+	bytes_per_color = screen->format->BytesPerPixel;
+	magenta = MAGENTA; // 24&32bit
+	shadow_mask = SHADOW_MASK888; //24&32bit
+		
+	if ( bytes_per_color == 2 )
 	{
+		bytes_per_color = screen->format->BytesPerPixel;
 		if ( screen->format->Rmask == 0xF800 )
+		{
 			magenta = MAGENTA_565;
+			shadow_mask = SHADOW_MASK565;
+		}
 		else
+		{
 			magenta = MAGENTA_555;
+			shadow_mask = SHADOW_MASK555;
+		}
 	}
-
 
 	// inicializirai Sound-a
 	AppendToLog("FMod Status: Opening... " );
@@ -1019,10 +1083,12 @@ SDL_Surface* CSdl::LoadBitmap( char *filename, Uint32 color_key, Uint8 alpha_val
 
 	
 	// display format savmestim s tozi na video mem
-	sdl_surf = SDL_DisplayFormat( sdl_surf );
+	SDL_Surface *new_surf = SDL_DisplayFormat( sdl_surf );
+	SDL_FreeSurface( sdl_surf );
+	sdl_surf = NULL;
 
 
-	return sdl_surf;
+	return new_surf;
 
 #endif
 
@@ -1088,12 +1154,14 @@ SDL_Surface* CSdl::LoadBitmap( char *filename, long file_offset, Uint32 file_siz
 	if ( alpha_value != NO_ALPHA )
 		SDL_SetAlpha( sdl_surf, SDL_SRCALPHA, (Uint8)alpha_value );
 
-	sdl_surf = SDL_DisplayFormat( sdl_surf );
+	SDL_Surface *new_surf = SDL_DisplayFormat( sdl_surf );
+	SDL_FreeSurface( sdl_surf );
+	sdl_surf = NULL;
 	
 	if ( pimg )
 		delete[] pimg;
 
-	return sdl_surf;
+	return new_surf;
 }
 
 
@@ -1292,7 +1360,7 @@ void CSdl::DrawNum( int x, int y, char *text )
 // Ime: LoadSound()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-int CSdl::LoadSound( char *filename, bool buffered_sound )
+int CSdl::LoadSound( const char *filename, bool buffered_sound )
 {
 
 	if ( !bsound_initialized ) return -1;

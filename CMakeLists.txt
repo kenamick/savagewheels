@@ -2,16 +2,9 @@ cmake_minimum_required (VERSION 2.6)
 project(savagewheels) 
 
 ### check for required libs
-
 find_package(SDL REQUIRED)
 
-#include_directories( ${SDL_INCLUDES} )
-#add_definitions( ${SDL_DEFINITIONS} )
-
-### required libs for compilation
-
-#add_subdirectory(src)
-
+### src
 include_directories(src/)
 include_directories(tinyxml/)
 #include_directories(fmod/linux/api)
@@ -38,7 +31,7 @@ set (
 	tinyxml/tinyxmlparser.cpp	
 )
 
-# add required libarires
+### add required libarires
 
 link_libraries (
 	${SDL_LIBRARY}
@@ -55,13 +48,19 @@ find_library(
 
 message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
 
-# additional defines
+### additional defines
 
 add_definitions(`sdl-config --cflags --libs`)
 add_definitions(-DLINUX_BUILD)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-g)
+else (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-O3 -DNDEBUG)
+endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 add_executable (	
-	savagewheels 	
+	savagewheels
 	${SOURCES}
 )
 

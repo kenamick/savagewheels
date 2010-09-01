@@ -51,7 +51,7 @@ class CMainMenu;
 
 
 // rejimi na menu-to
-typedef enum CONST_MENUSTATE
+enum CONST_MENUSTATE
 {
 	MS_STARTSCREEN,
 	MS_PLAY_SETUPCAR,
@@ -66,14 +66,14 @@ typedef enum CONST_MENUSTATE
 };
 
 
-typedef enum CONST_BUTTONTYPE
+enum CONST_BUTTONTYPE
 {
 	BT_TEXT,
 	BT_NAVIGATION
 };
 
 
-typedef enum CONST_BUTTONSTATE
+enum CONST_BUTTONSTATE
 {
 	BS_NORMAL,
 	BS_MOUSEOVER,
@@ -81,7 +81,7 @@ typedef enum CONST_BUTTONSTATE
 	BS_UP
 };
 
-typedef enum CONST_BUTTONTEXT
+enum CONST_BUTTONTEXT
 {
 	BTXT_MENU = 0,
 	BTXT_OPTIONS = 1,

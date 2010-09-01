@@ -28,14 +28,14 @@ class CKdf_Packeger
 
 private:
 
-	typedef struct kdf_file 
+	struct kdf_file 
 	{
 		char  filename[64];
 		long  pos;
 		long  size;
 	};
 
-	typedef struct kdf_ver
+	struct kdf_ver
 	{
 		unsigned char maj_ver;
 		unsigned char min_ver;

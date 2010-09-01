@@ -32,12 +32,13 @@ class CKdf_Packeger;
 #define JOY_AXIS_NONE		    5
 
 #define BLACK		   0x0
-#define WHITE		   0xffffff
-#define MAGENTA		   0xff00ff
+#define WHITE		   0xFFFFFF
+#define MAGENTA		   0xFF00FF
 #define MAGENTA_565	   0xF81F		
 #define MAGENTA_555	   0x7C1F
 #define SHADOW_MASK565 0xF7DE
 #define SHADOW_MASK555 0xFBDE
+#define SHADOW_MASK888 0x00FEFEFE
 
 #ifdef RGB_MODE555
  #define RGB_16BIT(r,g,b) ( ((r) << 10) | ((g) << 5) | (b) ) 
@@ -90,7 +91,7 @@ class CSdl
 protected:
 
 	// graphics
-	typedef struct STRUCT_BLIT 
+	struct STRUCT_BLIT 
 	{
 		int x,y,z;
 		SDL_Surface *surf;
@@ -98,13 +99,15 @@ protected:
 
 	typedef std::vector<int>	udtButtonsBuffer;
    
-	SDL_Surface   *screen;			    // glavna powyrhnost(buffer) na Sdl-to
-	STRUCT_BLIT   surface[MAX_SPRITES];
-    Uint32		  num_surfaces;			// broi kartinki koito da bydat rendirani pri sledwashitq kadyr  
-	int			  mouse_x, mouse_y;
-	int			  mouse_lbutton, mouse_rbutton;
+	SDL_Surface   	*screen;			    // glavna powyrhnost(buffer) na Sdl-to
+	STRUCT_BLIT   	surface[MAX_SPRITES];
+	Uint32		num_surfaces;			// broi kartinki koito da bydat rendirani pri sledwashitq kadyr  
+	int		mouse_x, mouse_y;
+	int		mouse_lbutton, mouse_rbutton;
 
 	Uint16		  magenta;
+	Uint16		  shadow_mask;
+	Uint16		  bytes_per_color;
 	CGame		  *_game;	
 
 
@@ -162,6 +165,8 @@ public:
 	void BlitNow( int x, int y, SDL_Surface *surf );
 	void BlitNow( int x, int y, SDL_Surface *surf, SDL_Rect *rsurf );
 	void BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf );
+	void BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf );
+	void BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf );
 	void BlitShadow( int x, int y, SDL_Surface *surf);
 	int  Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 );
 	int  Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 );
@@ -200,7 +205,7 @@ public:
 
 
 	// Sound functions
-	int  LoadSound( char *filename, bool buffered_sound );
+	int  LoadSound( const char *filename, bool buffered_sound );
 	void PlaySound( int snd_index, int position = -1 );
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );
 	//void PlaySound( int snd_index );

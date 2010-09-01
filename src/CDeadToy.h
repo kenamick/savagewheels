@@ -21,7 +21,7 @@ class CLandMines;
 #define LANDMINE_TIMETOSTAY   12000
 
 
-typedef enum CONST_DEADTOYS {
+enum CONST_DEADTOYS {
 	DT_BEARGOAL = 0,
 	DT_BEARANGER,
 	DT_BEARHP,
@@ -30,7 +30,7 @@ typedef enum CONST_DEADTOYS {
 };
 
 
-typedef enum CONST_DEADTOYGOAL {
+enum CONST_DEADTOYGOAL {
 	DTG_ONTHEROAD = 0,
 	DTG_TAKEN
 };

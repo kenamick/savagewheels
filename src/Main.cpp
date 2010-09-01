@@ -1,12 +1,10 @@
-
 /*
-
   "Savage Wheels" - we're goin' deadly...
 
-  Copyright  2003, 2004, 2005, 2006, 2007 KenamicK Entertainment
+  Copyright (c) 2003-2010 KenamicK Entertainment
   http://www.kenamick.com/
 
-  coded by Peter "Pro-XeX" Petrov
+  coded by Peter "necroleak" Petrov
 
   // release history
   Alpha Release: 29.06.2003
@@ -25,7 +23,6 @@
 
 #include "Main.h"
 
-
 int main( int argc, char *argv[] )
 {
 	OpenLog( "debug.html" );
@@ -37,7 +34,6 @@ int main( int argc, char *argv[] )
 	//return 1;
 
 #if 0
-	// startirai...
 	if ( argc > 1 )
 	{
 		if ( !strcmp( argv[1], "-wnd" ) )
@@ -49,7 +45,7 @@ int main( int argc, char *argv[] )
 		game.Execute(true); //{!}
 #endif
 
-	game.Execute( true, true );
+	game.Execute( false, true );
 		
 	game.Close();
 

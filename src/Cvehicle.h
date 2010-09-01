@@ -39,7 +39,7 @@ enum CONST_DIFFICULTY
 };
 
 
-typedef enum CONST_VEHICLE_TYPE 
+enum CONST_VEHICLE_TYPE 
 {
   VT_KAMION = 0,
   VT_FERRARI,
@@ -48,7 +48,7 @@ typedef enum CONST_VEHICLE_TYPE
 };
 
 
-typedef enum CONST_VEHICLE_MOVEMENT 
+enum CONST_VEHICLE_MOVEMENT 
 {
   VM_NONE = 0,
   VM_FORWARD,
@@ -56,7 +56,7 @@ typedef enum CONST_VEHICLE_MOVEMENT
 };
 
 
-typedef enum CONST_VEHICLE_ROTATION 
+enum CONST_VEHICLE_ROTATION 
 {
   VR_NONE = 0,
   VR_LEFT,
@@ -64,7 +64,7 @@ typedef enum CONST_VEHICLE_ROTATION
 };
 
 
-typedef enum CONST_VEHICLE_CONTROL 
+enum CONST_VEHICLE_CONTROL 
 {
   VC_PLAYER1 = 0,
   VC_PLAYER2,
@@ -74,7 +74,7 @@ typedef enum CONST_VEHICLE_CONTROL
 };
 
 
-typedef enum CONST_TIRETRAILS 
+enum CONST_TIRETRAILS 
 {
   VTT_NONE,
   VTT_TIRES,
@@ -82,7 +82,7 @@ typedef enum CONST_TIRETRAILS
 };
 
 
-typedef enum CONST_AI_VEHICLE_TYPE 
+enum CONST_AI_VEHICLE_TYPE 
 {
 	AVT_WARRIOR,
 	AVT_EXPLORER
