@@ -400,7 +400,6 @@ void CSdl::BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf )
       BlitShadow16(x, y, mask, rsurf);
     else
       BlitShadow32(x, y, mask, rsurf);
-      
 }
 
 
@@ -433,7 +432,6 @@ void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 
 			if ( *mask_val )
 				*pixel1 =  ((dst_color & shadow_mask) >> 1);
-// 				*pixel1 =  ((dst_color & 0xF7DE) >> 1);
 				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
 			pixel1++;
 		}
@@ -452,6 +450,8 @@ void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
 {
 
+  
+  
 	if ( ! _game->game_shadows ) 
 		return;
 
@@ -473,7 +473,8 @@ void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
  			dst_color = *pixel1;
 
 			if ( *mask_val )
-				*pixel1 =  SDL_MapRGB(screen->format, 0,0,0);//((dst_color & SHADOW_MASK888) >> 1);
+				*pixel1 = ((dst_color & SHADOW_MASK888) >> 1);
+				//*pixel1 = ((dst_color & SDL_MapRGB(screen->format, 0xFE,0xFE,0xFE)) >> 1);
 
 			pixel1++;
 		}
@@ -496,13 +497,13 @@ void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint16		i			= 0U, 
-						j			= 0U;
+	register Uint16		i = 0U, 
+				j = 0U;
 	SDL_Rect			rSurf1;
-	Uint16				*pixel1		= NULL, 
-						*pixel2		= NULL;
-	register Uint16		src_color	= 0U, 
-						dst_color	= 0U;
+	Uint16				*pixel1 = NULL, 
+					*pixel2 = NULL;
+	register Uint16		src_color = 0U, 
+				dst_color = 0U;
 
 	rSurf1.x = 0;
 	rSurf1.y = 0;
@@ -595,14 +596,23 @@ void CSdl::SetRect( SDL_Rect *rect, int x, int y, int width, int height )
 	rect->h = height;
 }
 
-
-
-
 ///////////////////////////////////////////////////////////////////////
 // Ime: MakeBoolMask() 
 // Opisanie: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask( SDL_Surface *surf, int *&mask )
+{
+    if ( bytes_per_color == 2 )
+      MakeBoolMask16( surf, mask );
+    else //32 bit
+      MakeBoolMask32( surf, mask );
+}
+
+///////////////////////////////////////////////////////////////////////
+// Ime: MakeBoolMask16() 
+// Opisanie: make sprte boolean mask
+///////////////////////////////////////////////////////////////////////
+void CSdl::MakeBoolMask16( SDL_Surface *surf, int *&mask )
 {
 
 	register int  i,j,w,h,pos;
@@ -626,6 +636,39 @@ void CSdl::MakeBoolMask( SDL_Surface *surf, int *&mask )
 
 		// premseti pad-a
 		pixel = (Uint16 *)((Uint8 *)surf->pixels + j * surf->pitch );
+	}
+
+	_Sunlock( surf );
+}
+
+///////////////////////////////////////////////////////////////////////
+// Ime: MakeBoolMask32() 
+// Opisanie: make sprte boolean mask
+///////////////////////////////////////////////////////////////////////
+void CSdl::MakeBoolMask32( SDL_Surface *surf, int *&mask )
+{
+
+	register int  i,j,w,h,pos;
+	Uint32	*pixel;
+
+	_Slock( surf );
+
+	pixel = (Uint32 *)surf->pixels;
+	w = surf->w;
+	h = surf->h;
+
+	mask = (int *) new int[w*h];
+	
+	for ( j = 0; j < h; j++ )
+	{
+		for ( i = 0; i < w; i++, pixel++ )
+		{
+			pos = w * j + i; 
+			mask[pos] = ( *pixel != MAGENTA ) ? 1 : 0;
+		}
+
+		// premseti pad-a
+		pixel = (Uint32 *)surf->pixels + j * surf->pitch/bytes_per_color;
 	}
 
 	_Sunlock( surf );
@@ -907,7 +950,8 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	bytes_per_color = screen->format->BytesPerPixel;
 	magenta = MAGENTA; // 24&32bit
 	shadow_mask = SHADOW_MASK888; //24&32bit
-		
+
+// check for 16/15 bit mode
 	if ( bytes_per_color == 2 )
 	{
 		bytes_per_color = screen->format->BytesPerPixel;
@@ -1172,7 +1216,7 @@ SDL_Surface* CSdl::LoadBitmap( char *filename, long file_offset, Uint32 file_siz
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CSdl::CreateEmptySurface( int width, int height )
 {
-	return SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, 16,
+	return SDL_CreateRGBSurface( SDL_HWSURFACE, width, height, bytes_per_color * 8,
 								 screen->format->Rmask,
 								 screen->format->Gmask,
 								 screen->format->Bmask,

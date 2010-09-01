@@ -38,13 +38,13 @@ class CKdf_Packeger;
 #define MAGENTA_555	   0x7C1F
 #define SHADOW_MASK565 0xF7DE
 #define SHADOW_MASK555 0xFBDE
-#define SHADOW_MASK888 0x00FEFEFE
+#define SHADOW_MASK888 0xFEFEFE
 
-#ifdef RGB_MODE555
- #define RGB_16BIT(r,g,b) ( ((r) << 10) | ((g) << 5) | (b) ) 
-#else
- #define RGB_16BIT(r,g,b) ( ((r) << 11) | ((g) << 5) | (b) ) 
-#endif
+// #ifdef RGB_MODE555
+//  #define RGB_16BIT(r,g,b) ( ((r) << 10) | ((g) << 5) | (b) ) 
+// #else
+//  #define RGB_16BIT(r,g,b) ( ((r) << 11) | ((g) << 5) | (b) ) 
+// #endif
 
 #define ANALOG_THRESHOLD 20000
 
@@ -165,8 +165,6 @@ public:
 	void BlitNow( int x, int y, SDL_Surface *surf );
 	void BlitNow( int x, int y, SDL_Surface *surf, SDL_Rect *rsurf );
 	void BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf );
-	void BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf );
-	void BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf );
 	void BlitShadow( int x, int y, SDL_Surface *surf);
 	int  Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 );
 	int  Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 );
@@ -216,7 +214,12 @@ public:
 	void SetMusicVolume( int );
 	void ChangeSoundVolume( int s_vol ) { volume_sound += s_vol; SetSoundVolume( volume_sound ); };
 	void ChangeMusicVolume( int m_vol ) { volume_music += m_vol; SetMusicVolume( volume_music ); };
-
+	
+  private:
+	void BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf );
+	void BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf );
+	void MakeBoolMask16( SDL_Surface *surf, int *& );
+	void MakeBoolMask32( SDL_Surface *surf, int *& );
 };
 
 
