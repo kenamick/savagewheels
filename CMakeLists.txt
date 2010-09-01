@@ -38,6 +38,7 @@ set (
 	tinyxml/tinyxmlparser.cpp	
 )
 
+# add required libarires
 
 link_libraries (
 	${SDL_LIBRARY}
@@ -45,15 +46,16 @@ link_libraries (
 #	fmod/linux/api/libfmod-3.75
 )
 
-
 set( FMOD_LIB_NAME "libfmod-3.75.so" )
 
-   find_library( FMOD_LIBRARY
-        NAMES ${FMOD_LIB_NAME}
-        PATHS "./fmod/linux/api" )
+find_library( 
+  FMOD_LIBRARY
+  NAMES ${FMOD_LIB_NAME}
+  PATHS "./fmod/linux/api" )
 
-   message( STATUS "Fmod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}" )
+message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
 
+# additional defines
 
 add_definitions(`sdl-config --cflags --libs`)
 add_definitions(-DLINUX_BUILD)
@@ -65,4 +67,4 @@ add_executable (
 
 target_link_libraries(savagewheels ${FMOD_LIBRARY})
 
-
+set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")

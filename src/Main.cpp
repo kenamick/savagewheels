@@ -3,7 +3,7 @@
 
   "Savage Wheels" - we're goin' deadly...
 
-  Copyright © 2003, 2004, 2005, 2006, 2007 KenamicK Entertainment® 
+  Copyright  2003, 2004, 2005, 2006, 2007 KenamicK Entertainment
   http://www.kenamick.com/
 
   coded by Peter "Pro-XeX" Petrov
@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
 		game.Execute(true); //{!}
 #endif
 
-			game.Execute( true, true );
+	game.Execute( true, true );
 		
 	game.Close();
 
