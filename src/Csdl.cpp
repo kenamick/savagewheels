@@ -866,7 +866,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	AppendToLog("SDL Status: Opening Simple DirectMedia Layer� ... " );
+	AppendToLog("SDL Status: Opening Simple DirectMedia Layer(c) ... " );
 
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
@@ -943,7 +943,9 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	}
 	
 	SDL_SetClipRect( screen, NULL );
-	SDL_WM_SetCaption( "Savage Wheels - KenamicK Entertainment", "None" );
+	char title[512];
+	sprintf( title, "Savage Wheels - KenamicK Entertainment V%d.%d", VER_MAJ, VER_MIN );
+	SDL_WM_SetCaption( title, "None" );
 	SDL_ShowCursor( SDL_DISABLE );	
 
 	// 16bit-mode-check

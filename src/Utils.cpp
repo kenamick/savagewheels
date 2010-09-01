@@ -160,10 +160,10 @@ int OpenLog ( const char* filename )
     // open debug file
     debug_file.open ( "debug.html", std::ios::out ); //ios::ate );
 
-    debug_file << "<html>\n<head>\n<title>SW-Log</title>\n</head>\n<body>\n<pre>\n<h1>Savage Wheels - Log File</h1>";
+    debug_file << "<html>\n<head>\n<title>SW-Log</title>\n</head>\n<body>\n<pre>\n<h1>Savage Wheels V" << VER_MAJ << "." << VER_MIN << " - Log File</h1>";
     debug_file << "\n<h3>------------------------------------------------</h3>\n";
     debug_file << "*** " << APP_NAME << " ***\n\n";
-    debug_file <<  buf1 << " " << "Copyright � 2004, 2005, 2006, 2007 KenamicK Entertainment" "\n";
+    debug_file <<  buf1 << " " << "Copyright &copy; 2003-2010 KenamicK Entertainment" "\n";
     debug_file <<  buf1 << " " <<"Opened on: " << __DATE__ << "\n";
     debug_file <<  buf1 << " " <<"Opened at: " << __TIME__ << "\n\n";
     debug_file <<  buf1 << " " << LOG_DASH;

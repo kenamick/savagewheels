@@ -61,6 +61,10 @@
 #define INT_MAX	 0x7fffffff //2147483647
 #endif
 
+// --- version
+#define VER_MAJ 1
+#define VER_MIN 4
+
 // --- global game defines
 #define ART_FILE		"graphics/gfxdata.kdf"
 #define BINDINGS_FILE	"bindings.xml"

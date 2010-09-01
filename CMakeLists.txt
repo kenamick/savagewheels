@@ -53,6 +53,8 @@ message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
 add_definitions(`sdl-config --cflags --libs`)
 add_definitions(-DLINUX_BUILD)
 
+message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-g)
 else (CMAKE_BUILD_TYPE STREQUAL "Debug")
