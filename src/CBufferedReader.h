@@ -1,5 +1,5 @@
 /*
-    Copyright (c) <year> <copyright holders>
+    Copyright (c) 2003-2010 KenamicK Entertainment
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
@@ -38,7 +38,7 @@ class CBufferedReader
     char readChar();
     unsigned char readUChar();
     void readCharArray( char *dest, int size );
-    void readUCharArray( unsigned char *dest, int size );
+    void readUCharArray( char *dest, int size );
     short readInt16();
     int readInt32();
     
