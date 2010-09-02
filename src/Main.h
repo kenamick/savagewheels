@@ -5,15 +5,16 @@
 #define __CMAIN
 
 #include <vector>
-#include <string>
+#include <cstring>
 #include <sstream>
 #include <fstream>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+#include <cstdarg>
+#include <cassert>
 #include <memory.h>
-#include <stdarg.h>
-#include <assert.h>
+#include <exception>
 
 #include <time.h>
 #include <sys/stat.h>
@@ -100,6 +101,6 @@ typedef std::ostringstream	OutputSStream;
 #include "CDeadToy.h"
 #include "Bindings.h"
 #include "Cgame.h"
-
+#include "CBufferedReader.h"
 
 #endif

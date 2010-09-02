@@ -5,6 +5,7 @@
 #ifdef LINUX_BUILD
 #	include <dirent.h>
 #	include <sys/stat.h>
+#	include <stdio.h>
 #else
 #	include <io.h>
 #endif
@@ -39,13 +40,16 @@ CSwv_module::~CSwv_module()
 ///////////////////////////////////////////////////////////////////////////////
 void CSwv_module::Release()
 {
-
 	if ( num_vehicles != 0 )
 	{
 		for ( unsigned int i = 0; i < num_vehicles; i++ )
+		{
 			delete[] vehicles[i].pfiles;
+			vehicles[i].pfiles = NULL;
+		}
 
 		delete[] vehicles;
+		vehicles = NULL;
 	}
 
 }
@@ -81,7 +85,6 @@ int CSwv_module::Create( SWV_HEADER *swm )
 	file_pos = ftell( fp );
 	fwrite( swm->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
 	
-
 	// put in bitmap data
 	for ( int i = 0; i < num_anims; i++ )
 	{
@@ -110,7 +113,6 @@ int CSwv_module::Create( SWV_HEADER *swm )
 	fseek( fp, file_pos, SEEK_SET );
 	fwrite( swm->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
 
-
 	fclose( fp );
 
 	return SWV_SUCCESS;
@@ -126,27 +128,50 @@ int CSwv_module::Create( SWV_HEADER *swm )
 ///////////////////////////////////////////////////////////////////////////////
 int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 {
-
-
-	FILE *fp;
+	FILE *fp = NULL;
 	//FILE *fp_bmp;
 	//char *buffer;
 	//char header[3];
 	int  num_anims;
 	//char kbd;
 	
-	
 	if ( ( fp = fopen( filename, "rb" ) ) == NULL )
 		return SWVERROR_OPENSWVFILE;
 
 	// read header
-	fread( swv_file, sizeof(SWV_HEADER), 1, fp );
-
+	CBufferedReader reader(fp);
+	
+	reader.readCharArray( swv_file->header, 3 );
+	//fread( swv_file, sizeof(SWV_HEADER), 1, fp );
 	if ( swv_file->header[0] != 'S' && swv_file->header[1] != 'W' && swv_file->header[2] != 'V' ) 
-	{
-		//...
 		return SWVERROR_INCORRECTHEADER;
-	}
+	
+	// read elements
+	reader.readCharArray( swv_file->filename, 64 );
+	reader.readCharArray( swv_file->vehiclename, 8 );
+	swv_file->max_vel = static_cast<CONST_VSPEED>(reader.readInt32());
+	swv_file->acc = static_cast<CONST_VACC>(reader.readInt32());
+	swv_file->dec_acc = static_cast<CONST_VACC>(reader.readInt32());
+	swv_file->rot_speed = static_cast<CONST_VROTSPEED>(reader.readInt32());
+	swv_file->lbs = reader.readInt32();
+	swv_file->damage = static_cast<CONST_VDAMAGE>(reader.readInt32());
+	swv_file->hp = static_cast<CONST_VARMOUR>(reader.readInt32());
+	swv_file->hp_crash = reader.readInt32();
+	swv_file->animation_frames = reader.readInt32();
+	
+/*	char		header[3];
+	char		filename[64];
+	char		vehiclename[8];
+	CONST_VSPEED    max_vel;
+	CONST_VACC 	acc;
+	int		dec_acc;
+	CONST_VROTSPEED rot_speed;
+	int		lbs;
+	CONST_VDAMAGE   damage;
+	CONST_VARMOUR   hp;
+	int		hp_crash;
+	int		animation_frames;
+	SWV_FILES	*pfiles;*/	
 
 
 	// read file_positions
@@ -170,7 +195,6 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 
 	// copy module_filename
 	sprintf( swv_file->filename, "%s", filename );
-	
 
 	fclose( fp );
 

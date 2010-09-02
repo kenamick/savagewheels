@@ -11,7 +11,8 @@ include_directories(tinyxml/)
 include_directories(fmod/linux/api/inc)
 
 set (
-        SOURCES
+        SOURCES 
+	src/CBufferedReader.cpp
         src/Bindings.cpp 
 	src/CDeadToy.cpp 
 	src/CKdf.cpp 

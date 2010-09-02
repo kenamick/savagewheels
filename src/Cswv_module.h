@@ -1,7 +1,5 @@
 // Cswm_module.h - 
 
-
-
 #ifndef __SWV_MODULE
 #define __SWV_MODULE
 
@@ -71,35 +69,26 @@ struct SWV_FILES {
 
 
 struct SWV_HEADER {
-	char		     header[3];
-	char		     filename[64];
-	char			 vehiclename[8];
-	CONST_VSPEED     max_vel;
-	CONST_VACC 	     acc;
-	int			     dec_acc;
-	CONST_VROTSPEED  rot_speed;
-	int			     lbs;
-	CONST_VDAMAGE    damage;
-	CONST_VARMOUR    hp;
-	int			     hp_crash;
-	int			     animation_frames;
-	SWV_FILES	     *pfiles;
+	char		header[3];
+	char		filename[64];
+	char		vehiclename[8];
+	CONST_VSPEED    max_vel;
+	CONST_VACC 	acc;
+	int		dec_acc;
+	CONST_VROTSPEED rot_speed;
+	int		lbs;
+	CONST_VDAMAGE   damage;
+	CONST_VARMOUR   hp;
+	int		hp_crash;
+	int		animation_frames;
+	SWV_FILES	*pfiles;
 };
 
 
 class CSwv_module
 {
 
-private:
-
-	//SWV_HEADER		  *vehicles;
-	unsigned int      num_vehicles;
-	unsigned long	  pos_face;		// title screen of the vehicle
-	
-private:
-	int Load( char *filename, SWV_HEADER *swv_file ); 
-
-public:
+  public:
 	CSwv_module();
 	~CSwv_module();
 
@@ -125,6 +114,14 @@ public:
 	long GetFramePos( unsigned int car_index, int frame );
 	long GetFrameSize( unsigned int car_index, int frame );
 
+  private:
+	int Load( char *filename, SWV_HEADER *swv_file ); 
+
+  private:
+	//SWV_HEADER		  *vehicles;
+	unsigned int      num_vehicles;
+	unsigned long	  pos_face;		// title screen of the vehicle
+	
 };
 
 
