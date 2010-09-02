@@ -46,6 +46,11 @@
 #	endif
 #endif
 
+//#define ATODW(n) ((n[3] & 0x000000FF) | ((n[2] & 0x000000FF) << 4) | ((n[1] & 0x000000FF) << 8) | ((n[0] & 0x000000FF) << 16))
+#define ATODW(n) ( ((((((n[3] & 0x000000FF) << 8) | n[2]) << 8) | n[1]) << 8) | n[0])
+//#define DWTOA(n,a) sprintf(a, "%d", n);
+#define DWTOA(n,a) sprintf((char *)a, "%d", n);
+
 // --- lib includes
 #include "SDL.h"
 //#include "sdl/sdl_ttf.h"

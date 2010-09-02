@@ -62,8 +62,10 @@ enum CONST_VARMOUR
 /*****************************/
 
 struct SWV_FILES {
-	long pos;
-	long length;
+	//long pos;
+	//long length;
+	unsigned char pos[4];
+	unsigned char length[4];
 	char filename[255];
 };
 
@@ -114,14 +116,14 @@ public:
 
 	char* GetVehicleFilename( unsigned int car_index ) { return vehicles[car_index].filename; };
 	char* GetVehicleName( unsigned int car_index ) { return vehicles[car_index].vehiclename; };
-	long GetFacePos( unsigned int car_index ) { return vehicles[car_index].pfiles[0].pos; };
-	long GetFaceSize( unsigned int car_index ) { return vehicles[car_index].pfiles[0].length; };
-	long GetDriverFacePos( unsigned int car_index ) { return vehicles[car_index].pfiles[1].pos; };
-	long GetDriverFaceSize( unsigned int car_index ) { return vehicles[car_index].pfiles[1].length; };
-	long GetNamePos( unsigned int car_index ) { return vehicles[car_index].pfiles[2].pos; };
-	long GetNameSize( unsigned int car_index ) { return vehicles[car_index].pfiles[2].length; };
-	long GetFramePos( unsigned int car_index, int frame ) { return vehicles[car_index].pfiles[frame+2].pos; };
-	long GetFrameSize( unsigned int car_index, int frame ) { return vehicles[car_index].pfiles[frame+2].length; };
+	long GetFacePos( unsigned int car_index );
+	long GetFaceSize( unsigned int car_index );
+	long GetDriverFacePos( unsigned int car_index );
+	long GetDriverFaceSize( unsigned int car_index );
+	long GetNamePos( unsigned int car_index );
+	long GetNameSize( unsigned int car_index );
+	long GetFramePos( unsigned int car_index, int frame );
+	long GetFrameSize( unsigned int car_index, int frame );
 
 };
 

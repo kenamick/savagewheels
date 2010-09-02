@@ -1,6 +1,6 @@
 // ckdf.cpp - 
 
-#include "CKdf.h"
+#include "Main.h"
 
 #ifdef LINUX_BUILD
 #	include <dirent.h>
@@ -162,7 +162,8 @@ int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name )
 	
 						filenumber++;
 						strcpy( pfiles[filenumber-1].filename, pDirEntry->d_name );
-						pfiles[filenumber-1].size = file_stat.st_size;
+						DWTOA(file_stat.st_size, pfiles[filenumber-1].size);
+						//pfiles[filenumber-1].size = file_stat.st_size;
 					}
 				}
 			}
@@ -208,12 +209,13 @@ int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name )
 
 		fpkid = fopen( filemask, "rb" );
 
-		pfiles[i].pos = ftell( fpKDF );
+		//pfiles[i].pos = ftell( fpKDF );
+		DWTOA(ftell( fpKDF ), pfiles[i].pos);
 
-		buf = new char[pfiles[i].size];
-		fread( buf, pfiles[i].size, 1, fpkid );
+		buf = new char[ATODW(pfiles[i].size)];
+		fread( buf, ATODW(pfiles[i].size), 1, fpkid );
 
-		fwrite( buf, pfiles[i].size, 1, fpKDF );
+		fwrite( buf, ATODW(pfiles[i].size), 1, fpKDF );
 
 		delete[] buf;
 
@@ -241,11 +243,16 @@ int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name )
 long CKdf_Packeger::GetFilePosition( const char *file_name )
 {
 	kdf_file *ptr = pfiles;
+	
+	int len = strlen(file_name);
+	long ret = 0;
 
 	for ( int i = 0; i < num_files; i++ )
 	{
-		if ( ! strcmp( file_name, ptr->filename ) )
-			return ptr->pos;
+		if ( ! strncmp( file_name, ptr->filename, len ) )
+		{
+			return ATODW( ptr->pos );
+		}
 
 		ptr++;
 	}
@@ -253,7 +260,14 @@ long CKdf_Packeger::GetFilePosition( const char *file_name )
 	return KDF_ERROR_FILEDOESNOTEXIST;
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////////
+//// Name: GetFilePosition()
+//// Desc: 
+///////////////////////////////////////////////////////////////////////////////////////
+long CKdf_Packeger::GetFilePosition( int file_index ) 
+{ 
+  return ATODW(pfiles[file_index].pos); 
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -267,10 +281,19 @@ long CKdf_Packeger::GetFileSize( const char *file_name )
 	for ( int i = 0; i < num_files; i++ )
 	{
 		if ( !strcmp( file_name, ptr->filename ) )
-			return ptr->size;
+			return ATODW(ptr->size);
 
 		ptr++;
 	}
 
 	return KDF_ERROR_FILEDOESNOTEXIST;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+//// Name: GetFileSize()
+//// Desc: 
+///////////////////////////////////////////////////////////////////////////////////////
+long CKdf_Packeger::GetFileSize( int file_index ) 
+{ 
+  return ATODW(pfiles[file_index].size); 
 }

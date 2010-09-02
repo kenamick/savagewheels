@@ -90,14 +90,15 @@ int CSwv_module::Create( SWV_HEADER *swm )
 			return SWVERROR_OPENGFXFILE;
 
 		// save position info in mother file
-		swm->pfiles[i].pos = ftell( fp );
+		//swm->pfiles[i].pos = ftell( fp );
+		DWTOA(swm->pfiles[i].pos, ftell( fp ));
 		
 		// allocate memory & read its contents
-		buffer = new char[swm->pfiles[i].length];
-		fread( buffer, swm->pfiles[i].length, 1, fp_bmp );
+		buffer = new char[ATODW(swm->pfiles[i].length)];
+		fread( buffer, ATODW(swm->pfiles[i].length), 1, fp_bmp );
 
 		// send data to SWV_m
-		fwrite( buffer, swm->pfiles[i].length, 1, fp );
+		fwrite( buffer, ATODW(swm->pfiles[i].length), 1, fp );
 
 		delete[] buffer;
 
@@ -271,4 +272,44 @@ int CSwv_module::SearchAndLoad( char *search_dir )
 	//delete vehicles;
 
 	return SWV_SUCCESS;
+}
+
+long CSwv_module::GetFacePos( unsigned int car_index ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[0].pos); 
+}
+
+long CSwv_module::GetFaceSize( unsigned int car_index ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[0].length); 
+}
+
+long CSwv_module::GetDriverFacePos( unsigned int car_index ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[1].pos); 
+}
+
+long CSwv_module::GetDriverFaceSize( unsigned int car_index ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[1].length); 
+}
+
+long CSwv_module::GetNamePos( unsigned int car_index ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[2].pos); 
+}
+
+long CSwv_module::GetNameSize( unsigned int car_index ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[2].length);
+}
+
+long CSwv_module::GetFramePos( unsigned int car_index, int frame ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[frame+2].pos); 
+}
+
+long CSwv_module:: GetFrameSize( unsigned int car_index, int frame ) 
+{ 
+  return ATODW(vehicles[car_index].pfiles[frame+2].length); 
 }

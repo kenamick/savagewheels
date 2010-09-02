@@ -22,19 +22,16 @@
 #define KDF_ERROR_UNSUPPORTED_VERSION	14
 #define KDF_ERROR_FILEDOESNOTEXIST		-1
 
-
 class CKdf_Packeger 
 {
 
 private:
 
-#pragma pack(push)
-#pragma pack(1)
 	struct kdf_file 
 	{
 		char  filename[64];
-		long  pos;
-		long  size;
+		unsigned char  pos[4];
+		unsigned char  size[4];
 	};
 
 	struct kdf_ver
@@ -42,7 +39,7 @@ private:
 		unsigned char maj_ver;
 		unsigned char min_ver;
 	};
-#pragma pack(pop)
+
 
 	kdf_file   *pfiles;						// array of file-info structures
 	char       **paths;						// array of file-paths
@@ -63,9 +60,9 @@ public:
 	void Reset();
 
 	long GetFilePosition( const char *file_name );
-	long GetFilePosition( int file_index ) { return pfiles[file_index].pos; };
+	long GetFilePosition( int file_index );
 	long GetFileSize( const char *file_name );
-	long GetFileSize( int file_index ) { return pfiles[file_index].size; };
+	long GetFileSize( int file_index );
 
 };
 

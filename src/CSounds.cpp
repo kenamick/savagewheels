@@ -66,11 +66,8 @@ bool CSounds::Initialize( CSdl *pSdl )
 	music_stopped = false;
 
 #undef LOAD_SOUND
-
-	return true;
-#else
-	return false;
 #endif
+	return true;
 }
 
 

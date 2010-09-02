@@ -205,19 +205,19 @@ int CVehicle::Initialize( CGame *game, SWV_HEADER *swv, Uint16 carIndex )
  {
 	 // normal sprites
 	 index = cn + 3;
-	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( swv->filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
+	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( swv->filename, ATODW(swv->pfiles[index].pos), ATODW(swv->pfiles[index].length), MAGENTA, NO_ALPHA )) == NULL ) return 0;
 	 // create a mask for this sprite
 	  _game->Sdl.MakeBoolMask( sprite_norm[cn], mask_norm[cn] );
 		 
 	 // crashed sprites
 	 index = cn + 3 + frames; // calc.offset to the crashed sprites
-	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( swv->filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
+	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( swv->filename, ATODW(swv->pfiles[index].pos), ATODW(swv->pfiles[index].length), MAGENTA, NO_ALPHA )) == NULL ) return 0;
 	 // create a mask for this sprite
 	 _game->Sdl.MakeBoolMask( sprite_crash[cn], mask_crash[cn] );
  }
 
  // load driver_name surface
- if ( (driver_name = _game->Sdl.LoadBitmap( swv->filename, swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA )) == NULL ) return 0;
+ if ( (driver_name = _game->Sdl.LoadBitmap( swv->filename, ATODW(swv->pfiles[2].pos), ATODW(swv->pfiles[2].length), BLACK, NO_ALPHA )) == NULL ) return 0;
 
  display_frame = tire_frame = 0;
 
