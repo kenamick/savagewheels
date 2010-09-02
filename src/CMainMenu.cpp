@@ -1174,6 +1174,8 @@ void CButton::Update( CGame *game )
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::SaveSettings()
 {
+	if ( _game == NULL )
+	  return;
 
 	FILE *fp;
 	int   tmp_int;

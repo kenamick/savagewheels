@@ -49,8 +49,10 @@
 // --- lib includes
 #include "SDL.h"
 //#include "sdl/sdl_ttf.h"
-#include "fmod.h"
-#include "fmod_errors.h"
+#ifdef WITH_FMOD
+  #include "fmod.h"
+  #include "fmod_errors.h"
+#endif
 // ---
 
 #ifndef UINT_MAX

@@ -31,12 +31,19 @@ set (
 	tinyxml/tinyxmlparser.cpp	
 )
 
+### specify executable
+
+add_executable (	
+	savagewheels
+	${SOURCES}
+)
+
 ### add required libarires
 
-link_libraries (
+target_link_libraries( 
+	savagewheels
 	${SDL_LIBRARY}
 	SDLmain
-#	fmod/linux/api/libfmod-3.75
 )
 
 set( FMOD_LIB_NAME "libfmod-3.75.so" )
@@ -46,11 +53,18 @@ find_library(
   NAMES ${FMOD_LIB_NAME}
   PATHS "./fmod/linux/api" )
 
-message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
+if ( NOT FMOD_LIBRARY OR NO_SOUND )
+  message( STATUS "FMod lib(${FMOD_LIB_NAME}) not found. Will compile without sound support." )
+else ( NOT FMOD_LIBRARY OR NO_SOUND )
+  add_definitions(-DWITH_FMOD)
+  target_link_libraries(savagewheels ${FMOD_LIBRARY})
+  message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
+endif ( NOT FMOD_LIBRARY OR NO_SOUND )
 
 ### additional defines
 
-add_definitions(`sdl-config --cflags --libs`)
+add_definitions(`sdl-config --cflags`)
+add_definitions(`sdl-config --libs`)
 add_definitions(-DLINUX_BUILD)
 
 message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
@@ -60,12 +74,5 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 else (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-O3 -DNDEBUG)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-add_executable (	
-	savagewheels
-	${SOURCES}
-)
-
-target_link_libraries(savagewheels ${FMOD_LIBRARY})
 
 set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")

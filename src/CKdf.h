@@ -28,6 +28,8 @@ class CKdf_Packeger
 
 private:
 
+#pragma pack(push)
+#pragma pack(1)
 	struct kdf_file 
 	{
 		char  filename[64];
@@ -40,7 +42,7 @@ private:
 		unsigned char maj_ver;
 		unsigned char min_ver;
 	};
-
+#pragma pack(pop)
 
 	kdf_file   *pfiles;						// array of file-info structures
 	char       **paths;						// array of file-paths

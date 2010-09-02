@@ -10,8 +10,10 @@
 CSounds::CSounds()
 : _sdl( NULL ), current_track( 0 ), music_stopped( false )
 {
+#ifdef WITH_FMOD
 	memset( sounds, 0, sizeof(int) * NUM_SOUNDS );
 	memset( music, NULL, NUM_MUSIX);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -28,6 +30,7 @@ CSounds::~CSounds()
 //////////////////////////////////////////////////////////////////////
 bool CSounds::Initialize( CSdl *pSdl )
 {
+#ifdef WITH_FMOD
 	this->_sdl = pSdl;
 	ASSERT( _sdl != NULL );
 
@@ -65,6 +68,9 @@ bool CSounds::Initialize( CSdl *pSdl )
 #undef LOAD_SOUND
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 
@@ -74,8 +80,10 @@ bool CSounds::Initialize( CSdl *pSdl )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Play( CONST_SOUNDS snd_to_play )
 {
+#ifdef WITH_FMOD
 	if ( _sdl )
 		_sdl->PlaySound( sounds[snd_to_play] );
+#endif
 }
 
 
@@ -85,8 +93,10 @@ void CSounds::Play( CONST_SOUNDS snd_to_play )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Play( CONST_SOUNDS snd_to_play, int pos )
 {
+#ifdef WITH_FMOD
 	if ( _sdl )
 		_sdl->PlaySound( sounds[snd_to_play], pos );
+#endif
 }
 
 
@@ -96,6 +106,7 @@ void CSounds::Play( CONST_SOUNDS snd_to_play, int pos )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 {
+#ifdef WITH_FMOD  
 	if ( _sdl )
 	{
 		if ( _sdl->GetMusicVolume() <= 0 ) 
@@ -107,6 +118,7 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 
 		//music_stopped = false;
 	}
+#endif
 }
 
 
@@ -116,22 +128,24 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 //////////////////////////////////////////////////////////////////////
 void CSounds::StopMusic()
 {
-
+#ifdef WITH_FMOD
 	if ( music[current_track] )
 		FMUSIC_StopSong( music[current_track] );
 	
 	//Mix_RewindMusic();
 
 	//music_stopped = true;
+#endif
 }
 
 
 void CSounds::FadeMusic( int milliseconds )
 {
+#ifdef WITH_FMOD
 	if ( music[current_track] )
 		FMUSIC_StopSong( music[current_track] );
 //	Mix_FadeOutMusic(milliseconds);
-
+#endif
 }
 
 
@@ -142,6 +156,7 @@ void CSounds::FadeMusic( int milliseconds )
 //////////////////////////////////////////////////////////////////////
 void CSounds::CheckMusic()
 {
+#ifdef WITH_FMOD  
 	if ( !music_stopped )
 	{
 	
@@ -157,7 +172,7 @@ void CSounds::CheckMusic()
 			Play( (CONST_MUSIC)current_track, false );
 		}
 	}
-
+#endif
 }
 
 
@@ -167,11 +182,13 @@ void CSounds::CheckMusic()
 //////////////////////////////////////////////////////////////////////
 void CSounds::setMusicVolume( int volume )
 { 
+#ifdef WITH_FMOD  
 	for ( int i = 0; i < NUM_MUSIX; i++ ) 
 	{
 		if ( music[i] )
 			FMUSIC_SetMasterVolume( music[i], volume ); 
 	}
+#endif	
 }
 
 
@@ -181,6 +198,7 @@ void CSounds::setMusicVolume( int volume )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Release()
 {
+#ifdef WITH_FMOD  
 	for ( int i = 0; i < NUM_MUSIX; i++ )
 	{
 		if ( music[i] )
@@ -188,4 +206,5 @@ void CSounds::Release()
 	}
 		
 	//Mix_FreeMusic( music[i] );
+#endif
 }

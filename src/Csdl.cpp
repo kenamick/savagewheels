@@ -53,6 +53,7 @@ void CSdl::Close()
 
 
 	// free all sounds
+#ifdef WITH_FMOD	
 	if ( bsound_initialized )
 	{
 		AppendToLog("FMod Status: Releasing Game Sounds... ");
@@ -66,7 +67,7 @@ void CSdl::Close()
 		AppendToLog("FMod: Closing...");
 		FSOUND_Close();
 	}
-
+#endif
 
 #ifdef FONT_TTF
 	TTF_CloseFont( font_ttf );
@@ -969,6 +970,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 		}
 	}
 
+#ifdef WITH_FMOD
 	// inicializirai Sound-a
 	AppendToLog("FMod Status: Opening... " );
 
@@ -1004,6 +1006,15 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	// get volumes
 	volume_sound = 255;
 	volume_music = 255;
+#else
+
+  // Nothing else is supported for sound right now.
+  
+  AppendToLog( "No sound support. Savage Wheels was compiled with no sound support !" );
+  
+  bsound_initialized = false;
+
+#endif
 
 	return true;
 }
@@ -1103,10 +1114,17 @@ SDL_Surface* CSdl::LoadBitmap( char *filename, Uint32 color_key, Uint8 alpha_val
 	String strFilename( ExtractFilename( filename ) );
 
 	long offset = _game->Kdf.GetFilePosition( strFilename.c_str() );
-	Uint32 size = _game->Kdf.GetFileSize( strFilename.c_str() );
+	
+	if ( KDF_ERROR_FILEDOESNOTEXIST != offset )
+	{
+	  Uint32 size = _game->Kdf.GetFileSize( strFilename.c_str() );
+	  
+	  return LoadBitmap( ART_FILE, offset, size, color_key, alpha_value );
+	}
+	
+	LOG( "Error loading " << filename << " !" );
 
-	return LoadBitmap( ART_FILE, offset, size, color_key, alpha_value );
-
+	return NULL;
 #else
 	
 	SDL_Surface *sdl_surf = NULL;
@@ -1321,7 +1339,9 @@ void CSdl::InitializeFont()
 #ifdef LOCAL_RES
 	font_bmp = LoadBitmap( "gfx/interf/fnt.bmp", 0x0 );
 #else // LOAD FROM KDF
-	font_bmp = LoadBitmap( ART_FILE, _game->Kdf.GetFilePosition("fnt.bmp"), _game->Kdf.GetFileSize("fnt.bmp") , 0x0 );
+	long position = _game->Kdf.GetFilePosition("fnt.bmp");
+	if ( KDF_ERROR_FILEDOESNOTEXIST != position )
+	  font_bmp = LoadBitmap( ART_FILE, _game->Kdf.GetFilePosition("fnt.bmp"), _game->Kdf.GetFileSize("fnt.bmp") , 0x0 );
 #endif
 
 	if ( font_bmp == NULL )
@@ -1330,7 +1350,6 @@ void CSdl::InitializeFont()
 	}
 	
 	font_size = 8; //fontsize;  // 7.5
-
 }
 
 
@@ -1408,7 +1427,7 @@ void CSdl::DrawNum( int x, int y, char *text )
 ///////////////////////////////////////////////////////////////////////
 int CSdl::LoadSound( const char *filename, bool buffered_sound )
 {
-
+#ifdef WITH_FMOD
 	if ( !bsound_initialized ) return -1;
 
 	Uint32		   i			= 0;
@@ -1454,6 +1473,9 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound )
 	}
 
 	return i;
+#else
+	return -1;
+#endif
 }
 
 
@@ -1509,6 +1531,7 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::PlaySound( int snd_index, int position )
 {
+#ifdef WITH_FMOD
 	 //return;  // {!}
 	int chn = -1;
 
@@ -1558,6 +1581,7 @@ void CSdl::PlaySound( int snd_index, int position )
 		FSOUND_SetPan( chn, position );		
 
 	}
+#endif
 }
 
 
@@ -1568,6 +1592,7 @@ void CSdl::PlaySound( int snd_index, int position )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetMusicVolume( int music_vol )
 {
+#ifdef WITH_FMOD  
 	volume_music = music_vol;
 	
 	if ( volume_music > 128 ) 
@@ -1577,8 +1602,8 @@ void CSdl::SetMusicVolume( int music_vol )
 
 	_game->Snd.setMusicVolume( volume_music );
 	//CSnd.setMusicVolume( volume_music );
+#endif
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1587,6 +1612,7 @@ void CSdl::SetMusicVolume( int music_vol )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetSoundVolume( int snd_vol )
 {
+#ifdef WITH_FMOD
 	volume_sound = snd_vol;
 	
 	if ( volume_sound > 256 ) 
@@ -1595,6 +1621,7 @@ void CSdl::SetSoundVolume( int snd_vol )
 		volume_sound = 0;
 
 	FSOUND_SetSFXMasterVolume( volume_sound );
+#endif
 }
 
 
@@ -1625,6 +1652,8 @@ void CSdl::PlaySound( int snd_index )
 ///////////////////////////////////////////////////////////////////////
 void CSound::Release()
 {
+#ifdef WITH_FMOD
 	if ( sound )
 		FSOUND_Sample_Free( sound );
+#endif
 }

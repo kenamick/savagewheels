@@ -11,7 +11,7 @@ class CSound;
 class CKdf_Packeger;
 /////////////////////////
 
-#define RELEASE_SURF( surf ) if ( surf ) { SDL_FreeSurface( surf ); }
+#define RELEASE_SURF( surf ) if ( (surf) != NULL ) { SDL_FreeSurface( surf ); surf = NULL; }
 
 //#define FONT_TTF						// use TTF_FONTS
 
@@ -66,7 +66,10 @@ class CSound
 public:
 
 	CSound()
-		: sound(NULL), buffered(false), play_channel(-1), loaded(false)
+		: buffered(false), play_channel(-1), loaded(false)
+#ifdef WITH_FMOD
+		,sound(NULL)
+#endif
 	{
 	};
 
@@ -74,10 +77,12 @@ public:
 	{
 	};
 
+#ifdef WITH_FMOD	
 	FSOUND_SAMPLE   *sound;
-	bool			buffered;				// bufferiran li shte e zvukyt 
-	int				play_channel;			// ne-bufferiran zvuk se nujdae ot otdelen kanal
-	bool			loaded;
+#endif
+	bool		buffered;				// bufferiran li shte e zvukyt 
+	int		play_channel;			// ne-bufferiran zvuk se nujdae ot otdelen kanal
+	bool		loaded;
 	
 	void Release();
 
