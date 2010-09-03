@@ -84,10 +84,8 @@ enum CONST_VARMOUR
 /*****************************/
 
 struct SWV_FILES {
-	//long pos;
-	//long length;
-	unsigned char pos[4];
-	unsigned char length[4];
+	long pos;
+	long length;
 	char filename[255];
 };
 

@@ -71,7 +71,9 @@
 #endif
 
 //#define ATODW(n) ((n[3] & 0x000000FF) | ((n[2] & 0x000000FF) << 4) | ((n[1] & 0x000000FF) << 8) | ((n[0] & 0x000000FF) << 16))
+#define ATOQW(n) ( ( (n[7] & 0x000000FF) << 8) | (n[6] << 8) | (n[5] << 8) | (n[4] << 8) | (n[3] << 8) | (n[2] << 8) | (n[1] << 8) | n[0] )
 #define ATODW(n) ( ((((((n[3] & 0x000000FF) << 8) | n[2]) << 8) | n[1]) << 8) | n[0])
+#define ATOW(n) ( ((n[0] & 0x00FF) << 8) | n[1])
 //#define DWTOA(n,a) sprintf(a, "%d", n);
 #define DWTOA(n,a) sprintf((char *)a, "%d", n);
 

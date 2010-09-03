@@ -26,7 +26,7 @@
 
 #include "Main.h"
 
-#define READ_OK(res) //if (0 == (res)) throw std::exception("Failed to read from buffered stream !")
+#define READ_OK(res) if (0 == (res)) LOG( "Error: CBufferedReader could not read bytes or reached end of stream." )
 
 CBufferedReader::CBufferedReader(FILE* fp)
 : _fpSource(fp)
@@ -58,27 +58,32 @@ unsigned char CBufferedReader::readUChar()
 
 void CBufferedReader::readCharArray(char* dest, int size)
 {
-  READ_OK( fread( dest, sizeof(char) * size, 1, _fpSource ) );
+  READ_OK( fread( dest, sizeof(char), size, _fpSource ) );
 }
 
 void CBufferedReader::readUCharArray(unsigned char* dest, int size)
 {
-  READ_OK( fread( dest, sizeof(unsigned char) * size, 1, _fpSource ) );
+  READ_OK( fread( dest, sizeof(unsigned char), size, _fpSource ) );
 }
 
-short int CBufferedReader::readInt16()
+short CBufferedReader::readInt16()
 {
-  short n;
-  READ_OK( fread( &n, sizeof(char) * 2, 1, _fpSource ) );
-
-  return n;
+  char buf[2];
+  READ_OK( fread( buf, sizeof(char), 2, _fpSource ) );
+  short aa = ATOW(buf);
+  return aa;
 }
 
 int CBufferedReader::readInt32()
 {
-  int n;
-  READ_OK( fread( &n, sizeof(char) * 4, 1, _fpSource ) );
-
-  return n;
+  char buf[4];
+  READ_OK( fread( buf, sizeof(char), 4, _fpSource ) );
+  return ATODW(buf);
 }
 
+long CBufferedReader::readInt64()
+{
+  char buf[8];
+  READ_OK( fread( buf, sizeof(char), 8, _fpSource ) );
+  return ATOQW(buf);
+}

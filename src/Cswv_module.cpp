@@ -117,15 +117,14 @@ int CSwv_module::Create( SWV_HEADER *swm )
 			return SWVERROR_OPENGFXFILE;
 
 		// save position info in mother file
-		//swm->pfiles[i].pos = ftell( fp );
-		DWTOA(swm->pfiles[i].pos, ftell( fp ));
+		swm->pfiles[i].pos = ftell( fp );
 		
 		// allocate memory & read its contents
-		buffer = new char[ATODW(swm->pfiles[i].length)];
-		fread( buffer, ATODW(swm->pfiles[i].length), 1, fp_bmp );
+		buffer = new char[swm->pfiles[i].length];
+		fread( buffer, swm->pfiles[i].length, 1, fp_bmp );
 
 		// send data to SWV_m
-		fwrite( buffer, ATODW(swm->pfiles[i].length), 1, fp );
+		fwrite( buffer, swm->pfiles[i].length, 1, fp );
 
 		delete[] buffer;
 
@@ -164,7 +163,7 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 
 	// read header
 	CBufferedReader reader(fp);
-	
+
 	reader.readCharArray( swv_file->header, 3 );
 	//fread( swv_file, sizeof(SWV_HEADER), 1, fp );
 	if ( swv_file->header[0] != 'S' && swv_file->header[1] != 'W' && swv_file->header[2] != 'V' ) 
@@ -173,15 +172,15 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 	// read elements
 	reader.readCharArray( swv_file->filename, 64 );
 	reader.readCharArray( swv_file->vehiclename, 8 );
-	swv_file->max_vel = static_cast<CONST_VSPEED>(reader.readInt32());
-	swv_file->acc = static_cast<CONST_VACC>(reader.readInt32());
-	swv_file->dec_acc = static_cast<CONST_VACC>(reader.readInt32());
-	swv_file->rot_speed = static_cast<CONST_VROTSPEED>(reader.readInt32());
-	swv_file->lbs = reader.readInt32();
-	swv_file->damage = static_cast<CONST_VDAMAGE>(reader.readInt32());
-	swv_file->hp = static_cast<CONST_VARMOUR>(reader.readInt32());
-	swv_file->hp_crash = reader.readInt32();
-	swv_file->animation_frames = reader.readInt32();
+	swv_file->max_vel = static_cast<CONST_VSPEED>(reader.readInt16());
+	swv_file->acc = static_cast<CONST_VACC>(reader.readInt16());
+	swv_file->dec_acc = static_cast<CONST_VACC>(reader.readInt16());
+	swv_file->rot_speed = static_cast<CONST_VROTSPEED>(reader.readInt16());
+	swv_file->lbs = reader.readInt16();
+	swv_file->damage = static_cast<CONST_VDAMAGE>(reader.readInt16());
+	swv_file->hp = static_cast<CONST_VARMOUR>(reader.readInt16());
+	swv_file->hp_crash = reader.readInt16();
+	swv_file->animation_frames = reader.readInt16();
 	
 /*	char		header[3];
 	char		filename[64];
@@ -201,17 +200,20 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 	// read file_positions
 	num_anims = swv_file->animation_frames * 2 + 3; // (+3 face.bmp dface.bmp, name.bmp)
 	swv_file->pfiles = new SWV_FILES[num_anims];
-	fread( swv_file->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
+//	fread( swv_file->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
 
-	/*for ( int i = 0; i < num_anims; i ++ )
+	for ( int i = 0; i < num_anims; i ++ )
 	{
+	  swv_file->pfiles[i].pos = reader.readInt16();
+	  swv_file->pfiles[i].length = reader.readInt16();
+	  reader.readCharArray(swv_file->pfiles[i].filename, 255 );
 		
-		cout << "\n file:" << vehicles->pfiles[i].filename;
+/*		cout << "\n file:" << vehicles->pfiles[i].filename;
 		cout << "\n  len:" << vehicles->pfiles[i].length;
 		cout << "\n  pos:" << vehicles->pfiles[i].pos;
 		//if ( ((i+1)%24) == 0 ) cin >> kbd;
-		//cin >> kbd;
-	}*/
+		//cin >> kbd;*/
+	}
 	
 	//swv_file->pfiles[0].pos = swv_file->pfiles[0].pos;
 	//swv_file->pfiles[0].length = swv_file->pfiles[0].length;
@@ -324,40 +326,40 @@ int CSwv_module::SearchAndLoad( char *search_dir )
 
 long CSwv_module::GetFacePos( unsigned int car_index ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[0].pos); 
+  return (vehicles[car_index].pfiles[0].pos); 
 }
 
 long CSwv_module::GetFaceSize( unsigned int car_index ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[0].length); 
+  return (vehicles[car_index].pfiles[0].length); 
 }
 
 long CSwv_module::GetDriverFacePos( unsigned int car_index ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[1].pos); 
+  return (vehicles[car_index].pfiles[1].pos); 
 }
 
 long CSwv_module::GetDriverFaceSize( unsigned int car_index ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[1].length); 
+  return (vehicles[car_index].pfiles[1].length); 
 }
 
 long CSwv_module::GetNamePos( unsigned int car_index ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[2].pos); 
+  return (vehicles[car_index].pfiles[2].pos); 
 }
 
 long CSwv_module::GetNameSize( unsigned int car_index ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[2].length);
+  return (vehicles[car_index].pfiles[2].length);
 }
 
 long CSwv_module::GetFramePos( unsigned int car_index, int frame ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[frame+2].pos); 
+  return (vehicles[car_index].pfiles[frame+2].pos); 
 }
 
 long CSwv_module:: GetFrameSize( unsigned int car_index, int frame ) 
 { 
-  return ATODW(vehicles[car_index].pfiles[frame+2].length); 
+  return (vehicles[car_index].pfiles[frame+2].length); 
 }

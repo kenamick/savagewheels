@@ -38,9 +38,10 @@ class CBufferedReader
     char readChar();
     unsigned char readUChar();
     void readCharArray( char *dest, int size );
-    void readUCharArray( char *dest, int size );
+    void readUCharArray( unsigned char *dest, int size );
     short readInt16();
     int readInt32();
+    long readInt64();
     
   private:
     FILE *_fpSource;
