@@ -182,6 +182,19 @@ void CSdl::_Blitall()
 
 }
 
+///////////////////////////////////////////////////////////////////////
+// Ime: ToggleFullscreen()
+// Opisanie: 
+///////////////////////////////////////////////////////////////////////
+void CSdl::ToggleFullscreen()
+{
+#ifdef LINUX_BUILD
+  if ( ! SDL_WM_ToggleFullScreen(screen) )
+  {
+    LOG("Error: Switching to Fullscreen. ");
+  }
+#endif
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Ime: Addtoblit()
@@ -439,8 +452,7 @@ void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 		return;
 
 	register Uint16		i = 0U, j = 0U;
-	register Uint16		dst_color = 0U;
-	int					*mask_val = NULL;
+	int			*mask_val = NULL;
 
 	_Slock( screen );
 
@@ -453,10 +465,8 @@ void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 
 		for ( i = rsurf->x; i < rsurf->w; i++, mask_val++ )
 		{
- 			dst_color = *pixel1;
-
 			if ( *mask_val )
-				*pixel1 =  ((dst_color & shadow_mask) >> 1);
+				*pixel1 =  ((*pixel1 & shadow_mask16) >> 1);
 				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
 			pixel1++;
 		}
@@ -474,20 +484,16 @@ void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
 {
-
-  
-  
 	if ( ! _game->game_shadows ) 
 		return;
 
 	register Uint16		i = 0U, j = 0U;
-	register Uint32		dst_color = 0U;
 	int			*mask_val = NULL;
 
 	_Slock( screen );
 
 	//x *= bytes_per_color; 
-	Uint32 *pixel1 = ((Uint32 *)screen->pixels + y * (screen->pitch/4) + x);
+	Uint32 *pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
 
 	for ( j = rsurf->y; j < rsurf->h; j++ )
 	{
@@ -495,17 +501,15 @@ void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
 
 		for ( i = rsurf->x; i < rsurf->w; i++, mask_val++ )
 		{
- 			dst_color = *pixel1;
-
 			if ( *mask_val )
-				*pixel1 = ((dst_color & SHADOW_MASK888) >> 1);
+				*pixel1 = (*pixel1 & SHADOW_MASK888) >> 1;
 				//*pixel1 = ((dst_color & SDL_MapRGB(screen->format, 0xFE,0xFE,0xFE)) >> 1);
 
 			pixel1++;
 		}
 
 		// premseti pad-a
-		pixel1 = ((Uint32 *)screen->pixels + (y + j) * (screen->pitch/4) + x);
+		pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch >> 2) + x;
 	}
 
 	_Sunlock( screen );
@@ -518,17 +522,27 @@ void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
 {
+    if ( bytes_per_color == 2 )
+      BlitShadow16(x, y, surf);
+    else
+      BlitShadow32(x, y, surf);  
+}
 
+
+///////////////////////////////////////////////////////////////////////////
+//// Name: BlitShadow16()
+//// Purpose: 
+///////////////////////////////////////////////////////////////////////////
+void CSdl::BlitShadow16( int x, int y, SDL_Surface *surf )
+{
 	if ( ! _game->game_shadows ) 
 		return;
 
 	register Uint16		i = 0U, 
 				j = 0U;
-	SDL_Rect			rSurf1;
-	Uint16				*pixel1 = NULL, 
-					*pixel2 = NULL;
-	register Uint16		src_color = 0U, 
-				dst_color = 0U;
+	SDL_Rect		rSurf1;
+	Uint16			*pixel1 = NULL, 
+				*pixel2 = NULL;
 
 	rSurf1.x = 0;
 	rSurf1.y = 0;
@@ -539,22 +553,17 @@ void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
 	_Slock( screen );
 	_Slock( surf );
 
-	x *= 2;   // 2 bytes per pixel =16bpp
+	x *= bytes_per_color;   // 2 bytes per pixel =16bpp
 
 	pixel1 = (Uint16 *)((Uint8 *)screen->pixels + y * screen->pitch + x );
 	pixel2 = (Uint16 *)((Uint8 *)surf->pixels );
-
 
 	for ( j = rSurf1.y; j < rSurf1.h; j++ )
 	{
 		for ( i = rSurf1.x; i < rSurf1.w; i++ )
 		{
- 
-			dst_color = *pixel1;
-			src_color = *pixel2;
-
-			if ( src_color != magenta )
-				*pixel1 =  ((dst_color & 0xF7DE) >> 1);
+			if ( *pixel2 != magenta16 )
+				*pixel1 =  (*pixel1 & shadow_mask16) >> 1;
 				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
 
 			pixel1++;
@@ -566,13 +575,58 @@ void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
 		pixel2 = (Uint16 *)((Uint8 *)surf->pixels + j * surf->pitch );
 	}
 
-
 	_Sunlock( screen );
 	_Sunlock( surf );
-
 }
 
 
+///////////////////////////////////////////////////////////////////////////
+//// Name: BlitShadow32()
+//// Purpose: 
+///////////////////////////////////////////////////////////////////////////
+void CSdl::BlitShadow32( int x, int y, SDL_Surface *surf )
+{
+	if ( ! _game->game_shadows ) 
+		return;
+
+	register Uint16		i = 0U, 
+				j = 0U;
+	SDL_Rect		rSurf1;
+	Uint32			*pixel1 = NULL, 
+				*pixel2 = NULL;
+
+	rSurf1.x = 0;
+	rSurf1.y = 0;
+	rSurf1.w = surf->w;
+	rSurf1.h = surf->h;
+
+	// lock surfaces
+	_Slock( screen );
+	_Slock( surf );
+
+	pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
+	pixel2 = (Uint32 *)surf->pixels;
+
+	for ( j = rSurf1.y; j < rSurf1.h; j++ )
+	{
+		for ( i = rSurf1.x; i < rSurf1.w; i++ )
+		{
+			if ( *pixel2 != MAGENTA_888 )
+				*pixel1 =  (*pixel1 & SHADOW_MASK888) >> 1;
+				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
+
+			pixel1++;
+			pixel2++;
+		}
+
+		// premseti pad-a
+		pixel1 = (Uint32 *)screen->pixels + x + (y + j) * (screen->pitch >> 2);
+		pixel2 = (Uint32 *)surf->pixels + j * (surf->pitch >> 2);
+	}
+
+	_Sunlock( screen );
+	_Sunlock( surf );
+}
 
 ///////////////////////////////////////////////////////////////////////////
 //// Name: _ClipRect()
@@ -580,10 +634,9 @@ void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
 ///////////////////////////////////////////////////////////////////////////
 int CSdl::_ClipRect( int *x , int *y, SDL_Rect *rSurf )
 {
-
 	SDL_Rect	rWld, rResult, rDest;
-	int			tx = *x, 
-				ty = *y;
+	int		tx = *x, 
+			ty = *y;
 
 	//tx -= rWorld.x;
 	//ty -= rWorld.y;
@@ -656,7 +709,7 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, int *&mask )
 		for ( i = 0; i < w; i++, pixel++ )
 		{
 			pos = w * j + i; 
-			mask[pos] = ( *pixel != magenta ) ? 1 : 0;
+			mask[pos] = ( *pixel != magenta16 ) ? 1 : 0;
 		}
 
 		// premseti pad-a
@@ -868,12 +921,10 @@ inline int CSdl::_Slock( SDL_Surface *surface )
 ///////////////////////////////////////////////////////////////////////
 inline void CSdl::_Sunlock( SDL_Surface *surface )
 {
-
 	if ( SDL_MUSTLOCK( surface ) )
 	{
 		SDL_UnlockSurface( surface );
 	}
-
 }
 
 
@@ -881,12 +932,9 @@ inline void CSdl::_Sunlock( SDL_Surface *surface )
 // Ime: Initialize()
 // Opisanie: Inicializira Sdl i prewkliuchwa video rejima
 ///////////////////////////////////////////////////////////////////////
-bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFullscreen, int bHardware )
+bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFullscreen, bool bHardware )
 {
-
-	char temp[128]				= { 0 };
-	SDL_VideoInfo  *vid_info	= NULL;
-	Uint32			flags		= 0;
+	char temp[128] 	= { 0 };
 
 	this->_game = game;
 	ASSERT( _game != NULL );
@@ -896,9 +944,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
 		fprintf (stderr, "Couldn't initialize SDL: %s\n", SDL_GetError() );
-
 		LOG( "SDL Error: ...failed to open SDL :  " << SDL_GetError() );
-
 		return false;
 	}
 
@@ -906,7 +952,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	SDL_VideoDriverName( temp, 128 );
 	LOG( "Video Driver: " << temp );
 	
-	vid_info =(SDL_VideoInfo *) SDL_GetVideoInfo();
+	SDL_VideoInfo *vid_info =(SDL_VideoInfo *) SDL_GetVideoInfo();
 	LOG( "Total Video Memory: " << vid_info->video_mem );
 	LOG( "hw_available: " << vid_info->hw_available );
 	LOG( "wm_available: " << vid_info->wm_available );
@@ -917,44 +963,36 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	LOG( "blit_sw_CC: " << vid_info->blit_sw_CC );
 	LOG( "blit_sw_A: " << vid_info->blit_sw_A );
 
-	// check video memory
-	if ( vid_info->video_mem > 24000U )
-		flags |= SDL_HWSURFACE;
-	else
-		flags |= SDL_SWSURFACE;
-
-	// ne se nalaga wikane na SDL_Quit() pri izhod 
-	//atexit( SDL_Quit );		*/
-
+// 	// check video memory (Note: This seems to be no longer valid !)
+// 	if ( vid_info->video_mem > 24000U )
+// 		flags |= SDL_HWSURFACE;
+// 	else
+// 		flags |= SDL_SWSURFACE;
 
 	// init na glawanata powyrhnost i video rejim
+	Uint32 flags = SDL_DOUBLEBUF | SDL_ANYFORMAT;
+	
 	if ( bFullscreen )
-		flags |= SDL_FULLSCREEN;
+	  flags |= SDL_FULLSCREEN;
 
-	flags = flags | SDL_DOUBLEBUF | SDL_ANYFORMAT;
-
-	LOG( "SDL Status: Switching video mode to " << nWidth << "x" << nHeight << "x" << nBpp );
-
-// #ifndef LINUX_BUILD
-	//if ( bHardware )
-	//{
-	//	CHK_VMODE( nWidth, nHeight, nBpp, flags );
-	//	screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, flags );
-	//}
-	if ( ! bHardware )
+	if ( bHardware )
 	{
-		flags |= SDL_SWSURFACE;
+	  flags |= SDL_HWSURFACE;
 		//CHK_VMODE( nWidth, nHeight, nBpp, flags | SDL_SWSURFACE );
 		//screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, flags | SDL_SWSURFACE );
 		////screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, SDL_FULLSCREEN | SDL_SWSURFACE | SDL_ANYFORMAT );
 	}
+	else
+	{
+	  flags |= SDL_SWSURFACE;
+	}
 
-// #else
-// 	flags = SDL_SWSURFACE | SDL_DOUBLEBUF | SDL_ANYFORMAT;
-// #endif
+	LOG( "SDL Status: Switching video mode to " << nWidth << "x" << nHeight << "x" << nBpp );
 
 	int vd = SDL_VideoModeOK( nWidth, nHeight, nBpp, flags ); 
+	
 	LOG( "SDL_VideoModeOK() recommends " << vd << " bit mode." );
+	
 	if ( vd == 24 )
 	{
 		LOG( "Savage Wheels does not support 24 bit video mode !" );
@@ -968,15 +1006,17 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	}
 	
 	SDL_SetClipRect( screen, NULL );
+	
 	char title[512];
 	sprintf( title, "Savage Wheels - KenamicK Entertainment V%d.%d", VER_MAJ, VER_MIN );
 	SDL_WM_SetCaption( title, "None" );
+	
 	SDL_ShowCursor( SDL_DISABLE );	
 
 	// 16bit-mode-check
 	bytes_per_color = screen->format->BytesPerPixel;
-	magenta = MAGENTA; // 24&32bit
-	shadow_mask = SHADOW_MASK888; //24&32bit
+	magenta16 = MAGENTA_565; // 24&32bit
+	shadow_mask16 = SHADOW_MASK565; //24&32bit
 
 // check for 16/15 bit mode
 	if ( bytes_per_color == 2 )
@@ -984,13 +1024,13 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 		bytes_per_color = screen->format->BytesPerPixel;
 		if ( screen->format->Rmask == 0xF800 )
 		{
-			magenta = MAGENTA_565;
-			shadow_mask = SHADOW_MASK565;
+			magenta16 = MAGENTA_565;
+			shadow_mask16 = SHADOW_MASK565;
 		}
 		else
 		{
-			magenta = MAGENTA_555;
-			shadow_mask = SHADOW_MASK555;
+			magenta16 = MAGENTA_555;
+			shadow_mask16 = SHADOW_MASK555;
 		}
 	}
 
@@ -1007,7 +1047,6 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFull
 	else
 	{
 		bsound_initialized = true;
-
 
 		if( !FSOUND_Init(44100, 32, FSOUND_INIT_USEDEFAULTMIDISYNTH) )
 		{

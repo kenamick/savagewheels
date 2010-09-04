@@ -680,7 +680,7 @@ void CMainMenu::Update()
 		ScrollScreen();
 		
 		// block Truck if not cheats
-		if ( strcmp( _game->Swv.vehicles[current_car].vehiclename, "DTRUCK" )==0 && !_game->game_cheats )
+		if ( strcmp( _game->Swv.GetVehiclesData()[current_car].vehiclename, "DTRUCK" )==0 && !_game->game_cheats )
 		{
 			current_car++;
 			if ( current_car > _game->Swv.GetVehicles() - 1 ) current_car = 0;
@@ -1374,11 +1374,11 @@ void CMainMenu::PreviewCar( int car_index )
 	if ( old_car_index != car_index )
 	{
 		// 1.3f = 130.0f / 100.0f
-		perc[0] = (Uint16)(1.3f * ( (float)attribSPEED[(int)_game->Swv.vehicles[car_index].max_vel] / (float)attribSPEED[4] ) * 100.0f);
-		perc[1] = (Uint16)(1.3f * ( (float)attribACC[(int)_game->Swv.vehicles[car_index].acc] / (float)attribACC[2] ) * 100.0f);
-		perc[2] = (Uint16)(1.3f * ( (float)_game->Swv.vehicles[car_index].lbs / (float)4 ) * 100.0f);
-		perc[3] = (Uint16)(1.3f * ( (float)attribARMOUR[(int)_game->Swv.vehicles[car_index].hp] / (float)attribARMOUR[3] ) * 100.0f);
-		perc[4] = (Uint16)(1.3f * ( (float)attribDAMAGE[(int)_game->Swv.vehicles[car_index].damage] / (float)attribDAMAGE[3] ) * 100.0f);
+		perc[0] = (Uint16)(1.3f * ( (float)attribSPEED[(int)_game->Swv.GetVehiclesData()[car_index].max_vel] / (float)attribSPEED[4] ) * 100.0f);
+		perc[1] = (Uint16)(1.3f * ( (float)attribACC[(int)_game->Swv.GetVehiclesData()[car_index].acc] / (float)attribACC[2] ) * 100.0f);
+		perc[2] = (Uint16)(1.3f * ( (float)_game->Swv.GetVehiclesData()[car_index].lbs / (float)4 ) * 100.0f);
+		perc[3] = (Uint16)(1.3f * ( (float)attribARMOUR[(int)_game->Swv.GetVehiclesData()[car_index].hp] / (float)attribARMOUR[3] ) * 100.0f);
+		perc[4] = (Uint16)(1.3f * ( (float)attribDAMAGE[(int)_game->Swv.GetVehiclesData()[car_index].damage] / (float)attribDAMAGE[3] ) * 100.0f);
 
 		old_car_index = car_index;
 	}

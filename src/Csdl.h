@@ -55,9 +55,10 @@ class CKdf_Packeger;
 
 #define BLACK		   0x0
 #define WHITE		   0xFFFFFF
-#define MAGENTA		   0xFF00FF
+#define MAGENTA_888	   0xFF00FF
 #define MAGENTA_565	   0xF81F		
 #define MAGENTA_555	   0x7C1F
+#define MAGENTA 	   MAGENTA_888
 #define SHADOW_MASK565 0xF7DE
 #define SHADOW_MASK555 0xFBDE
 #define SHADOW_MASK888 0xFEFEFE
@@ -80,13 +81,11 @@ typedef struct _BITMAPFILEHEADER {	// bmfh
 } __BITMAPFILEHEADER; 
 
 
-
 // (SDL_Mixer) Sound Class
 class CSound
 {
 
 public:
-
 	CSound()
 		: buffered(false), play_channel(-1), loaded(false)
 #ifdef WITH_FMOD
@@ -132,8 +131,8 @@ protected:
 	int		mouse_x, mouse_y;
 	int		mouse_lbutton, mouse_rbutton;
 
-	Uint16		  magenta;
-	Uint16		  shadow_mask;
+	Uint16		  magenta16;
+	Uint16		  shadow_mask16;
 	Uint16		  bytes_per_color;
 	CGame		  *_game;	
 
@@ -142,7 +141,7 @@ protected:
    TTF_Font       *font_ttf;
 #else
    SDL_Surface    *font_bmp;
-   Uint16		  font_size;
+   Uint16	  font_size;
 #endif
 
    CSound		  sounds[MAX_SOUNDS];	
@@ -151,27 +150,27 @@ protected:
    int			  volume_music;
 
    SDL_Joystick		*_joystick;
-   bool				_bJoystickSupport;
-   int 				_nJoystickDevices;
-   int				_nJoystickIdxDeviceToUse;
-   Sint16			_xJoystick;
-   Sint16			_yJoystick;
+   bool			_bJoystickSupport;
+   int 			_nJoystickDevices;
+   int			_nJoystickIdxDeviceToUse;
+   Sint16		_xJoystick;
+   Sint16		_yJoystick;
    udtButtonsBuffer	_JoystickButtons;
  
 public:
 
 	Uint8				*keys;				// masiv s aktivnite klavishi (natisnati)
-	int					JoystickAxisX;
-	int					JoystickAxisY;
+	int				JoystickAxisX;
+	int				JoystickAxisY;
 	Uint8				JoystickHatState;
 	
 
 protected:
 	void		_Blitall();
 	Uint32		_GetPixel(SDL_Surface *surface, int x, int y);
-	int			_Slock( SDL_Surface *surface );
+	int		_Slock( SDL_Surface *surface );
 	void		_Sunlock( SDL_Surface *surface );
-	int			_ClipRect( int *x , int *y, SDL_Rect *rSurf );
+	int		_ClipRect( int *x , int *y, SDL_Rect *rSurf );
 
 //	SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
 
@@ -180,7 +179,7 @@ public:
 	~CSdl();
 
 	// sdl_gfx
-	bool Initialize( CGame *game, int nWidth, int nHeight, int nBpp, int bFullscreen, int bHardware = false );
+	bool Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFullscreen, bool bHardware = false );
 	bool InitializeJoystick();
 	bool AcquireJoystick();
 	void UnAcquireJoystick();
@@ -188,6 +187,7 @@ public:
 	void Close();
 	void Flip();
 	void FlipTo( SDL_Surface *dest_surf );
+	void ToggleFullscreen();
 	int  Addtoblit( int x, int y, SDL_Surface *surf );
 	void BlitNow( int x, int y, SDL_Surface *surf );
 	void BlitNow( int x, int y, SDL_Surface *surf, SDL_Rect *rsurf );
@@ -210,7 +210,7 @@ public:
 	void DrawText( int x, int y, char *text, SDL_Color forecolor, SDL_Color backcolor );
 #else
 	void InitializeFont();
-    void DrawNum( int x, int y, char *text );
+	void DrawNum( int x, int y, char *text );
 #endif
 
 	// sdl_colors
@@ -223,10 +223,10 @@ public:
 	// sdl input
 	void GetInput();					// za klavishite
 	bool GetJoystickButtonPressed( int idx );
-	int	 GetMouseX() { return mouse_x; };
+	int  GetMouseX() { return mouse_x; };
 	int  GetMouseY() { return mouse_y; };
-	int	 GetMouseLButton() { return mouse_lbutton; };
-	int	 GetMouseRButton() { return mouse_rbutton; };
+	int  GetMouseLButton() { return mouse_lbutton; };
+	int  GetMouseRButton() { return mouse_rbutton; };
 
 
 	// Sound functions
@@ -245,6 +245,8 @@ public:
   private:
 	void BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf );
 	void BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf );
+	void BlitShadow16( int x, int y, SDL_Surface *surf );
+	void BlitShadow32( int x, int y, SDL_Surface *surf );
 	void MakeBoolMask16( SDL_Surface *surf, int *& );
 	void MakeBoolMask32( SDL_Surface *surf, int *& );
 };

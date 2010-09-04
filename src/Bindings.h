@@ -66,20 +66,20 @@ public:
 
 	bool	Load( const String strFilepath );
 	void	Release();
-	int		GetP1Key( CBindings::BindKeys Key );
-	int		GetP2Key( CBindings::BindKeys Key );
+	int	GetP1Key( CBindings::BindKeys Key );
+	int	GetP2Key( CBindings::BindKeys Key );
 
 protected:
 
 	String	_GetValues( const char* strSection, const char* strKey );
-	int		_FindKeyName( const String strKeyName );
+	int	_FindKeyName( const String strKeyName );
 
 protected:
 
 	bool			_bLoadSuccess;
 	TiXmlDocument*	_xmlDoc;
-	udtKeyNames		_vKeyNames;
-	int				_DefaultKeys[2][ BIND_PLAYER_MAX_KEYS ];
+	udtKeyNames	_vKeyNames;
+	int		_DefaultKeys[2][ BIND_PLAYER_MAX_KEYS ];
 
 };
 

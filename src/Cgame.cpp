@@ -349,37 +349,38 @@ void CGame::UpdateSplash()
 // Ime: Execute()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CGame::Execute( int bFullScreen, int bHardware )
+void CGame::Execute( bool bFullScreen, bool bHardware )
 {
   
-  float    ftimer				= 0.0f;
+  float    ftimer			= 0.0f;
   float    ftimediff			= 0.0f;
-  float    ffpstime				= 0.0f;
-  int	   fps					= 0, 
-		   frames				= 0;
-  char	   szfps[3]				= { '0', '0' };
-  int      i					= 0;
-  int	   dx					= 0, 
-		   dy					= 0;
+  float    ffpstime			= 0.0f;
+  int	   fps				= 0, 
+		   frames		= 0;
+  char	   szfps[3]			= { '0', '0' };
+  int      i				= 0;
+  int	   dx				= 0, 
+		   dy			= 0;
   Uint32   winner_index			= 0U, 
-		   winner_index2		= 0U;
+		   winner_index2	= 0U;
   Uint32   time_destroyem		= 0U;
   Uint32   time_showwinner		= 0U;
   SDL_Rect rtemp;
   bool	   change_map			= false;
   bool	   change_map_key		= false;
   bool	   change_shadows		= false;
-  bool	   change_shadows_key	= false;
+  bool	   change_shadows_key		= false;
   bool	   game_paused_key		= false;
   bool	   music_off			= false;
   bool	   music_off_key		= false;
-  bool	   game_end				= false;
-  float    qg_frame				= 0.0f;
-  bool	   wait_key				= false;
+  bool	   toggle_fullscreen		= false;
+  bool	   game_end			= false;
+  float    qg_frame			= 0.0f;
+  bool	   wait_key			= false;
   Uint32   time_round			= 0U, 
-		   tv					= 0U;
-  bool	   at_exit				= false;
-  CVehicle *ptr_veh				= NULL;
+		   tv			= 0U;
+  bool	   at_exit			= false;
+  CVehicle *ptr_veh			= NULL;
 
   p1_auto_index = 99;
   p2_auto_index = 99;
@@ -389,8 +390,6 @@ void CGame::Execute( int bFullScreen, int bHardware )
 
   Sdl.InitializeJoystick();
   Sdl.AcquireJoystick();
- 
-
  // bRunning = false;
   //exit(0);
 
@@ -422,7 +421,7 @@ void CGame::Execute( int bFullScreen, int bHardware )
 
   
    	// get input  
-    Sdl.GetInput(); 
+	Sdl.GetInput(); 
 	//if ( Sdl.keys[SDLK_ESCAPE] ) bRunning = false;
 
 	// map-change
@@ -458,6 +457,13 @@ void CGame::Execute( int bFullScreen, int bHardware )
 		}
 	}
 	if ( !Sdl.keys[SDLK_F9] ) change_shadows_key = false;
+	
+	if ( Sdl.keys[SDLK_F11] && !toggle_fullscreen )
+	{
+	  toggle_fullscreen = true;
+	  Sdl.ToggleFullscreen();
+	}
+	if ( !Sdl.keys[SDLK_F11] ) toggle_fullscreen = false;
 
 
 	// music on/off
@@ -1000,12 +1006,12 @@ void CGame::SetupVehicles()
 		// setup 2-PLAYER_GAME with bots
 		// ------------------------------
 
-		if ( !Auto[0].Initialize( this, &Swv.vehicles[p1_auto_index], 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[p1_auto_index]), 0 ) ) 
 		{
 			AppendToLog( "Error initializing vehicle #0 !" );
 			return;
 		}
-		if ( !Auto[1].Initialize( this, &Swv.vehicles[p2_auto_index], 1 ) ) 
+		if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[p2_auto_index]), 1 ) ) 
 		{
 			AppendToLog( "Error initializing vehicle #1 !" );
 			return;
@@ -1034,7 +1040,7 @@ void CGame::SetupVehicles()
 
 			for ( i = 2; i < game_num_cars; i++ )
 			{
-				if ( !Auto[i].Initialize( this, &Swv.vehicles[ai_car[i-2]], i ) ) 
+				if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-2]]), i ) ) 
 				{
 					AppendToLog( "Error initializing vehicle [2P]!" );
 					return;
@@ -1074,7 +1080,7 @@ void CGame::SetupVehicles()
 
 			for ( i = 2; i < game_num_cars; i++ )
 			{
-				if ( !Auto[i].Initialize( this, &Swv.vehicles[ai_car[i-2]], i ) ) 
+				if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-2]]), i ) ) 
 				{
 					AppendToLog( "Error initializing vehicle [2P]!" );
 					return;
@@ -1133,7 +1139,7 @@ void CGame::SetupVehicles()
 		}
 
 
-		if ( !Auto[0].Initialize( this, &Swv.vehicles[p1_auto_index], 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[p1_auto_index]), 0 ) ) 
 		{
 			AppendToLog( "Error initializing vehicle #0 !" );
 			return;
@@ -1149,7 +1155,7 @@ void CGame::SetupVehicles()
 
 		for ( int i = 1; i < game_num_cars; i++ )
 		{
-			if ( !Auto[i].Initialize( this, &Swv.vehicles[ai_car[i-1]], i ) ) 
+			if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-1]]), i ) ) 
 			{
 				AppendToLog( "Error initializing vehicle!" );
 				return;
@@ -1167,7 +1173,7 @@ void CGame::SetupVehicles()
 	}
 	else if ( Gameplayers == GP_JUDY_CAMPAIGN )	  /* CAMPAIGNS - JUDY */
 	{
-		if ( !Auto[0].Initialize( this, &Swv.vehicles[v_array[CV_DIABLO]], 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DIABLO]]), 0 ) ) 
 		{
 			AppendToLog( "Error initializing vehicle JUDY vehicle !" );
 			return;
@@ -1180,7 +1186,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_BMW]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #1 !" );
 				return;
@@ -1197,7 +1203,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_F1]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #2 !" );
 				return;
@@ -1214,7 +1220,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_JEEP]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #3 !" );
 				return;
@@ -1230,12 +1236,12 @@ void CGame::SetupVehicles()
 			game_num_cars = 3;
 			game_time = 300;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_MERCEDES]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &Swv.vehicles[v_array[CV_BMW]], 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 2 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.2 !" );
 				return;
@@ -1255,17 +1261,17 @@ void CGame::SetupVehicles()
 			game_num_cars = 4;
 			game_time = 300;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_DODGE]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DODGE]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &Swv.vehicles[v_array[CV_F1]], 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 2 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.2 !" );
 				return;
 			}
-			if ( !Auto[3].Initialize( this, &Swv.vehicles[v_array[CV_JEEP]], 3 ) ) 
+			if ( !Auto[3].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 3 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.3 !" );
 				return;
@@ -1287,7 +1293,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 300;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_DTRUCK]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DTRUCK]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #6 !" );
 				return;
@@ -1307,7 +1313,7 @@ void CGame::SetupVehicles()
 	}
 	else if ( Gameplayers == GP_KEETH_CAMPAIGN )	  /* CAMPAIGNS - KEETH */
 	{
-		if ( !Auto[0].Initialize( this, &Swv.vehicles[v_array[CV_DODGE]], 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DODGE]]), 0 ) ) 
 		{
 			AppendToLog( "Error initializing vehicle KEETH vehicle !" );
 			return;
@@ -1320,7 +1326,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_MERCEDES]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #1 !" );
 				return;
@@ -1337,7 +1343,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_F1]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #2 !" );
 				return;
@@ -1354,12 +1360,12 @@ void CGame::SetupVehicles()
 			game_num_cars = 3;
 			game_time = 300;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_MERCEDES]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &Swv.vehicles[v_array[CV_BMW]], 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 2 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.2 !" );
 				return;
@@ -1378,7 +1384,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_DJUGAN]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DJUGAN]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #3 !" );
 				return;
@@ -1393,17 +1399,17 @@ void CGame::SetupVehicles()
 			game_num_cars = 4;
 			game_time = 300;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_DIABLO]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DIABLO]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &Swv.vehicles[v_array[CV_F1]], 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 2 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.2 !" );
 				return;
 			}
-			if ( !Auto[3].Initialize( this, &Swv.vehicles[v_array[CV_JEEP]], 3 ) ) 
+			if ( !Auto[3].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 3 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.3 !" );
 				return;
@@ -1425,7 +1431,7 @@ void CGame::SetupVehicles()
 			game_num_cars = 2;
 			game_time = 300;	// game-round-time
 			
-			if ( !Auto[1].Initialize( this, &Swv.vehicles[v_array[CV_DTRUCK]], 1 ) ) 
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DTRUCK]]), 1 ) ) 
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #6 !" );
 				return;

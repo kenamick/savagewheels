@@ -242,7 +242,7 @@ public:
 	
 	void Repulse( int, int );
 	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
-	int	 Initialize( CGame *game, SWV_HEADER *swv, Uint16 carIndex );
+	int	 Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex );
 	void Release();
 	void Create();
 	void GetFrameRect( SDL_Rect *rect );

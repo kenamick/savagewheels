@@ -198,7 +198,7 @@ void CVehicle::Release()
 // Ime: Initialize()
 // Opisanie: create vehicle from module
 ///////////////////////////////////////////////////////////////////////
-int CVehicle::Initialize( CGame *game, SWV_HEADER *swv, Uint16 carIndex )
+int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
 
  int   cn		= 0;
@@ -224,24 +224,26 @@ int CVehicle::Initialize( CGame *game, SWV_HEADER *swv, Uint16 carIndex )
  sprite_crash = (SDL_Surface **) new SDL_Surface[frames];
  mask_norm = (int **) new int[frames];
  mask_crash = (int **) new int[frames];
+ 
+ char *vehicle_filename = const_cast<char *>(swv->filename);
 
  for( cn = 0; cn < frames; cn++ )
  {
 	 // normal sprites
 	 index = cn + 3;
-	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( swv->filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
+	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
 	 // create a mask for this sprite
 	  _game->Sdl.MakeBoolMask( sprite_norm[cn], mask_norm[cn] );
 		 
 	 // crashed sprites
 	 index = cn + 3 + frames; // calc.offset to the crashed sprites
-	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( swv->filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
+	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
 	 // create a mask for this sprite
 	 _game->Sdl.MakeBoolMask( sprite_crash[cn], mask_crash[cn] );
  }
 
  // load driver_name surface
- if ( (driver_name = _game->Sdl.LoadBitmap( swv->filename, swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA )) == NULL ) return 0;
+ if ( (driver_name = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA )) == NULL ) return 0;
 
  display_frame = tire_frame = 0;
 
@@ -778,15 +780,13 @@ void CVehicle::DoMotion()
 
 					if ( waypoint.goal_type == WAYPOINT_VEHICLE  )
 					{
-						AppendToLog( "[COLLIDE] Step #9" );
-
 						waypoint.do_precalculate = true;
 						waypoint.do_reverse = true;
+						DBG( "[COLLIDE] Step #9" );
 					}
 					else
 					{
 						waypoint.do_precalculate = true;
-
 						DBG( "[COLLIDE] Step #10" );
 					}
 				}

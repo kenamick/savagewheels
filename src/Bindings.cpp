@@ -128,20 +128,20 @@ bool CBindings::Load( const String strFilepath )
 	//_vKeyNames[ "SDLK_LALT" ]			= SDLK_LALT;
 
 	// default player keys
-	_DefaultKeys[BIND_PLAYER1][BK_LEFT]		= SDLK_LEFT;
+	_DefaultKeys[BIND_PLAYER1][BK_LEFT]	= SDLK_LEFT;
 	_DefaultKeys[BIND_PLAYER1][BK_RIGHT]	= SDLK_RIGHT;
-	_DefaultKeys[BIND_PLAYER1][BK_ACC]		= SDLK_UP;
+	_DefaultKeys[BIND_PLAYER1][BK_ACC]	= SDLK_UP;
 	_DefaultKeys[BIND_PLAYER1][BK_BREAK]	= SDLK_DOWN;
-	_DefaultKeys[BIND_PLAYER1][BK_MINE]		= SDLK_RCTRL;
-	_DefaultKeys[BIND_PLAYER1][BK_HONK]		= SDLK_RALT;
+	_DefaultKeys[BIND_PLAYER1][BK_MINE]	= SDLK_RCTRL;
+	_DefaultKeys[BIND_PLAYER1][BK_HONK]	= SDLK_RALT;
 	_DefaultKeys[BIND_PLAYER1][BK_BLOWUP]	= SDLK_DELETE;
 
-	_DefaultKeys[BIND_PLAYER2][BK_LEFT]		= SDLK_d;
+	_DefaultKeys[BIND_PLAYER2][BK_LEFT]	= SDLK_d;
 	_DefaultKeys[BIND_PLAYER2][BK_RIGHT]	= SDLK_g;
-	_DefaultKeys[BIND_PLAYER2][BK_ACC]		= SDLK_r;
+	_DefaultKeys[BIND_PLAYER2][BK_ACC]	= SDLK_r;
 	_DefaultKeys[BIND_PLAYER2][BK_BREAK]	= SDLK_f;
-	_DefaultKeys[BIND_PLAYER2][BK_MINE]		= SDLK_LCTRL;
-	_DefaultKeys[BIND_PLAYER2][BK_HONK]		= SDLK_LALT;
+	_DefaultKeys[BIND_PLAYER2][BK_MINE]	= SDLK_LCTRL;
+	_DefaultKeys[BIND_PLAYER2][BK_HONK]	= SDLK_LALT;
 	_DefaultKeys[BIND_PLAYER2][BK_BLOWUP]	= SDLK_TAB;
 
 	_bLoadSuccess = _xmlDoc->LoadFile();
@@ -226,7 +226,7 @@ String	CBindings::_GetValues( const char *strSection, const char* strKey )
 #undef VALID_NODE
 }
 
-int		CBindings::_FindKeyName( const String strKeyName )
+int CBindings::_FindKeyName( const String strKeyName )
 {
 	for( CBindings::udtKeyNames::iterator it = _vKeyNames.begin(); 
 		it != _vKeyNames.end();

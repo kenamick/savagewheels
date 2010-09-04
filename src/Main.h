@@ -36,32 +36,23 @@
 #include <cmath>
 #include <cstdarg>
 #include <cassert>
-#include <memory.h>
 #include <exception>
 
-#include <time.h>
+#include <ctime>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/timeb.h>
 
-#ifndef LINUX_BUILD
-
+#ifdef LINUX_BUILD
+#	define BACKSLASH	"/"
+#else
 #	pragma comment( lib, "sdl.lib" )
 #	pragma comment( lib, "sdlmain.lib" )
-#	pragma comment( lib, "fmodvc.lib" )
-
+#	pragma comment( lib, "fmodvc.lib" ) // MSVC
 #	define BACKSLASH	"\\"
-#	define ASSERT		assert		// TODO: check if available
-
-#else
-
-//#	include <windows.h>
-
-#	define BACKSLASH	"/"
-#	define ASSERT		assert
-
 #endif
 
+#define ASSERT	assert
 
 #if !defined(_DEBUG) && !defined(DEBUG) && !defined(__DEBUG)
 #	ifdef ASSERT
@@ -70,11 +61,9 @@
 #	endif
 #endif
 
-//#define ATODW(n) ((n[3] & 0x000000FF) | ((n[2] & 0x000000FF) << 4) | ((n[1] & 0x000000FF) << 8) | ((n[0] & 0x000000FF) << 16))
-#define ATOQW(n) ( ( (n[7] & 0x000000FF) << 8) | (n[6] << 8) | (n[5] << 8) | (n[4] << 8) | (n[3] << 8) | (n[2] << 8) | (n[1] << 8) | n[0] )
+#define ATOQW(n) ( (((((((((((((((n[7] & 0x00000000000000FF) << 8) | n[6]) << 8) | n[5]) << 8) | n[4]) << 8) | n[3]) << 8) | n[2]) << 8) | n[1]) << 8) | n[0] ) )
 #define ATODW(n) ( ((((((n[3] & 0x000000FF) << 8) | n[2]) << 8) | n[1]) << 8) | n[0])
 #define ATOW(n) ( ((n[0] & 0x00FF) << 8) | n[1])
-//#define DWTOA(n,a) sprintf(a, "%d", n);
 #define DWTOA(n,a) sprintf((char *)a, "%d", n);
 
 // --- lib includes
@@ -99,11 +88,11 @@
 #define VER_MIN 4
 
 // --- global game defines
-#define ART_FILE		"graphics/gfxdata.kdf"
+#define ART_FILE	"graphics/gfxdata.kdf"
 #define BINDINGS_FILE	"bindings.xml"
 #define LOAD_OK         (-1)
 #define LOAD_FAILED     (0)
-#define HRESULT(x)		( (x) == NULL : LOAD_OK ? LOAD_FAILED )
+#define HRESULT(x)	( (x) == NULL : LOAD_OK ? LOAD_FAILED )
 
 struct POINT 
 {
@@ -113,7 +102,6 @@ struct POINT
 typedef std::string			String;
 typedef std::ostringstream	OutputSStream;
 
-// dobawqne na localnite headarni failove
 #include "Utils.h"
 #include "CKdf.h"
 #include "Csdl.h"

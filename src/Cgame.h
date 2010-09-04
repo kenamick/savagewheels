@@ -41,8 +41,8 @@ class CLandMines;
 //////////////////////
 
 
-#define APP_NAME		   "Savage Wheels 1.04 (BETA)"
-#define NUM_MPS			   4
+#define APP_NAME	"Savage Wheels 1.4"
+#define NUM_MPS		   4
 #define NUM_BACKGROUNDS    5
 #define SCREEN_WIDTH       640
 #define SCREEN_HEIGHT      480
@@ -57,7 +57,7 @@ enum CONST_GAMESTATE
 {
 	GS_MENU = 0,
 	GS_GAMEPLAY_SETUP,
-    GS_GAMEPLAY,
+	GS_GAMEPLAY,
 	GS_GAMEPLAY_WINNER,
 	GS_EXIT,
 	// campaign states
@@ -125,20 +125,20 @@ private:
 	SDL_Surface		*winneris;
 	SDL_Surface		*splash;
 	SDL_Surface		*splash_logo[30];
-	SDL_Surface	    *getready;
+	SDL_Surface	    	*getready;
 
 	//SDL_Surface     *sprite_tire[MAX_TIRETRAILS]; 
 	SDL_Surface		*back[NUM_BACKGROUNDS]; // ...
 
 public:
 
-	CMainMenu       Menu;
+	CMainMenu       	Menu;
 	CSdl			Sdl;
 	CSounds			Snd;
 	CTimer			Timer;
-	CAnimations	    Anims;
+	CAnimations	    	Anims;
 	CVehicle		Auto[ NUM_MPS ];
-	CKdf_Packeger   Kdf;					// KDF class
+	CKdf_Packeger   	Kdf;					// KDF class
 	CSwv_module		Swv;					// vehicles module class
 	CDeadtoys		Dtoys;					// dead_toys class
 	CLandMines		Mines;					// landmines class
@@ -156,11 +156,11 @@ public:
 	bool			  game_hitmode;			// stop phsysics enabled !?
 	bool			  game_shadows;
 	bool			  game_bots;
-	int				  game_frags;			// frags to win
-	int				  game_time;			// round time
+	int			  game_frags;			// frags to win
+	int			  game_time;			// round time
 	bool			  show_fps;// = false;
 	bool			  game_paused;
-	int				  game_num_cars;	    // number of active vehicles
+	int			  game_num_cars;	    // number of active vehicles
 	bool			  game_cheats;// = false;
 	Uint32			  p1_auto_index;
 	Uint32			  p2_auto_index;
@@ -168,7 +168,7 @@ public:
 
 	Uint32			 cur_map;       			// current visible background map
 
-	SDL_Surface      *scales[2];				// hit_points & anger scales
+	SDL_Surface      	*scales[2];				// hit_points & anger scales
 	SDL_Surface		 *self_dest;				// self_destruct pic
 
 private:
@@ -183,7 +183,7 @@ public:
 	CGame();
 	~CGame();
 
-	void Execute( int bFullScreen = false, int bHardware = false);
+	void Execute(bool bFullScreen = false, bool bHardware = false);
 	void Close();
 	const float getMpf()	{ return mpf; };
 

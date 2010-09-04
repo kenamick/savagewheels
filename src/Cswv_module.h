@@ -114,17 +114,15 @@ class CSwv_module
 	CSwv_module();
 	~CSwv_module();
 
-	SWV_HEADER		  *vehicles;
-
 	int  Create( SWV_HEADER *swv );
 	int  SearchAndLoad( char *search_dir );
 	void Release();
 	unsigned int GetVehicles() { return num_vehicles; };
+	const SWV_HEADER* GetVehiclesData();
 
 	/* File Positions
 	   {!} Need to add a check for valid car_index
 	*/
-
 	char* GetVehicleFilename( unsigned int car_index ) { return vehicles[car_index].filename; };
 	char* GetVehicleName( unsigned int car_index ) { return vehicles[car_index].vehiclename; };
 	long GetFacePos( unsigned int car_index );
@@ -140,7 +138,7 @@ class CSwv_module
 	int Load( char *filename, SWV_HEADER *swv_file ); 
 
   private:
-	//SWV_HEADER		  *vehicles;
+	SWV_HEADER	  *vehicles;
 	unsigned int      num_vehicles;
 	unsigned long	  pos_face;		// title screen of the vehicle
 	

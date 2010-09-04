@@ -92,7 +92,7 @@ class CAnimations
 {
 
 private:
-	CGame		 *_game;
+	CGame *_game;
 	SDL_Surface  *sprite_blood[MAX_BLOOD_FRAMES];
 	SDL_Surface  *sprite_explosion[MAX_EXPLOSION_FRAMES];
 	SDL_Surface  *sprite_splat[MAX_SPLATS];

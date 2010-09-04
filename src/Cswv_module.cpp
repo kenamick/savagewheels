@@ -41,7 +41,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 CSwv_module::CSwv_module()
 :	num_vehicles( 0 ),
-	pos_face( -1L )
+	pos_face( -1L ),
+	vehicles(NULL)
 {
 
 }
@@ -53,7 +54,13 @@ CSwv_module::CSwv_module()
 ///////////////////////////////////////////////////////////////////////////////
 CSwv_module::~CSwv_module()
 {
-
+  
+  // clean up allocated memory
+  if ( vehicles != NULL )
+  {
+    delete[] vehicles;
+    vehicles = NULL;
+  }
 
 }
 
@@ -152,77 +159,48 @@ int CSwv_module::Create( SWV_HEADER *swm )
 int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 {
 	FILE *fp = NULL;
-	//FILE *fp_bmp;
-	//char *buffer;
-	//char header[3];
-	int  num_anims;
-	//char kbd;
 	
 	if ( ( fp = fopen( filename, "rb" ) ) == NULL )
 		return SWVERROR_OPENSWVFILE;
 
 	// read header
-	CBufferedReader reader(fp);
+	//CBufferedReader reader(fp);
 
-	reader.readCharArray( swv_file->header, 3 );
-	//fread( swv_file, sizeof(SWV_HEADER), 1, fp );
+	//reader.readCharArray( swv_file->header, 3 );
+	fread( swv_file, sizeof(SWV_HEADER), 1, fp );
 	if ( swv_file->header[0] != 'S' && swv_file->header[1] != 'W' && swv_file->header[2] != 'V' ) 
 		return SWVERROR_INCORRECTHEADER;
 	
 	// read elements
-	reader.readCharArray( swv_file->filename, 64 );
-	reader.readCharArray( swv_file->vehiclename, 8 );
-	swv_file->max_vel = static_cast<CONST_VSPEED>(reader.readInt16());
-	swv_file->acc = static_cast<CONST_VACC>(reader.readInt16());
-	swv_file->dec_acc = static_cast<CONST_VACC>(reader.readInt16());
-	swv_file->rot_speed = static_cast<CONST_VROTSPEED>(reader.readInt16());
-	swv_file->lbs = reader.readInt16();
-	swv_file->damage = static_cast<CONST_VDAMAGE>(reader.readInt16());
-	swv_file->hp = static_cast<CONST_VARMOUR>(reader.readInt16());
-	swv_file->hp_crash = reader.readInt16();
-	swv_file->animation_frames = reader.readInt16();
+// 	reader.readCharArray( swv_file->filename, 64 );
+// 	reader.readCharArray( swv_file->vehiclename, 8 );
+// 	swv_file->max_vel = static_cast<CONST_VSPEED>(reader.readInt16());
+// 	swv_file->acc = static_cast<CONST_VACC>(reader.readInt16());
+// 	swv_file->dec_acc = static_cast<CONST_VACC>(reader.readInt16());
+// 	swv_file->rot_speed = static_cast<CONST_VROTSPEED>(reader.readInt16());
+// 	swv_file->lbs = reader.readInt16();
+// 	swv_file->damage = static_cast<CONST_VDAMAGE>(reader.readInt16());
+// 	swv_file->hp = static_cast<CONST_VARMOUR>(reader.readInt16());
+// 	swv_file->hp_crash = reader.readInt16();
+// 	swv_file->animation_frames = reader.readInt16();
 	
-/*	char		header[3];
-	char		filename[64];
-	char		vehiclename[8];
-	CONST_VSPEED    max_vel;
-	CONST_VACC 	acc;
-	int		dec_acc;
-	CONST_VROTSPEED rot_speed;
-	int		lbs;
-	CONST_VDAMAGE   damage;
-	CONST_VARMOUR   hp;
-	int		hp_crash;
-	int		animation_frames;
-	SWV_FILES	*pfiles;*/	
-
-
 	// read file_positions
-	num_anims = swv_file->animation_frames * 2 + 3; // (+3 face.bmp dface.bmp, name.bmp)
+	int num_anims = swv_file->animation_frames * 2 + 3; // (+3 face.bmp dface.bmp, name.bmp)
 	swv_file->pfiles = new SWV_FILES[num_anims];
-//	fread( swv_file->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
+	fread( swv_file->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
 
-	for ( int i = 0; i < num_anims; i ++ )
-	{
-	  swv_file->pfiles[i].pos = reader.readInt16();
-	  swv_file->pfiles[i].length = reader.readInt16();
-	  reader.readCharArray(swv_file->pfiles[i].filename, 255 );
-		
-/*		cout << "\n file:" << vehicles->pfiles[i].filename;
-		cout << "\n  len:" << vehicles->pfiles[i].length;
-		cout << "\n  pos:" << vehicles->pfiles[i].pos;
-		//if ( ((i+1)%24) == 0 ) cin >> kbd;
-		//cin >> kbd;*/
-	}
+// 	for ( int i = 0; i < num_anims; i ++ )
+// 	{
+// 	  swv_file->pfiles[i].pos = reader.readInt64();
+// 	  swv_file->pfiles[i].length = reader.readInt64();
+// 	  reader.readCharArray(swv_file->pfiles[i].filename, 255 );
+// 	}
 	
-	//swv_file->pfiles[0].pos = swv_file->pfiles[0].pos;
-	//swv_file->pfiles[0].length = swv_file->pfiles[0].length;
-
-
 	// copy module_filename
 	sprintf( swv_file->filename, "%s", filename );
 
-	fclose( fp );
+	if ( fp != NULL )
+	  fclose( fp );
 
 	return SWV_SUCCESS;
 }
@@ -267,12 +245,12 @@ int CSwv_module::SearchAndLoad( char *search_dir )
 		sprintf( buf, "%s/%s", search_dir, ffile.name );
 
 		//AppendToMultiLog( "Loading ...", buf, NULL );
+		memset( &vehicles[num_vehicles], 0, sizeof(SWV_HEADER) );
 
 		if ( Load( buf, &vehicles[num_vehicles] ) != SWV_SUCCESS )
 			return SWVERROR_OPENSWVFILE;
 
 		num_vehicles++;
-		
 
 		while ( _findnext( hFile, &ffile ) == 0 )
 		{
@@ -319,9 +297,12 @@ int CSwv_module::SearchAndLoad( char *search_dir )
 		return SWVERROR_NOFILES;
 	}
 
-	//delete vehicles;
-
 	return SWV_SUCCESS;
+}
+
+const SWV_HEADER* CSwv_module::GetVehiclesData()
+{
+  return static_cast<const SWV_HEADER *>(vehicles);
 }
 
 long CSwv_module::GetFacePos( unsigned int car_index ) 
