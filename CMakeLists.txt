@@ -47,20 +47,28 @@ target_link_libraries(
 	SDLmain
 )
 
-set( FMOD_LIB_NAME "libfmod-3.75.so" )
+# check if sound support is required
+if ( NOT NO_SOUND )
+  set( FMOD_LIB_NAME "libfmod-3.75.so" )
 
-find_library( 
-  FMOD_LIBRARY
-  NAMES ${FMOD_LIB_NAME}
-  PATHS "./fmod/linux/api" )
+  # try to find fmod lib
+  find_library( 
+    FMOD_LIBRARY
+    NAMES ${FMOD_LIB_NAME}
+    PATHS "/usr/local/lib/" 
+  )
 
-if ( NOT FMOD_LIBRARY OR NO_SOUND )
-  message( STATUS "FMod lib(${FMOD_LIB_NAME}) not found. Will compile without sound support." )
-else ( NOT FMOD_LIBRARY OR NO_SOUND )
-  add_definitions(-DWITH_FMOD)
-  target_link_libraries(savagewheels ${FMOD_LIBRARY})
-  message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
-endif ( NOT FMOD_LIBRARY OR NO_SOUND )
+  if ( NOT FMOD_LIBRARY )
+      message( STATUS "FMod lib(${FMOD_LIB_NAME}) not found! Will compile without sound support." )
+  else ( NOT FMOD_LIBRARY )
+      add_definitions(-DWITH_FMOD)
+      target_link_libraries(savagewheels ${FMOD_LIBRARY})
+      message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
+  endif ( NOT FMOD_LIBRARY )
+
+else ( NOT NO_SOUND )
+  message( STATUS "Sound option set to disabled. Will compile without sound support." )
+endif ( NOT NO_SOUND )
 
 ### additional defines
 
@@ -76,4 +84,6 @@ else (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-O3 -DNDEBUG)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
+### set runtime directory
 set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")
+
