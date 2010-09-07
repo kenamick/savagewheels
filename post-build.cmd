@@ -1,12 +1,15 @@
 @echo off
 
+SET TARGET=bin\
+
 echo [post-build] Starting ...
 
 echo Copying SDL.dll ...
-copy .\libsdl\lib\SDL.dll bin\
+copy /Y libsdl\lib\SDL.dll %TARGET%
+copy /Y libsdl\README-SDL.txt %TARGET%
 
 echo Copying fmod.dll ...
-copy .\fmod\win32\api\fmod.dll bin\
+copy /Y fmod\win32\api\fmod.dll %TARGET%
 
 echo [post-build] Done.
 
