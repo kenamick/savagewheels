@@ -1,0 +1,28 @@
+Savage Wheels installation instructions
+---------------------------------------
+
+Note
+----
+
+
+SVN development download
+------------------------
+Get the latest source code by using subversion:
+$ svn co checkout http://savagewheels.googlecode.com/svn/trunk/ savagewheels
+
+Supported Platforms
+-------------------
+* Linux x86
+* Windows x86/x64
+* Tested on Linux distros - Debian/Archlinux/Ubuntu
+* Tested on Windows XP/2003/Vista
+
+
+Installation on Linux platforms
+===============================
+
+
+
+Installation on Windows
+=======================
+
