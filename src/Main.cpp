@@ -30,7 +30,7 @@
   Copyright (c) 2003-2010 KenamicK Entertainment
   http://www.kenamick.com/
 
-  coded by Peter "necroleak" Petrov
+  coded by Peter Petrov
 
   // release history
   Alpha Release: 29.06.2003

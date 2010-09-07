@@ -165,13 +165,15 @@ int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name )
 
 		filenumber++;
 		strcpy( pfiles[filenumber-1].filename, ffile.name );
-		pfiles[filenumber-1].size = ffile.size;
+		DWTOA( ffile.size, pfiles[filenumber-1].size );
+		//pfiles[filenumber-1].size = ffile.size;
 
 		while ( _findnext( hFile, &ffile ) == 0 )
 		{
 			filenumber++;
 			strcpy( pfiles[filenumber-1].filename, ffile.name );
-			pfiles[filenumber-1].size = ffile.size;
+			DWTOA(ffile.size, pfiles[filenumber-1].size);
+			//pfiles[filenumber-1].size = ffile.size;
 		}
 #else
 		pDirEntry = readdir( pDir );
