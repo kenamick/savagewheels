@@ -27,6 +27,12 @@
 #ifndef __SWV_MODULE
 #define __SWV_MODULE
 
+#ifdef SWV_CREATE // include these, only when we're generating content
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#endif
+
 
 #define SWV_MAJ_VERSION			   1
 #define SWV_MIN_VERSION		 	   0

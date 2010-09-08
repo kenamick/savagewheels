@@ -1,46 +1,135 @@
 // main.cpp -
 
 
-#include "main.h"
-
+#include "Main.h"
 
 CSwv_module   CSwvm;
-SWV_HEADER	  swvh;
 
-
-
-void main()
+int create_swv_module(SWV_HEADER *swv)
 {
-
+	int ret = 0;
 	char buf[255];
-	char carname[255];
-	FILE *fgd;
-	int car = 2;
+	FILE *fgd = NULL;
+
+	if ( swv == NULL )
+		return ret;
+
+	// fill file array
+	swv->pfiles = new SWV_FILES[swv->animation_frames * 2 + 3];
+
+	// car_face
+	sprintf ( swv->pfiles[0].filename, "%s", "build/face.bmp" );
+	if (  (fgd = fopen( swv->pfiles[0].filename, "rb" )) == NULL )
+	{
+		cout << "\n\nError opening " << buf;
+		goto swv_cleanup;
+	}
+	swv->pfiles[0].length = getfilesize( fgd );
+	fclose( fgd );
+
+
+	// driver_face
+	sprintf ( swv->pfiles[1].filename, "%s", "build/dface.bmp" );
+	if (  (fgd = fopen( swv->pfiles[1].filename, "rb" )) == NULL )
+	{
+		cout << "\n\nError opening driver_face.bmp" << buf;
+		goto swv_cleanup;
+	}
+	swv->pfiles[1].length = getfilesize( fgd );
+	fclose( fgd );
+
+
+	// car_name
+	sprintf ( swv->pfiles[2].filename, "%s", "build/name.bmp" );
+	if (  (fgd = fopen( swv->pfiles[2].filename, "rb" )) == NULL )
+	{
+		cout << "\n\nError opening name.bmp" << buf;
+		goto swv_cleanup;
+	}
+	swv->pfiles[2].length = getfilesize( fgd );
+	fclose( fgd );
+
 	
+	for ( int i = 0; i < swv->animation_frames; i++ )
+	{
+		// normal faces
+		sprintf( buf, "build/ok/%d.bmp", i );
+		sprintf( swv->pfiles[i+3].filename, "%s", buf );
+		
 
-	goto savs;
+		if (  (fgd = fopen( buf, "rb" )) == NULL )
+		{
+			cout << "\n\nError opening " << buf;
+			goto swv_cleanup;
+		}
+		swv->pfiles[i+3].length = getfilesize( fgd );
+		fclose( fgd );
 
+		
+		// crash faces
+		sprintf( buf, "build/crash/%d.bmp", i );
+		sprintf( swv->pfiles[i + 3 + swv->animation_frames].filename, "%s", buf );
+
+		if (  (fgd = fopen( buf, "rb" )) == NULL )
+		{
+			cout << "\n\nError opening " << buf;
+			goto swv_cleanup;
+		}
+		swv->pfiles[i + 3 + swv->animation_frames].length = getfilesize( fgd );
+		fclose( fgd );
+
+	}
+		
+	//sprintf( swv->filename, carname );
+	if ( CSwvm.Create( swv ) != SWV_SUCCESS ) 
+	{
+		cout << "\n\nFailed to create SWV module " << swv->filename << " !" << buf;
+		goto swv_cleanup;
+	}
+	
+	ret = 1;
+
+	// free mem
+swv_cleanup:
+
+	if ( swv->pfiles )
+	{
+		delete[] swv->pfiles;
+		swv->pfiles = NULL;
+	}
+
+	return ret;
+}
+
+void test_car(int idx)
+{
 	CSwvm.SearchAndLoad( "/" );
 
-
-	cout << CSwvm.GetFacePos( car );
-	cout << "\n" << CSwvm.GetFaceSize( car );
-	cout << "\n" << CSwvm.GetFramePos( car, 0 );
-	cout << "\n" << CSwvm.GetFrameSize( car, 0 );
-	cout << "\n" << CSwvm.GetFramePos( car, 1 );
-	cout << "\n" << CSwvm.GetFrameSize( car, 1 );
+	cout << CSwvm.GetFacePos( idx );
+	cout << "\n" << CSwvm.GetFaceSize( idx );
+	cout << "\n" << CSwvm.GetFramePos( idx, 0 );
+	cout << "\n" << CSwvm.GetFrameSize( idx, 0 );
+	cout << "\n" << CSwvm.GetFramePos( idx, 1 );
+	cout << "\n" << CSwvm.GetFrameSize( idx, 1 );
 
 //	cout << "\n" << CSwvm.GetFile( car );
-
 
 	int rt;
 	cin >> rt;
 
 	CSwvm.Release();
-	exit(0);
+}
 
+long getfilesize( FILE *fp )
+{
+	fseek( fp, 0, SEEK_END );
+	long f_size = ftell( fp );
+	return f_size;
+}
 
-	cout << "\n 'Savage Wheels' Vehicles Module Creator ver. " << SWV_MAJ_VERSION << "." << SWV_MIN_VERSION;
+int main(int argc, char* argv[])
+{
+	cout << "\n 'Savage Wheels' SWV Vehicles Module Creator ver. " << SWV_MAJ_VERSION << "." << SWV_MIN_VERSION;
 	cout << "\n\n";
 
 /*	cout << "Please, fill in vehicle info: \n";
@@ -71,7 +160,8 @@ void main()
 	cout << "animation_frames (36-no wheel rotation (*2 per frame): ";
 	cin >> swvh.animation_frames;
 */
-savs:
+
+	SWV_HEADER	  swvh;
 	swvh.acc = VACC_SLOW;
 	swvh.max_vel = VSPEED_VSLOW;
 	swvh.dec_acc = 50;
@@ -81,102 +171,12 @@ savs:
 	swvh.hp_crash = 2;
 	swvh.damage = VDMG_ENORMOUS;
 	swvh.animation_frames = 72;
-	sprintf( carname, "truck.swv" );
+	sprintf( swvh.filename, "truck.swv" );
 	sprintf( swvh.vehiclename, "DTRUCK" );
-
-
-	// fill file array
-	swvh.pfiles = new SWV_FILES[swvh.animation_frames*2+3];
-
-	// car_face
-	sprintf ( swvh.pfiles[0].filename, "%s", "build/face.bmp" );
-	if (  (fgd = fopen( swvh.pfiles[0].filename, "rb" )) == NULL )
-	{
-		cout << "\n\nError opening " << buf;
-		return;
-	}
-	swvh.pfiles[0].length = getfilesize( fgd );
-	fclose( fgd );
-
-
-	// driver_face
-	sprintf ( swvh.pfiles[1].filename, "%s", "build/dface.bmp" );
-	if (  (fgd = fopen( swvh.pfiles[1].filename, "rb" )) == NULL )
-	{
-		cout << "\n\nError opening driver_face.bmp" << buf;
-		return;
-	}
-	swvh.pfiles[1].length = getfilesize( fgd );
-	fclose( fgd );
-
-
-	// car_name
-	sprintf ( swvh.pfiles[2].filename, "%s", "build/name.bmp" );
-	if (  (fgd = fopen( swvh.pfiles[2].filename, "rb" )) == NULL )
-	{
-		cout << "\n\nError opening name.bmp" << buf;
-		return;
-	}
-	swvh.pfiles[2].length = getfilesize( fgd );
-	fclose( fgd );
-
-	
-	for ( int i = 0; i < swvh.animation_frames; i++ )
-	{
-		// normal faces
-		sprintf( buf, "build/ok/%d.bmp", i );
-		sprintf( swvh.pfiles[i+3].filename, "%s", buf );
-		
-
-		if (  (fgd = fopen( buf, "rb" )) == NULL )
-		{
-			cout << "\n\nError opening " << buf;
-			return;
-		}
-		swvh.pfiles[i+3].length = getfilesize( fgd );
-		fclose( fgd );
-
-		
-		// crash faces
-		sprintf( buf, "build/crash/%d.bmp", i );
-		sprintf( swvh.pfiles[i + 3 + swvh.animation_frames].filename, "%s", buf );
-
-		if (  (fgd = fopen( buf, "rb" )) == NULL )
-		{
-			cout << "\n\nError opening " << buf;
-			return;
-		}
-		swvh.pfiles[i + 3 + swvh.animation_frames].length = getfilesize( fgd );
-		fclose( fgd );
-
-	}
-
-		
-	sprintf( swvh.filename, carname );
-	if ( CSwvm.Create( &swvh ) != SWV_SUCCESS ) exit(-22);
-	
-	
-	// free mem
-	delete[] swvh.pfiles;
-
-
 	//...
+
 	CSwvm.Release();
 
-
-	cout << endl << "Building successful..." << endl;
-
+	return 0;
 }
 
-
-long getfilesize( FILE *fp )
-{
-
-	long f_size;
-
-	fseek( fp, 0, SEEK_END );
-	f_size = ftell( fp );
-
-	return f_size;
-
-}

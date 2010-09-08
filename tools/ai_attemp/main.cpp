@@ -1,9 +1,10 @@
 // main.cpp -
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <time.h>
+#include <cstdlib>
+#include <iostream>
+#include <ctime>
 
+using namespace std;
 
 #define ACTIONS  5
 

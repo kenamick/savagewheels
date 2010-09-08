@@ -12,6 +12,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "intro", "tools\intro\intro.
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ai_attemp", "tools\ai_attemp\ai_attemp.vcproj", "{FA5A6CCB-D66E-4E80-90BD-D143860E44EB}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "swv_builder", "tools\swv_builder\swv_builder.vcproj", "{3A7A648E-5E2E-4388-8388-AF013200296A}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.Debug = "False"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -26,6 +38,14 @@ Global
 		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Debug|Win32.Build.0 = Debug|Win32
 		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Release|Win32.ActiveCfg = Release|Win32
 		{35385370-8BE0-4E8D-BD3F-698A34E3AB30}.Release|Win32.Build.0 = Release|Win32
+		{FA5A6CCB-D66E-4E80-90BD-D143860E44EB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FA5A6CCB-D66E-4E80-90BD-D143860E44EB}.Debug|Win32.Build.0 = Debug|Win32
+		{FA5A6CCB-D66E-4E80-90BD-D143860E44EB}.Release|Win32.ActiveCfg = Release|Win32
+		{FA5A6CCB-D66E-4E80-90BD-D143860E44EB}.Release|Win32.Build.0 = Release|Win32
+		{3A7A648E-5E2E-4388-8388-AF013200296A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3A7A648E-5E2E-4388-8388-AF013200296A}.Debug|Win32.Build.0 = Debug|Win32
+		{3A7A648E-5E2E-4388-8388-AF013200296A}.Release|Win32.ActiveCfg = Release|Win32
+		{3A7A648E-5E2E-4388-8388-AF013200296A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

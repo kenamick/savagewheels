@@ -24,7 +24,11 @@
 
 */
 
-#include "Main.h"
+#ifdef SWV_CREATE
+#	include "Cswv_module.h"
+#else
+#	include "Main.h"
+#endif
 
 #ifdef LINUX_BUILD
 #	include <dirent.h>
