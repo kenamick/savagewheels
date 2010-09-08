@@ -95,22 +95,33 @@ void CSwv_module::Release()
 //// Name: Create()
 //// Desc: create a savagewheels-vehicles file from a header
 ///////////////////////////////////////////////////////////////////////////////
-int CSwv_module::Create( SWV_HEADER *swm )
+int CSwv_module::Create( const char *destPath, SWV_HEADER *swm )
 {
 
 	FILE *fp;
 	FILE *fp_bmp;
 	char header[3] = { 'S', 'W', 'V' };
-	char *buffer;
+	char *buffer = NULL;
 	long file_pos;
 	int  num_anims;
-
-
-	if ( ( fp = fopen( swm->filename, "wb" ) ) == NULL )
+	char fullpath[255];
+	
+	
+	if ( destPath )
+	{
+	  sprintf( fullpath, "%s/%s", destPath, swm->filename );
+	}
+	else
+	{
+	  sprintf( fullpath, "%s", swm->filename );
+	}
+	
+	if ( ( fp = fopen( fullpath, "wb" ) ) == NULL )
 		return SWVERROR_OPENSWVFILE;
 
 	// write headers
-	strcpy( swm->header, header );
+	//sprintf( swm->header, "%s", "SWV" );
+	strncpy( swm->header, header, 3 );
 	//fwrite( header, sizeof(header)*3, 1, fp );
 	fwrite( swm, sizeof(SWV_HEADER), 1, fp );
 
@@ -150,7 +161,6 @@ int CSwv_module::Create( SWV_HEADER *swm )
 	fclose( fp );
 
 	return SWV_SUCCESS;
-
 }
 
 

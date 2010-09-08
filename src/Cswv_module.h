@@ -90,8 +90,8 @@ enum CONST_VARMOUR
 /*****************************/
 
 struct SWV_FILES {
-	long pos;
-	long length;
+	signed int pos;
+	signed int length;
 	char filename[255];
 };
 
@@ -102,13 +102,13 @@ struct SWV_HEADER {
 	char		vehiclename[8];
 	CONST_VSPEED    max_vel;
 	CONST_VACC 	acc;
-	int		dec_acc;
+	signed int	dec_acc;
 	CONST_VROTSPEED rot_speed;
-	int		lbs;
+	signed int	lbs;
 	CONST_VDAMAGE   damage;
 	CONST_VARMOUR   hp;
-	int		hp_crash;
-	int		animation_frames;
+	signed int	hp_crash;
+	signed int	animation_frames;
 	SWV_FILES	*pfiles;
 };
 
@@ -120,7 +120,7 @@ class CSwv_module
 	CSwv_module();
 	~CSwv_module();
 
-	int  Create( SWV_HEADER *swv );
+	int Create( const char *destPath, SWV_HEADER *swm );
 	int  SearchAndLoad( char *search_dir );
 	void Release();
 	unsigned int GetVehicles() { return num_vehicles; };

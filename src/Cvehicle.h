@@ -62,13 +62,13 @@ enum CONST_DIFFICULTY
 };
 
 
-enum CONST_VEHICLE_TYPE 
-{
-  VT_KAMION = 0,
-  VT_FERRARI,
-  VT_MERCEDES,
-  VT_BUGGY
-};
+// enum CONST_VEHICLE_TYPE 
+// {
+//   VT_KAMION = 0,
+//   VT_FERRARI,
+//   VT_MERCEDES,
+//   VT_BUGGY
+// };
 
 
 enum CONST_VEHICLE_MOVEMENT 
@@ -198,7 +198,7 @@ private:
 	//SDL_Surface	 ***sprite_norm; //*sprite_norm[36];  // car faces
 	//SDL_Surface  ***sprite_crash; //*sprite_crash[36]; // car crashed-faces
 	
-	CONST_VEHICLE_TYPE		me;
+	//CONST_VEHICLE_TYPE		me;
 	CONST_VEHICLE_CONTROL   control;
 	CONST_VEHICLE_MOVEMENT  vmove;
 	CONST_VEHICLE_ROTATION	vrot;
