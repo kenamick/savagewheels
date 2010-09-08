@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project(swv_builder) 
 
 ### src
+include_directories(../../src/)
 
 set (
         SOURCES 
