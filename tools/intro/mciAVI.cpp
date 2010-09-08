@@ -28,19 +28,24 @@ int CAvi::Initialize()
 ///////////////////////////////////////////////////////////////////////////////////////////////
 int CAvi::Open( HWND hwnd, LPSTR avifile, LPSTR avialias )
 {
-    
 	MCIERROR rval;
 	char	 mcicommand[255];
 
 	// open avi-file with given alias
-	sprintf( mcicommand, MOV_OPEN_FORMAT, avifile, avialias, hwnd );
-	rval = mciSendString( mcicommand, NULL, NULL, NULL );
+	sprintf( mcicommand, MOV_OPEN_FORMAT, avifile, "AVIVideo", avialias, hwnd );
+	//sprintf( mcicommand, MOV_OPEN_FORMAT, avifile, avialias, hwnd );
+	rval = mciSendString( mcicommand, NULL, NULL, hwnd );
+	if ( rval ) 
+		return ShowErrorString( rval );
+
+	sprintf( mcicommand, "put %s window at 0 0 640 480", avialias );
+	rval = mciSendString( mcicommand, NULL, NULL, hwnd ) ;
 	if ( rval ) 
 		return ShowErrorString( rval );
 	
 	// realize the palette
 	sprintf( mcicommand, "realize %s", avialias );
-	rval = mciSendString( mcicommand, NULL, NULL, NULL );
+	rval = mciSendString( mcicommand, NULL, NULL, hwnd );
    
   return 1;
 }
@@ -219,11 +224,14 @@ int CAvi::ShowErrorString( MCIERROR errval )
 ///////////////////////////////////////////////////////////////////////////////////////////////
 void CAvi::Release()
 {
-	MCIERROR rval = mciSendString( CLOSE_AVI_VIDEO, NULL, NULL, NULL );
-	if ( rval ) 
-		ShowErrorString( rval );
+	if ( bInitialized )
+	{
+		MCIERROR rval = mciSendString( CLOSE_AVI_VIDEO, NULL, NULL, NULL );
+		if ( rval ) 
+			ShowErrorString( rval );
 
-	bInitialized = false;
+		bInitialized = false;
+	}
 }
 
 

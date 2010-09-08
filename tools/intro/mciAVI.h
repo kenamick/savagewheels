@@ -30,11 +30,13 @@
 #define MOV_SEEK_TO_END "seek mov to end"
 #define MOV_CLOSE "close %s"
 #define MOV_SOURCE "where %s source"
-#define MOV_OPEN_FORMAT "open %s alias %s style child parent %d"
+#define MOV_OPEN_FORMAT "open %s type %s alias %s style child parent %d"
+//#define MOV_OPEN_FORMAT "open %s alias %s style child parent %d"
 #define MOV_SHOW "window %s state show"
 #define MOV_HANDLE "status %s window handle"
 #define MOV_REVERSE "play %s reverse notify"
 #define MOV_FORWARD "play %s notify"
+//#define MOV_FORWARD "play %s fullscreen"
 #define MOV_PAUSE "pause %s"
 #define MOV_FORWARD_STEP "step %s by 1"
 #define MOV_REVERSE_STEP "step %s reverse by 1"
@@ -59,8 +61,10 @@ private:
 	void GetRect( LPSTR avialias, RECT *rect );
 
 public:
-	CAvi() { bInitialized = false; };
-	~CAvi() { if ( bInitialized ) Release(); };
+	CAvi() 
+		: bInitialized(false)
+	{};
+	~CAvi() { Release(); };
 
 	int Initialize();
 	int Open( HWND hwnd, LPSTR avifile, LPSTR avialias );

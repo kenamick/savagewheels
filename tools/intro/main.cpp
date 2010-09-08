@@ -187,7 +187,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		return -1;
 	}
 
-	hwnd = CreateWindowEx( 					// create our window 
+	hwnd = CreateWindowEx(					// create our window 
 		WS_EX_APPWINDOW,
         CLASS_NAME,
 		"SDK_WINDOW",
@@ -205,6 +205,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	UpdateWindow( hwnd );
 	SetFocus( hwnd );
 
+	char avi_name[] = "mov_sw";
+
 
 	if ( !ChangeToFullScreen( 640, 480, 16 ) )
 		goto r_end;
@@ -218,12 +220,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	if ( classavi.Initialize() )
 	{
 	
-		if ( !classavi.Open( hwnd, "graphics/logo.avi", "mov1" ) )
+		if ( !classavi.Open( hwnd, "graphics/logo.avi", avi_name ) )
 			goto r_end;
 
-		classavi.CenterWindow( "mov1", 640, 480 );
+		//classavi.CenterWindow( avi_name, 640, 480 );
 		
-		if ( !classavi.Play( "mov1", PM_NOTIFY ) )
+		if ( !classavi.Play( avi_name, PM_NOTIFY ) )
 			goto r_end;
 	}
 	else
@@ -231,7 +233,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 
 	nowt = GetTickCount();
-
 	ShowCursor( false );
 
 	for(;;)
@@ -250,15 +251,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 			break;
 	}
 
-
-
-	//ModifyHeader( "graphics/logo.avi", false );
-
 	ShowCursor( true );
+	ModifyHeader( "graphics/logo.avi", false );
 
 r_end:
-
-
+	classavi.Close( avi_name );
+	classavi.Release();
 	ShellExecute( NULL, "open", "sw.exe", NULL, NULL, SW_SHOWNORMAL);
  
 	return 0L;
