@@ -1,7 +1,7 @@
 // main.cpp -
 
 
-#include "Main.h"
+#include "main.h"
 
 CSwv_module   CSwvm;
 
