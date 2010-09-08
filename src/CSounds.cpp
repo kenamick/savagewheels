@@ -36,7 +36,9 @@ CSounds::CSounds()
 {
 #ifdef WITH_FMOD
 	memset( sounds, 0, sizeof(int) * NUM_SOUNDS );
-	memset( music, NULL, NUM_MUSIX);
+	for( int i = 0; i < NUM_MUSIX; i++ )
+		music[i] = NULL;
+	//memset( music, NULL, sizeof(FMUSIC_MODULE) * NUM_MUSIX);
 #endif
 }
 

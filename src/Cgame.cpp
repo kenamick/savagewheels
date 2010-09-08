@@ -51,6 +51,9 @@ CGame::CGame()
 	game_hitmode( false )
 { 
 
+	for( int cn = 0; cn < NUM_BACKGROUNDS; cn++ )
+		back[cn] = NULL;
+
 	for( int i = 0; i < 2; i++ )
 		scales[i] = NULL;
 
@@ -395,10 +398,10 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
   if ( bRunning )
   {
-	  bRunning = (bool)LoadGame();
-
+	  if ( bRunning = (bool)LoadGame() )
+		  AppendToLog("Starting Game loop...");
+	  
 	  ftimer = (float)SDL_GetTicks();
-	  AppendToLog("Starting Game loop...");
   }
 
   while( bRunning )
@@ -1451,7 +1454,12 @@ void CGame::SetupVehicles()
 
 }
 
-
+String CGame::GetWindowTitle()
+{
+	char buf[512];
+	sprintf( buf, "Savage Wheels - KenamicK Entertainment V%d.%d", VER_MAJ, VER_MIN );
+	return String(buf);
+}
 
 
 

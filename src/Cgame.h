@@ -125,20 +125,20 @@ private:
 	SDL_Surface		*winneris;
 	SDL_Surface		*splash;
 	SDL_Surface		*splash_logo[30];
-	SDL_Surface	    	*getready;
+	SDL_Surface	    *getready;
 
 	//SDL_Surface     *sprite_tire[MAX_TIRETRAILS]; 
 	SDL_Surface		*back[NUM_BACKGROUNDS]; // ...
 
 public:
 
-	CMainMenu       	Menu;
+	CMainMenu       Menu;
 	CSdl			Sdl;
 	CSounds			Snd;
 	CTimer			Timer;
-	CAnimations	    	Anims;
+	CAnimations	    Anims;
 	CVehicle		Auto[ NUM_MPS ];
-	CKdf_Packeger   	Kdf;					// KDF class
+	CKdf_Packeger   Kdf;					// KDF class
 	CSwv_module		Swv;					// vehicles module class
 	CDeadtoys		Dtoys;					// dead_toys class
 	CLandMines		Mines;					// landmines class
@@ -156,11 +156,11 @@ public:
 	bool			  game_hitmode;			// stop phsysics enabled !?
 	bool			  game_shadows;
 	bool			  game_bots;
-	int			  game_frags;			// frags to win
-	int			  game_time;			// round time
+	int				  game_frags;			// frags to win
+	int				  game_time;			// round time
 	bool			  show_fps;// = false;
 	bool			  game_paused;
-	int			  game_num_cars;	    // number of active vehicles
+	int				  game_num_cars;	    // number of active vehicles
 	bool			  game_cheats;// = false;
 	Uint32			  p1_auto_index;
 	Uint32			  p2_auto_index;
@@ -168,7 +168,7 @@ public:
 
 	Uint32			 cur_map;       			// current visible background map
 
-	SDL_Surface      	*scales[2];				// hit_points & anger scales
+	SDL_Surface      *scales[2];				// hit_points & anger scales
 	SDL_Surface		 *self_dest;				// self_destruct pic
 
 private:
@@ -186,6 +186,7 @@ public:
 	void Execute(bool bFullScreen = false, bool bHardware = false);
 	void Close();
 	const float getMpf()	{ return mpf; };
+	String GetWindowTitle();
 
 };
 

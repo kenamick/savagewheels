@@ -61,6 +61,45 @@ SDL_Surface		  *ssStrings[STRINGS_SURFACES];
 CMainMenu::CMainMenu()
 : _game( NULL )
 {
+	Uint32 i = 0;
+	for ( i = 0; i < MENU_BACKGROUNDS; i++ )
+		 ssBack[i] = NULL;
+
+	for ( i = 0; i < MENU_BUTTONS; i++ )
+		ssButtons[i] = NULL;
+
+	for ( i = 0; i < STRINGS_SURFACES; i++ )
+		ssStrings[i] = NULL;
+
+	RELEASE_SURF( ssVolume );
+	
+	for ( i = 0; i < 17; i++ )
+		ssCursor[i] = NULL;
+	
+	ssCarAttribs = NULL;
+	ssMenu[0] = NULL;
+	ssMenu[1] = NULL;
+    credits = NULL;
+
+	for ( i = 0; i < 10; i++ )
+		ssTitle[i] = NULL;
+
+	// release upgrades
+	for ( i = 0; i < 35; i++ )
+	{
+		ssUpg[ANIM_NOS][i] = NULL;
+		ssUpg[ANIM_ENGINE][i] = NULL;
+		ssUpg[ANIM_DAMAGE][i] = NULL;
+		ssUpg[ANIM_ARMOUR][i] = NULL;
+	}
+
+	// release select menus
+	savage_select[0] = NULL;
+	savage_select[1] = NULL;
+
+	camp_select = NULL;
+	camp_selquad = NULL;
+
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -78,11 +117,10 @@ CMainMenu::~CMainMenu()
 void CMainMenu::Release()
 {
 
-	Uint32 i;
+	Uint32 i = 0;
 
 	// save settings on close
 	SaveSettings();
-
 
 	for ( i = 0; i < MENU_BACKGROUNDS; i++ )
 		RELEASE_SURF( ssBack[i] );

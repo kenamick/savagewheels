@@ -64,14 +64,14 @@ class CSounds
 
 private:
 
-	CSdl		*_sdl;
-	int		sounds[NUM_SOUNDS];
+	CSdl	*_sdl;
 #ifdef WITH_FMOD
+	int		sounds[NUM_SOUNDS];
 	FMUSIC_MODULE	*music[NUM_MUSIX];
 #endif
 
 	int		current_track;
-	bool		music_stopped;
+	bool	music_stopped;
 
 public:
 

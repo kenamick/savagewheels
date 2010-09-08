@@ -252,7 +252,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 
 
-	ModifyHeader( "graphics/logo.avi", false );
+	//ModifyHeader( "graphics/logo.avi", false );
 
 	ShowCursor( true );
 

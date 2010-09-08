@@ -167,7 +167,6 @@ bool InRange ( float val, float bound1, float bound2 )
 ///////////////////////////////////////////////////////////////////////
 int OpenLog ( const char* filename )
 {
-
     char buf1[64];
 
 #ifdef LINUX_BUILD
@@ -183,13 +182,15 @@ int OpenLog ( const char* filename )
 
     // open debug file
     debug_file.open ( "debug.html", std::ios::out ); //ios::ate );
+	if ( ! debug_file.good() )
+		return 0;
 
-    debug_file << "<html>\n<head>\n<title>SW-Log</title>\n</head>\n<body>\n<pre>\n<h1>Savage Wheels V" << VER_MAJ << "." << VER_MIN << " - Log File</h1>";
-    debug_file << "\n<h3>------------------------------------------------</h3>\n";
-    debug_file << "*** " << APP_NAME << " ***\n\n";
-    debug_file <<  buf1 << " " << "Copyright &copy; 2003-2010 KenamicK Entertainment" "\n";
-    debug_file <<  buf1 << " " <<"Opened on: " << __DATE__ << "\n";
-    debug_file <<  buf1 << " " <<"Opened at: " << __TIME__ << "\n\n";
+    debug_file << "<html><head><title>Savage Wheels Log File</title></head><body><h1>Savage Wheels V" << VER_MAJ << "." << VER_MIN << " - Log File</h1>";
+    debug_file << "<hr/><pre>";
+	debug_file <<  buf1 << " Build: " << APP_NAME << " <br/>";
+    debug_file <<  buf1 << " " << "Copyright &copy; 2003-2010 KenamicK Entertainment <br />";
+    debug_file <<  buf1 << " " <<"Opened on: " << __DATE__ << "<br />";
+    debug_file <<  buf1 << " " <<"Opened at: " << __TIME__ << "<br /><br />";
     debug_file <<  buf1 << " " << LOG_DASH;
 
     return 1;
@@ -202,7 +203,6 @@ int OpenLog ( const char* filename )
 ///////////////////////////////////////////////////////////////////////
 void AppendToLog ( const char *dbgstring )
 {
-
     char buf1[64];
 
 #ifdef LINUX_BUILD
@@ -269,7 +269,7 @@ void AppendToLog ( const char *dbgstring )
 void CloseLog ( void )
 {
     AppendToLog ( "Game closed." );
-    debug_file << "\n</pre>\n</body>\n</html>";
+    debug_file << "\n</pre></body></html>";
     debug_file.close();
 }
 

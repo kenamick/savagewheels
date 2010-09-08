@@ -51,6 +51,9 @@ CSdl::CSdl()
 
 	_JoystickButtons = udtButtonsBuffer( 30 );
 
+#ifndef FONT_TTF
+	font_bmp = NULL;
+#endif
 }
 
 
@@ -72,21 +75,18 @@ CSdl::~CSdl()
 ///////////////////////////////////////////////////////////////////////
 void CSdl::Close()
 {
-	
 	AppendToLog("Closing SDL class...");
-
 
 	// free all sounds
 #ifdef WITH_FMOD	
 	if ( bsound_initialized )
 	{
 		AppendToLog("FMod Status: Releasing Game Sounds... ");
-		for ( Uint32 i = 0; i < MAX_SOUNDS; i++ )
-		{
-			//if ( sounds[i].loaded )
-				//sounds[i].Release();
-		}
-
+		//for ( Uint32 i = 0; i < MAX_SOUNDS; i++ )
+		//{
+		//	if ( sounds[i].loaded )
+		//		sounds[i].Release();
+		//}
 
 		AppendToLog("FMod: Closing...");
 		FSOUND_Close();
@@ -104,7 +104,6 @@ void CSdl::Close()
 	SDL_Quit();
 
 	AppendToLog( "SDL Status: CSdl closed" );
-
 }
 
 
@@ -939,7 +938,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	AppendToLog("SDL Status: Opening Simple DirectMedia Layer(c) ... " );
+	AppendToLog("Initializing SDL ... " );
 
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
@@ -963,42 +962,56 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	LOG( "blit_sw_CC: " << vid_info->blit_sw_CC );
 	LOG( "blit_sw_A: " << vid_info->blit_sw_A );
 
-// 	// check video memory (Note: This seems to be no longer valid !)
+// 	// check video memory (Note: This seems to be stupi..uuhm... no longer valid !)
 // 	if ( vid_info->video_mem > 24000U )
 // 		flags |= SDL_HWSURFACE;
 // 	else
 // 		flags |= SDL_SWSURFACE;
 
 	// init na glawanata powyrhnost i video rejim
-	Uint32 flags = SDL_DOUBLEBUF | SDL_ANYFORMAT;
+	Uint32 flags = 0 ;//SDL_DOUBLEBUF | SDL_ANYFORMAT;
 	
 	if ( bFullscreen )
 	  flags |= SDL_FULLSCREEN;
 
-	if ( bHardware )
+	flags |= bHardware ? SDL_HWSURFACE : SDL_SWSURFACE;
+
+	// enumerate available video modes
+	SDL_Rect **rModes = NULL;
+	rModes = SDL_ListModes( NULL, flags );
+	if ( (SDL_Rect **)NULL == rModes )
 	{
-	  flags |= SDL_HWSURFACE;
-		//CHK_VMODE( nWidth, nHeight, nBpp, flags | SDL_SWSURFACE );
-		//screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, flags | SDL_SWSURFACE );
-		////screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, SDL_FULLSCREEN | SDL_SWSURFACE | SDL_ANYFORMAT );
+		LOG( "SDL Error: Unable to enumerate video modes! " );
+		return false;
+	}
+	else if ( (SDL_Rect **)-1 == rModes )
+	{
+		LOG( "All modes are available." );
 	}
 	else
 	{
-	  flags |= SDL_SWSURFACE;
+		LOG( "Listing available video modes:" );
+		for( int i = 0; rModes[i]; i++ )
+		{
+			char buf[256];
+			sprintf( buf, "Mode: %dx%d is OK", rModes[i]->w, rModes[i]->h );
+			LOG( buf );
+		}
 	}
 
-	LOG( "SDL Status: Switching video mode to " << nWidth << "x" << nHeight << "x" << nBpp );
+	// switch to desired video mode
+	flags = SDL_DOUBLEBUF | SDL_ANYFORMAT;
 
 	int vd = SDL_VideoModeOK( nWidth, nHeight, nBpp, flags ); 
-	
 	LOG( "SDL_VideoModeOK() recommends " << vd << " bit mode." );
 	
 	if ( vd == 24 )
 	{
-		LOG( "Savage Wheels does not support 24 bit video mode !" );
+		LOG( "Error: Sorry, Savage Wheels does not support 24 bit video mode !" );
 		return false;	  
 	}
-	
+
+	LOG( "Switching video mode to " << nWidth << "x" << nHeight << "x" << nBpp );
 	if ( NULL == (screen = SDL_SetVideoMode( nWidth, nHeight, nBpp, flags )) )
 	{
 		LOG( "SDL Error: Setting video mode : " << SDL_GetError() );
@@ -1006,11 +1019,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	}
 	
 	SDL_SetClipRect( screen, NULL );
-	
-	char title[512];
-	sprintf( title, "Savage Wheels - KenamicK Entertainment V%d.%d", VER_MAJ, VER_MIN );
-	SDL_WM_SetCaption( title, "None" );
-	
+	SDL_WM_SetCaption( _game->GetWindowTitle().c_str(), "None" );
 	SDL_ShowCursor( SDL_DISABLE );	
 
 	// 16bit-mode-check
