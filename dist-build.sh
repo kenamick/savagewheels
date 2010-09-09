@@ -2,25 +2,24 @@
 
 CMD="$1"
 TAR="$(which tar)"
-CUR_DIR="$(dirname `readlink -f $0)`)"
+CUR_DIR="$(dirname $(readlink -f $0))"
 BIN_PATH="$CUR_DIR/bin"
 TMP_PATH="$CUR_DIR/dist-build.temp"
 EXEC_PATH="$CUR_DIR/savagewheels"
 LIBSDL_PATH="$CUR_DIR/libsdl"
-VERMAJ=""
-VERMIN=""
+VERMAJ=`perl -nle 'print $1 if /.*VER_MAJ\s(\d+).*/' src/Main.h`
+VERMIN=`perl -nle 'print $1 if /.*VER_MIN\s(\d+).*/' src/Main.h`
+VERSION="$VERMAJ.$VERMIN"
 
-for vr in `grep VER src/Main.h | awk '{ print $3 }' | tr -d \n\r\t`
-do
-	if [ "$VERMAJ" = "" ]; then
-		VERMAJ="$vr"
-	elif [ "$VERMIN" = "" ]; then
-		VERMIN="$vr"
-	fi
-echo $vr
-done
-
-echo $VERSION
+#for vr in `grep VER src/Main.h | awk '{ print $3 }' | tr -d \n\r\t`
+#do
+#	if [ "$VERMAJ" = "" ]; then
+#		VERMAJ="$vr"
+#	elif [ "$VERMIN" = "" ]; then
+#		VERMIN="$vr"
+#	fi
+#echo $vr
+#done
 
 usage() {
 	echo "dist-build.sh - Savage Wheels ${VERMAJ}.${VERMIN} build script"
@@ -48,6 +47,10 @@ build() {
 		echo "Dist path could not be created - $TMP_PATH"
 		exit
 	fi
+	if [ ! -e $EXEC_PATH ]; then
+		echo "Executable was not found. Is the project build ?"
+		exit
+	fi
 
 	cp $CUR_DIR/LICENSE $TMP_PATH
 
@@ -60,7 +63,7 @@ build() {
 
 	echo "Creating archive ..."
 	
-	PAK_NAME="savagewheels_1.4.tar.gz"
+	PAK_NAME="savagewheels_$VERSION.tar.gz"
 	
 	cd $TMP_PATH
 	$TAR -czf $PAK_NAME --exclude=.svn *
@@ -68,6 +71,7 @@ build() {
 	cd ..
 
 	echo "Build done."
+	echo "You can find the $PAK_NAME archive in $TMP_PATH. Enjoy :)"
 }
 
 if [ "$1" = "clean" ]; then
