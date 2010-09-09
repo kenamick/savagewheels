@@ -2,31 +2,36 @@ SAVAGE WHEELS - History
 =======================
 
 $ V1.4 Release
- - added support for Linux systems. The game can now be compiled and run on Linux. 
- - changed - the game will now always try to go for hardware surfaces for better performace
  - fixed a large number of memory leaks
  - fixed problems in showing ingame shadows when in 32 bit color mode
  - fixed crash on exit the game
+ - fixed problem where when in windowed mode the game window was not centered
+ - changed - To prevent problems on Linux systems the game will start in windowed mode by default.
+             Use F11 when playing to toggle fullscreen mode or start the game with a command line parameter '-force-fullscreen'.
+             NOTE: Fullscreen may crash your Linux desktop. So, far problems where detected only on KDE.
+ - changed - the game will now always try to go for hardware surface for better performace. If you want to run
+             with software surfaces use the '-sw' command line parameter.
+ - added support for Linux systems. The game can now be compiled and run on Linux. 
 
 $ V1.03 Patch
- - no more sound-conflicts that caused the game to crash under win2k and XP systems
- - game now uses Fmod® sound engine
- - added -hw command line for greater video cards
+ - fixed sound-conflicts that caused the game to crash under win2k and XP systems
+ - changed - game now uses Fmod(c) sound engine
+ - added '-hw' command line for greater video cards
  
 $ V1.02 Patch
  - fixed a bug that caused campaigns to start from level 2  
- - fixed a bug that caused vehicles going back, do enormous damage
+ - fixed a bug that caused vehicles going back to do enormous damage
  - fixed time-left blitting
- - When playing 2v2 teams for 'Time-limit' the winning score is now determined by the sum of the
-   frags of the team-mates
- - The frag-giving bug now has to be kept 6 seconds instead of 8
- - Landmines now do more damage 
+ - changed - when playing 2v2 teams for 'Time-limit' the winning score is now determined by the sum of the
+   frags of the team members instead of just the member with the highest score
+ - changed - The frag-giving bug now has to be kept 6 seconds instead of 8
+ - changed - Landmines now do more damage 
 
 $ V1.0 Release
- - fixed Physics
- - optimized PP collision detection
- - optimized shadow casting
- - upgraded vehicle AI
+ - fixed impact physics
+ - optimized collision detection
+ - optimized shadow casting for better performance
+ - optimized vehicle AI
  - added better menu graphics
  - added bonus identificators
  - added timer
@@ -35,6 +40,7 @@ $ V1.0 Release
  - added one more track to the soundtrack 
 
 $ V0.9 (beta)
+ - fixed menu-game prelude
  - added shadow-casting
  - added additional bonuses
  - added vehicle AI
@@ -43,7 +49,6 @@ $ V0.9 (beta)
  - added vehicle modules
  - added beta-sfx
  - added menu & game_music
- - fixed menu-game prelude
 
 $ V0.1
  - added Bonuses and Animations

@@ -322,7 +322,7 @@ bool CGame::LoadGame()
 
 	Menu.LoadSettings();
 
-	//Snd.Play( MUS_MENU, true );
+	Snd.Play( MUS_MENU, true );
 
 	return true;
 }

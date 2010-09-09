@@ -490,8 +490,8 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 	_Slock( screen );
 
 	//x *= bytes_per_color; 
-	//Uint32 *pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
-	Uint32 *pixel1 = (Uint32 *)screen->pixels + y * screen->pitch + x * sizeof(Uint32);
+	Uint32 *pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
+	//Uint32 *pixel1 = (Uint32 *)screen->pixels + y * screen->pitch + x * sizeof(Uint32);
 
 	for ( j = rsurf->y; j < rsurf->h; j++ )
 	{
@@ -507,10 +507,10 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 		}
 
 		// premseti pad-a
-		//pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch >> 2) + x;
-		pixel1 = (Uint32 *)screen->pixels + (y + j) * screen->pitch + (Uint32)x * sizeof(Uint32);
+		pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch >> 2) + x;
+		//pixel1 = (Uint32 *)screen->pixels + (y + j) * screen->pitch + (Uint32)x * sizeof(Uint32);
 	}
-
+	
 	_Sunlock( screen );
 }
 
@@ -1006,7 +1006,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	// switch to desired video mode
 	flags = SDL_DOUBLEBUF | SDL_ANYFORMAT;
 
-	int vd = SDL_VideoModeOK( nWidth, nHeight, 32, flags ); 
+	int vd = SDL_VideoModeOK( nWidth, nHeight, nBpp, flags ); 
 	LOG( "SDL_VideoModeOK() recommends " << vd << " bit mode." );
 	
 	if ( vd == 24 )
@@ -1061,7 +1061,14 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	{
 		bsound_initialized = true;
 
-		if( !FSOUND_Init(44100, 32, FSOUND_INIT_USEDEFAULTMIDISYNTH) )
+#ifdef LINUX_BUILD
+		// seems ALSA is preferred for FMod on Debian
+		if ( getenv("SW_SND_ALSA") && !strcmp( getenv("SW_SND_ALSA"), "1" ) )
+		  FSOUND_SetOutput(FSOUND_OUTPUT_ALSA);
+#endif
+		int mixrate = getenv("SW_SND_22KHZ") && !strcmp( getenv("SW_SND_22KHZ"), "1" ) ? 22050 : 44100;
+		
+		if( ! FSOUND_Init(mixrate, 32, 0) )
 		{
 			LOG( "FMod Error: ...failed to initialize :" << FMOD_ErrorString( FSOUND_GetError() ) );
 			bsound_initialized = false;
@@ -1690,7 +1697,7 @@ void CSdl::SetMusicVolume( int music_vol )
 // Ime: SetSoundVolume()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::SetSoundVolume( int snd_vol )
+  void CSdl::SetSoundVolume( int snd_vol )
 {
 #ifdef WITH_FMOD
 	volume_sound = snd_vol;

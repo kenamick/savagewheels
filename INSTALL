@@ -9,7 +9,7 @@ $ svn co checkout http://savagewheels.googlecode.com/svn/trunk/ savagewheels
 
 Supported Platforms
 -------------------
-* Linux x86
+* Linux x86/x64
 * Windows x86/x64
 * Tested on Linux distros - Debian/Archlinux/Ubuntu
 * Tested on Windows XP/2003/Vista
@@ -29,12 +29,12 @@ Instructions
 
 1. Download the sources from the SVN.
 
-2. Install the libSDL package on your distro.
+2. Install the libSDL package using the package manager on your Linux distribution.
 
 3. Install the FMod shared object. Go to the sources folder and copy the file "fmod/linux/api/libfmod-3.75.so" to /usr/local/lib.
    Note: For x64 bit installation I was not able to locate the proper .so file, therefore Savage Wheels runs without sound on a x64 bit Linux :( It's sad.
 
-4. Go to the sources directory and create the make files via:
+4. Go to the sources directory and start CMake via:
    $ cmake CMakeLists.txt
    Note: For x64 Linux versions use the following:
    $ cmake CMakeLists.txt -DNO_SOUND=1
@@ -47,7 +47,9 @@ Instructions
 7. Download the Savage Wheels data files. You will need those, since they contain all graphics, sound, and vehicles data.
    Extract the downloaded archive into the bin/ folder. The important folders are - autos/, graphics/, sounds/.
 
-8. Ok, you're done :) ...Oh, one more thing. If you want to create distributable you may use the dist-build.sh script to do so:
+8. Ok, you're done :) Go to the bin/ folder and start the game using the "savagewheels" binary.
+  
+   ...Oh, one more thing. If you want to create distributable you may use the dist-build.sh script to do so:
    $ ./dist-build build
    This will create a folder dist-build.tmp/ and an archive inside, containing the "Ready For Playing" game. 
 
@@ -72,6 +74,31 @@ Instructions
 4. Choose [Release] (or [Debug]) from the Build settings and compile.
 
 5. All the required files should be available in the relative \bin folder. You should be able to start the EXE file from there.
+
+
+Notes about compiling on x64 systems
+====================================
+
+Well, it will compile but ...it may not work :( The game is 10 years old and much of the code was not written 
+to be portable.
+
+The major problems seem to be on Linux systems, where I get a lot of crashes due to wrong addressing
+and data type convertions. The data files serialization and deserialization code was rewritten and
+seems to not cause troubles anymore, however there are problems with SDL_Surface objects and gfx shadows,
+which may lead to a crash on a x64 bit version of the game.
+
+I have not made any tests on Windows x64, since I do not have yet such system. There could be problems
+in there as well.
+
+
+Compiling a Debug version
+=========================
+
+When issuing the command:
+$ cmake CMakeLists.txt
+You will create a makefile for a Release build of the game. If not let me know ;)
+If you want to build a Debug version to catch a bug or something, use the following:
+$ cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Debug
 
 
 Links

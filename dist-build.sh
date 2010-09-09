@@ -22,10 +22,10 @@ VERSION="$VERMAJ.$VERMIN"
 #done
 
 usage() {
-	echo "dist-build.sh - Savage Wheels ${VERMAJ}.${VERMIN} build script"
+	echo "dist-build.sh - Savage Wheels ${VERMAJ}.${VERMIN} distributable package build script"
 	echo "Usage:"
-	echo "	clean"
-	echo "	build"
+	echo "	clean - clean files from previous package build"
+	echo "	build - clean and create new package files"
 	echo
 }
 
@@ -63,7 +63,7 @@ build() {
 
 	echo "Creating archive ..."
 	
-	PAK_NAME="savagewheels_$VERSION.tar.gz"
+	PAK_NAME="savagewheels-$VERSION-linux.tar.gz"
 	
 	cd $TMP_PATH
 	$TAR -czf $PAK_NAME --exclude=.svn *

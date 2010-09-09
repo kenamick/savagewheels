@@ -23,7 +23,6 @@
     OTHER DEALINGS IN THE SOFTWARE.
 
 */
-
 /*
   "Savage Wheels" - we're goin' deadly...
 
@@ -39,11 +38,8 @@
   Final Release: 10.02.2004
   Patch 1.02:    ??.03.2004
   Patch 1.03:    ??.05.2004
-
-  //TODO:
-  Started Revision: 23.04.2005
-  Ended Revision: 
-  Patch 1.04:    ??.??.2007
+  Release 1.4:   ??.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 09.09.2010
+  
 
 */
 
@@ -51,28 +47,42 @@
 
 int main( int argc, char *argv[] )
 {
+	// SDL Env vars
+	setenv("SDL_VIDEO_CENTERED", "1", 1); // center screen
+  
+	bool fullscreen = true, hardware_support = true;
+#ifdef LINUX_BUILD
+	fullscreen = false;	// on Linux fullscreen seems to crash some systems (if KDE?!)
+#endif
+
+	if ( argc > 1 )
+	{
+	  for( int i = 1; i < argc; i++ )
+	  {
+	    if ( !strcmp( argv[i], "-wnd" ) )
+	      fullscreen = false;
+	    else if ( !strcmp( argv[i], "-sw" ) )
+	      hardware_support = false;
+	    else if ( !strcmp( argv[i], "-force-fullscreen" ) )
+	      fullscreen = true;
+	    else if ( !strcmp( argv[i], "-snd_alsa" ) )
+	      putenv("SW_SND_ALSA=1");
+	    else if ( !strcmp( argv[i], "-snd_22khz" ) )
+	      putenv("SW_SND_22KHZ=1");	    
+	    else
+	    {
+	      perror("Unknown command line parameter passed!");
+	      exit(0);
+	    }
+	  }
+	}
+	
+	// Start Game
+	  
 	OpenLog( "debug.html" );
 	
 	CGame game;
-	
-	//game.Bindings.Load( "bindings.xml" );
-	//CloseLog();
-	//return 1;
-
-#if 0
-	if ( argc > 1 )
-	{
-		if ( !strcmp( argv[1], "-wnd" ) )
-			game.Execute();
-		else if ( !strcmp( argv[1], "-hw" ) )
-			game.Execute( true, true );
-	}
-	else
-		game.Execute(true); //{!}
-#endif
-
-	game.Execute( false, true );
-		
+	game.Execute(fullscreen, hardware_support);
 	game.Close();
 
 	CloseLog();
