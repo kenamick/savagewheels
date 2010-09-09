@@ -1,4 +1,28 @@
-// main.cpp -
+/*
+    Copyright (c) 2003-2010 KenamicK Entertainment
+
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation
+    files (the "Software"), to deal in the Software without
+    restriction, including without limitation the rights to use,
+    copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following
+    conditions:
+
+    The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+    OTHER DEALINGS IN THE SOFTWARE.
+
+*/
 
 
 #include "main.h"
@@ -91,8 +115,6 @@ int create_swv_module(SWV_HEADER *swv)
 		goto swv_cleanup;
 	}
 	
-	cout << "\nCreated " << swv->filename << " [ok]" ;
-	
 	ret = 1;
 
 	// free mem
@@ -105,6 +127,15 @@ swv_cleanup:
 	}
 	
 	CSwvm.Release();
+
+	if ( ret )
+	{
+		cout << "\nCreating " << swv->filename << " [ok]" ;
+	}
+	else
+	{
+		cout << "\nCreating " << swv->filename << " [error] !" ;
+	}
 
 	return ret;
 }
@@ -330,62 +361,94 @@ int test_car(CONST_VEHICLES vehicle)
 	return 1;
 }
 
-long getfilesize( FILE *fp )
+int32_t getfilesize( FILE *fp )
 {
 	fseek( fp, 0, SEEK_END );
-	long f_size = ftell( fp );
+	int32_t f_size = ftell( fp );
 	return f_size;
 }
 
 int main(int argc, char* argv[])
 {
-	cout << "\n 'Savage Wheels' SWV Vehicles Module Creator ver. " << SWV_MAJ_VERSION << "." << SWV_MIN_VERSION;
+	cout << "\nSavage Wheels SWV builder ver. " << SWV_MAJ_VERSION << "." << SWV_MIN_VERSION;
 	cout << "\n\n";
 	
 	SWV_HEADER header;
 	int vehicles[] = { CV_BMW, CV_DIABLO, CV_DJUGAN, CV_DODGE, CV_DTRUCK, CV_F1, CV_JEEP, CV_MERCEDES, -1 };
-	
-	// create modules
-	for( int i = 0; vehicles[i] != -1; i++ )
+
+	bool build_vehicles = false;
+	bool test_vehicles = false;
+	if ( argc > 1 )
 	{
-	  memset( &header, NULL, sizeof(SWV_HEADER) );
-	  if ( populate_swv_module( static_cast<CONST_VEHICLES>(vehicles[i]), &header) )
-	    create_swv_module(&header);
+		for( int i = 1; i < argc; i++ )
+		{
+			if ( !strcmp(argv[i], "test") )
+			{
+				test_vehicles = true;
+			}
+			else if ( !strcmp(argv[i], "build" ) )
+			{
+				build_vehicles = true;
+			}
+		}
+	}
+	else
+	{
+		cout << "Usage: swv_builder [build] [test]" << endl;
+		cout << "\tbuild - build all modules" << endl;
+		cout << "\ttest - tests already build modules against known values" << endl;
+		cout << endl;
+		return 0;
 	}
 	
-	// test created stuff
-	cout << endl << "=== TESTING ===" << endl << endl;
-	for( int i = 0; vehicles[i] != -1; i++ )
-	  test_car(static_cast<CONST_VEHICLES>(vehicles[i]));
+	if ( build_vehicles )
+	{
+		// create modules
+		cout << endl << "=== BUILDING ===" << endl << endl;
+		for( int i = 0; vehicles[i] != -1; i++ )
+		{
+		  memset( &header, NULL, sizeof(SWV_HEADER) );
+		  if ( populate_swv_module( static_cast<CONST_VEHICLES>(vehicles[i]), &header) )
+			create_swv_module(&header);
+		}
+	}
 
-/*	cout << "Please, fill in vehicle info: \n";
-	cout << "speed (average-120;fast->260) : ";
-	cin	 >> swvh.max_vel;
+	if ( test_vehicles )
+	{
+		// test created stuff
+		cout << endl << "=== TESTING ===" << endl << endl;
+		for( int i = 0; vehicles[i] != -1; i++ )
+		  test_car(static_cast<CONST_VEHICLES>(vehicles[i]));
+	}
 
-	cout << "acceleartion (very slow-4;fast->15) : ";
-	cin	 >> swvh.acc;
+	//cout << "Please, fill in vehicle info: \n";
+	//cout << "speed (average-120;fast->260) : ";
+	//cin	 >> swvh.max_vel;
 
-	cout << "acceleartion_friction (usualy 1/2, 1/3 of acc) : ";
-	cin	 >> swvh.dec_acc;
+	//cout << "acceleartion (very slow-4;fast->15) : ";
+	//cin	 >> swvh.acc;
 
-	cout << "rotation(turning) speed (average-15;fast-25) : ";
-	cin >> swvh.rot_speed;
+	//cout << "acceleartion_friction (usualy 1/2, 1/3 of acc) : ";
+	//cin	 >> swvh.dec_acc;
 
-	cout << "weight (very_heavy-4;lite-1) : ";
-	cin >> swvh.lbs;
+	//cout << "rotation(turning) speed (average-15;fast-25) : ";
+	//cin >> swvh.rot_speed;
 
-	cout << "damage (it's up to u :P ) ";
-	cin >> swvh.damage;
+	//cout << "weight (very_heavy-4;lite-1) : ";
+	//cin >> swvh.lbs;
 
-	cout << "hit_points : ";
-	cin >> swvh.hp;
+	//cout << "damage (it's up to u :P ) ";
+	//cin >> swvh.damage;
 
-	cout << "hit_points crash (when to animate it crashed?!): ";
-	cin >> swvh.hp_crash;
+	//cout << "hit_points : ";
+	//cin >> swvh.hp;
 
-	cout << "animation_frames (36-no wheel rotation (*2 per frame): ";
-	cin >> swvh.animation_frames;
-*/
+	//cout << "hit_points crash (when to animate it crashed?!): ";
+	//cin >> swvh.hp_crash;
+
+	//cout << "animation_frames (36-no wheel rotation (*2 per frame): ";
+	//cin >> swvh.animation_frames;
+
 	return 0;
 }
 

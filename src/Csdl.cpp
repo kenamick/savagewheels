@@ -1237,7 +1237,7 @@ SDL_Surface* CSdl::LoadBitmap( char *filename, Uint32 color_key, Uint8 alpha_val
 // Ime: _LoadBitmap() {2}
 // Opisanie: zarejda SDL surface ot bitmap v BINRreource file
 ///////////////////////////////////////////////////////////////////////
-SDL_Surface* CSdl::LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key, Uint16 alpha_value )
+SDL_Surface* CSdl::LoadBitmap( char *filename, int32_t file_offset, Uint32 file_size, Uint32 color_key, Uint16 alpha_value )
 {
 
 	SDL_Surface  *sdl_surf	= NULL;						// temp surface

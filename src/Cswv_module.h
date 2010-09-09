@@ -31,11 +31,13 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
+#include "pstdint.h"
+
 #endif
 
 
 #define SWV_MAJ_VERSION			   1
-#define SWV_MIN_VERSION		 	   0
+#define SWV_MIN_VERSION		 	   1
 #define SWV_SUCCESS			 	   0
 #define SWVERROR_OPENSWVFILE	  -1
 #define SWVERROR_OPENGFXFILE	  -2
@@ -90,8 +92,8 @@ enum CONST_VARMOUR
 /*****************************/
 
 struct SWV_FILES {
-	signed int pos;
-	signed int length;
+	int32_t pos;
+	int32_t length;
 	char filename[255];
 };
 
@@ -102,13 +104,13 @@ struct SWV_HEADER {
 	char		vehiclename[8];
 	CONST_VSPEED    max_vel;
 	CONST_VACC 	acc;
-	signed int	dec_acc;
+	int32_t		dec_acc;
 	CONST_VROTSPEED rot_speed;
-	signed int	lbs;
+	int32_t	lbs;
 	CONST_VDAMAGE   damage;
 	CONST_VARMOUR   hp;
-	signed int	hp_crash;
-	signed int	animation_frames;
+	int32_t	hp_crash;
+	int32_t	animation_frames;
 	SWV_FILES	*pfiles;
 };
 
@@ -131,22 +133,22 @@ class CSwv_module
 	*/
 	char* GetVehicleFilename( unsigned int car_index ) { return vehicles[car_index].filename; };
 	char* GetVehicleName( unsigned int car_index ) { return vehicles[car_index].vehiclename; };
-	long GetFacePos( unsigned int car_index );
-	long GetFaceSize( unsigned int car_index );
-	long GetDriverFacePos( unsigned int car_index );
-	long GetDriverFaceSize( unsigned int car_index );
-	long GetNamePos( unsigned int car_index );
-	long GetNameSize( unsigned int car_index );
-	long GetFramePos( unsigned int car_index, int frame );
-	long GetFrameSize( unsigned int car_index, int frame );
+	int32_t GetFacePos( unsigned int car_index );
+	int32_t GetFaceSize( unsigned int car_index );
+	int32_t GetDriverFacePos( unsigned int car_index );
+	int32_t GetDriverFaceSize( unsigned int car_index );
+	int32_t GetNamePos( unsigned int car_index );
+	int32_t GetNameSize( unsigned int car_index );
+	int32_t GetFramePos( unsigned int car_index, int frame );
+	int32_t GetFrameSize( unsigned int car_index, int frame );
 
   private:
 	int Load( char *filename, SWV_HEADER *swv_file ); 
 
   private:
 	SWV_HEADER	  *vehicles;
-	unsigned int      num_vehicles;
-	unsigned long	  pos_face;		// title screen of the vehicle
+	unsigned int  num_vehicles;
+	int32_t	  pos_face;		// title screen of the vehicle
 	
 };
 

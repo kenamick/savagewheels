@@ -98,11 +98,11 @@ void CSwv_module::Release()
 int CSwv_module::Create( const char *destPath, SWV_HEADER *swm )
 {
 
-	FILE *fp;
-	FILE *fp_bmp;
+	FILE *fp = NULL;
+	FILE *fp_bmp = NULL;
 	char header[3] = { 'S', 'W', 'V' };
 	char *buffer = NULL;
-	long file_pos;
+	int32_t file_pos = -1;
 	int  num_anims;
 	char fullpath[255];
 	
@@ -227,7 +227,6 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 ///////////////////////////////////////////////////////////////////////////////
 int CSwv_module::SearchAndLoad( char *search_dir )
 {
-
 #ifdef LINUX_BUILD
 	struct stat file_stat;
 	struct dirent *pDirEntry = NULL;
@@ -319,42 +318,42 @@ const SWV_HEADER* CSwv_module::GetVehiclesData()
   return static_cast<const SWV_HEADER *>(vehicles);
 }
 
-long CSwv_module::GetFacePos( unsigned int car_index ) 
+int32_t CSwv_module::GetFacePos( unsigned int car_index ) 
 { 
   return (vehicles[car_index].pfiles[0].pos); 
 }
 
-long CSwv_module::GetFaceSize( unsigned int car_index ) 
+int32_t CSwv_module::GetFaceSize( unsigned int car_index ) 
 { 
   return (vehicles[car_index].pfiles[0].length); 
 }
 
-long CSwv_module::GetDriverFacePos( unsigned int car_index ) 
+int32_t CSwv_module::GetDriverFacePos( unsigned int car_index ) 
 { 
   return (vehicles[car_index].pfiles[1].pos); 
 }
 
-long CSwv_module::GetDriverFaceSize( unsigned int car_index ) 
+int32_t CSwv_module::GetDriverFaceSize( unsigned int car_index ) 
 { 
   return (vehicles[car_index].pfiles[1].length); 
 }
 
-long CSwv_module::GetNamePos( unsigned int car_index ) 
+int32_t CSwv_module::GetNamePos( unsigned int car_index ) 
 { 
   return (vehicles[car_index].pfiles[2].pos); 
 }
 
-long CSwv_module::GetNameSize( unsigned int car_index ) 
+int32_t CSwv_module::GetNameSize( unsigned int car_index ) 
 { 
   return (vehicles[car_index].pfiles[2].length);
 }
 
-long CSwv_module::GetFramePos( unsigned int car_index, int frame ) 
+int32_t CSwv_module::GetFramePos( unsigned int car_index, int frame ) 
 { 
   return (vehicles[car_index].pfiles[frame+2].pos); 
 }
 
-long CSwv_module:: GetFrameSize( unsigned int car_index, int frame ) 
+int32_t CSwv_module:: GetFrameSize( unsigned int car_index, int frame ) 
 { 
   return (vehicles[car_index].pfiles[frame+2].length); 
 }

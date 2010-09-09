@@ -102,6 +102,7 @@ struct POINT
 typedef std::string			String;
 typedef std::ostringstream	OutputSStream;
 
+//#include "pstdint.h" // portable types
 #include "Utils.h"
 #include "CKdf.h"
 #include "Csdl.h"

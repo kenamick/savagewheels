@@ -323,6 +323,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\pstdint.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\resource.h"
 				>
 			</File>
