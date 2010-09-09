@@ -448,7 +448,7 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint16		i = 0U, j = 0U;
+	Uint32			i = 0U, j = 0U;
 	Uint32			*mask_val = NULL;
 
 	_Slock( screen );
@@ -485,7 +485,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 		return;
 
 	register Uint32		i = 0U, j = 0U;
-	Uint32			*mask_val = NULL;
+	Uint32				*mask_val = NULL;
 
 	_Slock( screen );
 
@@ -495,7 +495,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 
 	for ( j = rsurf->y; j < rsurf->h; j++ )
 	{
-		mask_val = &mask[j*rsurf->w];
+		mask_val = &mask[j * rsurf->w];
 
 		for ( i = rsurf->x; i < rsurf->w; i++, mask_val++ )
 		{
@@ -508,7 +508,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 
 		// premseti pad-a
 		//pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch >> 2) + x;
-		pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch) + (Uint32)x * sizeof(Uint32);
+		pixel1 = (Uint32 *)screen->pixels + (y + j) * screen->pitch + (Uint32)x * sizeof(Uint32);
 	}
 
 	_Sunlock( screen );
@@ -1006,7 +1006,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	// switch to desired video mode
 	flags = SDL_DOUBLEBUF | SDL_ANYFORMAT;
 
-	int vd = SDL_VideoModeOK( nWidth, nHeight, nBpp, flags ); 
+	int vd = SDL_VideoModeOK( nWidth, nHeight, 32, flags ); 
 	LOG( "SDL_VideoModeOK() recommends " << vd << " bit mode." );
 	
 	if ( vd == 24 )

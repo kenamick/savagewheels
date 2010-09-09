@@ -142,7 +142,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="./libsdl/include;./fmod/win32/api/inc;./tinyxml"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WITH_FMOD;LOCAL_RES"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WITH_FMOD"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"

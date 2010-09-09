@@ -800,8 +800,6 @@ void CVehicle::DoMotion()
 						DBG( "[COLLIDE] Step #10" );
 					}
 				}
-
-				
 			}
 		} 
 
