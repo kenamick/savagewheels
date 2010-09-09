@@ -119,7 +119,7 @@ protected:
 	// graphics
 	struct STRUCT_BLIT 
 	{
-		int x,y,z;
+		Sint32 x,y,z;
 		SDL_Surface *surf;
 	};
 
@@ -188,14 +188,14 @@ public:
 	void Flip();
 	void FlipTo( SDL_Surface *dest_surf );
 	void ToggleFullscreen();
-	int  Addtoblit( int x, int y, SDL_Surface *surf );
-	void BlitNow( int x, int y, SDL_Surface *surf );
-	void BlitNow( int x, int y, SDL_Surface *surf, SDL_Rect *rsurf );
-	void BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf );
-	void BlitShadow( int x, int y, SDL_Surface *surf);
+	int  Addtoblit( Sint32 x, Sint32 y, SDL_Surface *surf );
+	void BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf );
+	void BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf );
+	void BlitShadow( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
+	void BlitShadow( Sint32 x, Sint32 y, SDL_Surface *surf);
 	int  Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 );
-	int  Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 );
-	void MakeBoolMask( SDL_Surface *surf, int *& );
+	int  Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 );
+	void MakeBoolMask( SDL_Surface *surf, Uint32 *& );
 	//SDL_Surface* LoadBitmap( char *filename, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
 	//SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
 	SDL_Surface* LoadBitmap( char *filename, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
@@ -243,12 +243,12 @@ public:
 	void ChangeMusicVolume( int m_vol ) { volume_music += m_vol; SetMusicVolume( volume_music ); };
 	
   private:
-	void BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf );
-	void BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf );
-	void BlitShadow16( int x, int y, SDL_Surface *surf );
-	void BlitShadow32( int x, int y, SDL_Surface *surf );
-	void MakeBoolMask16( SDL_Surface *surf, int *& );
-	void MakeBoolMask32( SDL_Surface *surf, int *& );
+	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
+	void BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
+	void BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf );
+	void BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf );
+	void MakeBoolMask16( SDL_Surface *surf, Uint32 *& );
+	void MakeBoolMask32( SDL_Surface *surf, Uint32 *& );
 };
 
 

@@ -35,7 +35,7 @@
 #ifdef _DEBUG
 #	define DBG	LOG
 #else
-#	define DBG	
+#	define DBG(x)	
 #endif
 
 #define LOG( stream_msg ) { OutputSStream ostr; ostr << stream_msg; AppendToLog( ostr.str().c_str() ); }

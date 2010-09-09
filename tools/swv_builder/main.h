@@ -53,6 +53,6 @@ enum CONST_VEHICLES
 int create_swv_module(SWV_HEADER *swv);
 int populate_swv_module(CONST_VEHICLES vehicle, SWV_HEADER *phdr);
 int test_car(CONST_VEHICLES vehicle);
-long getfilesize(FILE *fp);
+int32_t getfilesize(FILE *fp);
 
 #endif

@@ -111,9 +111,9 @@ void CSdl::Close()
 // Ime: BlitNow()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::BlitNow( int x, int y, SDL_Surface *surf)
+void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf)
 {
-	SDL_Rect      rdest;
+	SDL_Rect      rdest = { 0, 0, 0, 0 };
 
 	rdest.x = x;
 	rdest.y = y;
@@ -126,9 +126,9 @@ void CSdl::BlitNow( int x, int y, SDL_Surface *surf)
 // Ime: BlitNow()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::BlitNow( int x, int y, SDL_Surface *surf, SDL_Rect *rsurf )
+void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf )
 {
-	SDL_Rect      rdest;
+	SDL_Rect      rdest = { 0, 0, 0, 0 };
 
 	rdest.x = x;
 	rdest.y = y;
@@ -143,13 +143,13 @@ void CSdl::BlitNow( int x, int y, SDL_Surface *surf, SDL_Rect *rsurf )
 void CSdl::_Blitall()
 {
 
+  if ( num_surfaces == 0 ) 
+    return;
   
-  SDL_Rect      rdest;
+  SDL_Rect      rdest = { 0, 0, 0, 0 };
   bool          bFlag = true;
   STRUCT_BLIT   surf;
-  Uint32		i;
-
-  if ( num_surfaces == 0 ) return;
+  Uint32	i = 0;
 
   // sortirai kartinkite predi rendirane
   while(bFlag)
@@ -166,19 +166,17 @@ void CSdl::_Blitall()
 		bFlag = true;
 	  }
 	}
-  
   }
 
   for ( i = 0; i < num_surfaces; i++ )
   {
-    rdest.x = surface[i].x;
+	rdest.x = surface[i].x;
 	rdest.y = surface[i].y;
 	SDL_BlitSurface( surface[i].surf, NULL, screen, &rdest );
   }
 
   // izchisti broqcha
   num_surfaces = 0;
-
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -199,20 +197,20 @@ void CSdl::ToggleFullscreen()
 // Ime: Addtoblit()
 // Opisanie: dobawq kartinka kym masiva za pokazwane na ekrana
 ///////////////////////////////////////////////////////////////////////
-int CSdl::Addtoblit( int x, int y, SDL_Surface *surf )
+int CSdl::Addtoblit( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
 
   // proweri dali ima mqsto w masiva
-  if ( num_surfaces + 1 > MAX_SPRITES ) return SDL_FAIL;
+  if ( num_surfaces + 1 > MAX_SPRITES ) 
+    return SDL_FAIL;
  
   // dobawi powyrhnostta kym masiva za rendirane
   
   surface[num_surfaces].x = x;
   surface[num_surfaces].y = y;
-  surface[num_surfaces].z = y + surf->w / 2;
+  surface[num_surfaces].z = y + (surf->w / 2);
   surface[num_surfaces].surf = surf;
   num_surfaces++;
-  
 
   return SDL_OK;
 }
@@ -431,7 +429,7 @@ int CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 // Ime: BlitShadow() 
 // Opisanie: shadow from surface 50/50 trans using MASK 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf )
+void CSdl::BlitShadow( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 {
     if ( bytes_per_color == 2 )
       BlitShadow16(x, y, mask, rsurf);
@@ -444,14 +442,14 @@ void CSdl::BlitShadow( int x, int y, int *mask, SDL_Rect *rsurf )
 // Ime: BlitShadow16() 
 // Opisanie: 16bit shadow from surface 50/50 trans using MASK 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
+void CSdl::BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 {
 
 	if ( ! _game->game_shadows ) 
 		return;
 
 	register Uint16		i = 0U, j = 0U;
-	int			*mask_val = NULL;
+	Uint32			*mask_val = NULL;
 
 	_Slock( screen );
 
@@ -481,18 +479,19 @@ void CSdl::BlitShadow16( int x, int y, int *mask, SDL_Rect *rsurf )
 // Ime: BlitShadow32() 
 // Opisanie: 32 bit shadow from surface 50/50 trans using MASK 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
+void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 {
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint16		i = 0U, j = 0U;
-	int			*mask_val = NULL;
+	register Uint32		i = 0U, j = 0U;
+	Uint32			*mask_val = NULL;
 
 	_Slock( screen );
 
 	//x *= bytes_per_color; 
-	Uint32 *pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
+	//Uint32 *pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
+	Uint32 *pixel1 = (Uint32 *)screen->pixels + y * screen->pitch + x * sizeof(Uint32);
 
 	for ( j = rsurf->y; j < rsurf->h; j++ )
 	{
@@ -508,7 +507,8 @@ void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
 		}
 
 		// premseti pad-a
-		pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch >> 2) + x;
+		//pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch >> 2) + x;
+		pixel1 = (Uint32 *)screen->pixels + (y + j) * (screen->pitch) + (Uint32)x * sizeof(Uint32);
 	}
 
 	_Sunlock( screen );
@@ -519,7 +519,7 @@ void CSdl::BlitShadow32( int x, int y, int *mask, SDL_Rect *rsurf )
 // Ime: BlitShadow() 
 // Opisanie: shadow from surface 50/50 trans
 ///////////////////////////////////////////////////////////////////////
-void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
+void CSdl::BlitShadow( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
     if ( bytes_per_color == 2 )
       BlitShadow16(x, y, surf);
@@ -532,7 +532,7 @@ void CSdl::BlitShadow( int x, int y, SDL_Surface *surf )
 //// Name: BlitShadow16()
 //// Purpose: 
 ///////////////////////////////////////////////////////////////////////////
-void CSdl::BlitShadow16( int x, int y, SDL_Surface *surf )
+void CSdl::BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
 	if ( ! _game->game_shadows ) 
 		return;
@@ -583,7 +583,7 @@ void CSdl::BlitShadow16( int x, int y, SDL_Surface *surf )
 //// Name: BlitShadow32()
 //// Purpose: 
 ///////////////////////////////////////////////////////////////////////////
-void CSdl::BlitShadow32( int x, int y, SDL_Surface *surf )
+void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
 	if ( ! _game->game_shadows ) 
 		return;
@@ -677,7 +677,7 @@ void CSdl::SetRect( SDL_Rect *rect, int x, int y, int width, int height )
 // Ime: MakeBoolMask() 
 // Opisanie: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
-void CSdl::MakeBoolMask( SDL_Surface *surf, int *&mask )
+void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 {
     if ( bytes_per_color == 2 )
       MakeBoolMask16( surf, mask );
@@ -689,23 +689,24 @@ void CSdl::MakeBoolMask( SDL_Surface *surf, int *&mask )
 // Ime: MakeBoolMask16() 
 // Opisanie: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
-void CSdl::MakeBoolMask16( SDL_Surface *surf, int *&mask )
+void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 {
-
-	register int  i,j,w,h,pos;
-	Uint16		  *pixel;
+	Uint32 pos = 0;
+	Uint32 w = surf->w;
+	Uint32 h = surf->h;
+	Uint16	  *pixel = NULL;
+	
+	DBG("Making bool mask (16bit) with W: " << w << " H: " << h );
+	
+	mask = new Uint32[w*h];
 
 	_Slock( surf );
-
-	pixel = (Uint16 *)((Uint8 *)surf->pixels );
-	w = surf->w;
-	h = surf->h;
-
-	mask = (int *) new int[w*h];
 	
-	for ( j = 0; j < h; j++ )
+	pixel = (Uint16 *)((Uint8 *)surf->pixels );
+	
+	for ( Uint32 j = 0; j < h; j++ )
 	{
-		for ( i = 0; i < w; i++, pixel++ )
+		for ( Uint32 i = 0; i < w; i++, pixel++ )
 		{
 			pos = w * j + i; 
 			mask[pos] = ( *pixel != magenta16 ) ? 1 : 0;
@@ -722,30 +723,30 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, int *&mask )
 // Ime: MakeBoolMask32() 
 // Opisanie: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
-void CSdl::MakeBoolMask32( SDL_Surface *surf, int *&mask )
+void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 {
-
-	register int  i,j,w,h,pos;
-	Uint32	*pixel;
-
+	Uint32	*pixel = NULL;
+	Uint32  pos = 0;
+	Uint32 	w = surf->w;
+	Uint32 	h = surf->h;
+	
+	DBG("Making bool mask (32bit) with W: " << w << " H: " << h );
+	mask = (Uint32 *) new Uint32[w*h];
+	
 	_Slock( surf );
 
 	pixel = (Uint32 *)surf->pixels;
-	w = surf->w;
-	h = surf->h;
 
-	mask = (int *) new int[w*h];
-	
-	for ( j = 0; j < h; j++ )
+	for ( Uint32 j = 0; j < h; j++ )
 	{
-		for ( i = 0; i < w; i++, pixel++ )
+		for ( Uint32 i = 0; i < w; i++, pixel++ )
 		{
 			pos = w * j + i; 
 			mask[pos] = ( *pixel != MAGENTA ) ? 1 : 0;
 		}
 
 		// premseti pad-a
-		pixel = (Uint32 *)surf->pixels + j * surf->pitch/bytes_per_color;
+		pixel = (Uint32 *)surf->pixels + j * surf->pitch/4;
 	}
 
 	_Sunlock( surf );
@@ -758,17 +759,17 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, int *&mask )
 // PIXELPERFECT - collision detection using int Masks
 ///////////////////////////////////////////////////////////////////////
 //int CSdl::Collide( SDL_Rect *r1, SDL_Surface *surf1, SDL_Rect *r2, SDL_Surface *surf2 )
-int CSdl::Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 )
+int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 {
 
 	SDL_Rect  rt1, rt2, rret;
 	SDL_Rect  rSurf1, rSurf2;
-	int       col_width, col_height;
-	int		  x_off1, y_off1;
-	int		  x_off2, y_off2;
+	Sint32    col_width, col_height;
+	Sint32	  x_off1, y_off1;
+	Sint32	  x_off2, y_off2;
 	bool	  bcollision = false;
-	int 	  *pm1, *pm2;
-	int		  w1, w2; //, h1, h2;
+	Uint32 	  *pm1, *pm2;
+	Sint32	  w1, w2; //, h1, h2;
 
 	SetRect( &rt1, r1->x, r1->y, r1->w, r1->h );
 	SetRect( &rt2, r2->x, r2->y, r2->w, r2->h );
@@ -804,6 +805,7 @@ int CSdl::Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 )
 		// dimensii na intersekciqta
 		col_width = (rret.w - rret.x);
 		col_height = (rret.h - rret.y);
+		DBG("Collision dimensions => OffsetX1: " << x_off1 << " OffsetX2:" << x_off2 << " W: " << col_width << " H:" << col_height );
 
 		for ( int j = 0; j < col_height; j++ )
 		{
@@ -815,6 +817,7 @@ int CSdl::Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 )
 
 			for ( int i = 0; i < col_width; i++, pm1++, pm2++ )
 			{
+				//DBG("Collision offsets => 1: " << y_off1 << " 2:" << y_off2 );
 				if ( *pm1 && *pm2 )
 					bcollision = true;
 			}
@@ -854,7 +857,8 @@ int CSdl::Collide( SDL_Rect *r1, int *mask1, SDL_Rect *r2, int *mask2 )
 		_Sunlock( surf1 );
 		_Sunlock( surf2 );*/
 
-		if ( bcollision ) return 1;
+		if ( bcollision ) 
+		  return 1;
 
 	}
 
@@ -1289,14 +1293,18 @@ SDL_Surface* CSdl::LoadBitmap( char *filename, int32_t file_offset, Uint32 file_
 
 	if ( alpha_value != NO_ALPHA )
 		SDL_SetAlpha( sdl_surf, SDL_SRCALPHA, (Uint8)alpha_value );
+	
+	//DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << sdl_surf->w << " H: " << sdl_surf->h );
 
 	SDL_Surface *new_surf = SDL_DisplayFormat( sdl_surf );
 	SDL_FreeSurface( sdl_surf );
 	sdl_surf = NULL;
 	
 	if ( pimg )
-		delete[] pimg;
+	  delete[] pimg;
 
+	//DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );	
+	
 	return new_surf;
 }
 

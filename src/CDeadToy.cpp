@@ -230,8 +230,8 @@ void CDeadtoys::Update()
 			ptr_cdt->frame += 7 * _game->getMpf(); ;
 			if ( (int)ptr_cdt->frame > ptr_cdt->max_frames ) ptr_cdt->frame = 0;
 
-			_game->Sdl.BlitShadow( (int)ptr_cdt->x + 2, (int)ptr_cdt->y + 3, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
-			_game->Sdl.Addtoblit( (int)ptr_cdt->x, (int)ptr_cdt->y, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
+			_game->Sdl.BlitShadow( ptr_cdt->x + 2, ptr_cdt->y + 3, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
+			_game->Sdl.Addtoblit( ptr_cdt->x, ptr_cdt->y, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
 			
 			// see if its time to unwarp the toy
 			if ( cur_ticks > ptr_cdt->life ) //&& ptr_cdt->type != DT_BEARGOAL )

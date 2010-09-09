@@ -160,7 +160,7 @@ private:
 	int			 lbs;			// kolko teji 
 	int			 rot_speed;		// rotation speed
 	SDL_Rect     rCollide;		// kvadrat na zasichane
-	Uint16		 center_x, center_y;
+	Uint32		 center_x, center_y;
 	//SDL_Rect	 rFrame;
 	float	     x,y;			// poziciq
 	float		 x_acc, y_acc;  // ugly na uskorenie pri udar
@@ -191,9 +191,9 @@ private:
 	Uint32		 warning_time;
 
 	SDL_Surface  **sprite;			// current image-pointer
-	SDL_Surface	 **sprite_norm; 
+	SDL_Surface  **sprite_norm; 
 	SDL_Surface  **sprite_crash;
-	int 		 **mask, **mask_norm, **mask_crash;
+	Uint32 	     **mask, **mask_norm, **mask_crash;
 	SDL_Surface  *driver_name;
 	//SDL_Surface	 ***sprite_norm; //*sprite_norm[36];  // car faces
 	//SDL_Surface  ***sprite_crash; //*sprite_crash[36]; // car crashed-faces
@@ -252,10 +252,10 @@ public:
 	void AddFrags( int fragnum ) { frags += fragnum; }; 
 
 	SDL_Surface*	GetCurrentFrame() { return sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
-	int*			GetCurrentFrameMask() { return mask[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
+	Uint32*			GetCurrentFrameMask() { return mask[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
 	SDL_Surface*	GetDriverNameSurface() { return driver_name; }; 
-	Uint16  GetX() { return center_x; };
-	Uint16  GetY() { return center_y; };
+	Uint32  GetX() { return center_x; };
+	Uint32  GetY() { return center_y; };
 
 	// ...
   	//Uint16  GetXT() { return (Uint16)x + g_dirx[(int)display_frame]; };

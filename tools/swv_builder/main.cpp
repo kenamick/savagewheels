@@ -40,7 +40,7 @@ int create_swv_module(SWV_HEADER *swv)
 	if ( swv == NULL )
 	  return ret;
 	
-	memset(swv_path, NULL, sizeof(char) * 64);
+	memset(swv_path, '\0', sizeof(char) * 64);
 	strncpy( swv_path, swv->filename, strlen(swv->filename) - 4 ); // -".swv"
 
 	// fill file array

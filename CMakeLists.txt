@@ -80,6 +80,8 @@ message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-g)
+  add_definitions(-D_DEBUG)
+  add_definitions(-DDEBUG)
 else (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-O3 -DNDEBUG)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")

@@ -201,7 +201,7 @@ void CVehicle::Release()
 int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
 
- int   cn		= 0;
+ int   cn	= 0;
  int   frames	= 0;
  int   index	= 0;
  
@@ -222,8 +222,8 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
  // allocate mem for images
  sprite_norm = (SDL_Surface **) new SDL_Surface[frames];
  sprite_crash = (SDL_Surface **) new SDL_Surface[frames];
- mask_norm = (int **) new int[frames];
- mask_crash = (int **) new int[frames];
+ mask_norm = (Uint32 **) new Uint32[frames];
+ mask_crash = (Uint32 **) new Uint32[frames];
  
  char *vehicle_filename = const_cast<char *>(swv->filename);
 
@@ -231,13 +231,15 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
  {
 	 // normal sprites
 	 index = cn + 3;
-	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
+	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) 
+	   return 0;
 	 // create a mask for this sprite
 	  _game->Sdl.MakeBoolMask( sprite_norm[cn], mask_norm[cn] );
 		 
 	 // crashed sprites
 	 index = cn + 3 + frames; // calc.offset to the crashed sprites
-	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) return 0;
+	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) 
+	   return 0;
 	 // create a mask for this sprite
 	 _game->Sdl.MakeBoolMask( sprite_crash[cn], mask_crash[cn] );
  }
@@ -294,7 +296,7 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 	}
 	
 	// change attribs
-	acc				= (int)( (float)acc * diff_perc);
+	acc			= (int)( (float)acc * diff_perc);
 	dec_acc			= (int)( (float)dec_acc * diff_perc);
 	max_hitpoints	= (int)( (float)max_hitpoints * diff_perc);
 	hit_points_crash = max_hitpoints / 2;
@@ -429,20 +431,28 @@ void CVehicle::Create()
  x = pos_warp[j].x;
  y = pos_warp[j].y;
  speed_bonus = 0;
+ 
  if ( j == 2 || j == 3 )
  {
 	motion_frame = 18;
 	display_frame = motion_frame;
-	center_x = (Uint16)x + sprite[18]->w / 2;
-	center_y = (Uint16)y + sprite[18]->h / 2;
+	center_x = (Uint32)x + sprite[18]->w / 2;
+	center_y = (Uint32)y + sprite[18]->h / 2;
+
+	DBG( "18-X: " << x << " Y: " << y << " Sprite-W: " << sprite[18]->w << " Sprite-H:" << sprite[18]->h << " Sprite-NORM-W: " << sprite_norm[18]->w << " Sprite-NORM-H:" << sprite_norm[18]->h);
+	DBG( "18-CX: " << center_x << " 18CY: " << center_y);
  }
  else
  {
 	motion_frame = 0;
 	display_frame = 0;
-	center_x = (Uint16)x + sprite[0]->w / 2;
-	center_y = (Uint16)y + sprite[0]->h / 2;
+	center_x = (Uint32)x + sprite[0]->w / 2;
+	center_y = (Uint32)y + sprite[0]->h / 2;
+	
+	DBG( "X: " << x << " Y: " << y << " Sprite-W: " << sprite[0]->w << " Sprite-H:" << sprite[0]->h << " Sprite-NORM-W: " << sprite_norm[0]->w << " Sprite-NORM-H:" << sprite_norm[0]->h);
+	DBG( "CX: " << center_x << " CY: " << center_y);
  }
+
  
  tire_frame = 0;
  vel = 0;
@@ -898,7 +908,7 @@ void CVehicle::DoMotion()
 	// HitTestToys...
 	SDL_Rect rMe;
 	SDL_Rect rToy;
-	Uint16   dx = 0U, 
+	Uint32   dx = 0U, 
 			 dy = 0U;
 
 	GetFrameRect( &rMe );
@@ -1084,8 +1094,8 @@ void CVehicle::Repulse( int frame_angle, int speed )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::GetFrameRect( SDL_Rect *rect )
 {
-	rect->x = (Uint16)x;
-	rect->y = (Uint16)y;
+	rect->x = (Uint32)x;
+	rect->y = (Uint32)y;
 	rect->w = rect->x + sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]->w;
 	rect->h = rect->y + sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]->h;
 }
@@ -1164,11 +1174,11 @@ void CVehicle::Update()
  //static bool bputmine = false, bputminekey = false;
  char		 buf[64];
  float		 perc		= 0.0f;
- Uint16		 width		= 0U, 
+ Uint32		 width		= 0U, 
 			 height		= 0U;
  SDL_Rect	 rect;
- SDL_Surface *surf		= NULL;
- int		 *cur_mask	= NULL;
+ SDL_Surface 	 *surf		= NULL;
+ Uint32		 *cur_mask	= NULL;
  
  cur_mask = GetCurrentFrameMask();
  surf = sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
@@ -1183,8 +1193,8 @@ void CVehicle::Update()
  // preizchisli center koordinati na avtomobila i kvadrat na kadyra
  width = surf->w;
  height = surf->h;
- center_x = (Uint16)x + (width >> 1);
- center_y = (Uint16)y + (height >> 1); 
+ center_x = x + (width >> 1);
+ center_y = y + (height >> 1); 
 
  // pridviji MPS-to $p.petrov - comented
  DoMotion();
@@ -1192,8 +1202,8 @@ void CVehicle::Update()
 
  width		= surf->w;
  height		= surf->h;
- center_x	= (Uint16)x + (width >> 1);
- center_y	= (Uint16)y + (height >> 1); 
+ center_x	= x + (width >> 1);
+ center_y	= y + (height >> 1); 
  rect.x		= rect.y = 0;
  rect.w		= width; 
  rect.h		= height;
@@ -1220,14 +1230,16 @@ void CVehicle::Update()
 
  // blit shadow and vehicle
  //_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
- _game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, cur_mask, &rect );
- _game->Sdl.Addtoblit( (int)x, (int)y, surf );
+ _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
+ _game->Sdl.Addtoblit( x, y, surf );
+ 
+ DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
  
  // blit status
  sprintf( buf, "%d", frags );
  _game->Sdl.DrawNum( pos_frag[myIndex].x, pos_frag[myIndex].y, buf );
  perc = ( (float)hit_points / (float)max_hitpoints ) * 100.0f;
- _game->scales[0]->w = (Uint16)( /*(130.0f / 100.0f )*/ 1.3f * perc);
+ _game->scales[0]->w = (Uint32)( /*(130.0f / 100.0f )*/ 1.3f * perc);
  _game->Sdl.BlitNow( pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0] ); 
  _game->scales[1]->w = anger;
  _game->Sdl.BlitNow( pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1] ); 
