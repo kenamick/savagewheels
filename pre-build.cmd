@@ -8,6 +8,7 @@ del /Q %TARGET%\debug.html
 
 del /Q %TARGET%\SDL.dll
 del /Q %TARGET%\README-SDL.txt 
+del /Q %TARGET%\HISTORY
 
 del /Q %TARGET%\fmod.dll
 

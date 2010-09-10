@@ -27,8 +27,8 @@ LANGUAGE LANG_BULGARIAN, SUBLANG_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,4,0
- PRODUCTVERSION 1,0,4,0
+ FILEVERSION 1,4,0,0
+ PRODUCTVERSION 1,4,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -41,22 +41,21 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040204b0"
+        BLOCK "000904b0"
         BEGIN
-            VALUE "Comments", "we are going deadly "
             VALUE "CompanyName", "KenamicK Entertainment - www.kenamick.com"
             VALUE "FileDescription", "sw"
-            VALUE "FileVersion", "BETA"
+            VALUE "FileVersion", "sw.exe"
             VALUE "InternalName", "sw"
-            VALUE "LegalCopyright", "Copyright © 2004, 2005, 2006, 2007"
+            VALUE "LegalCopyright", "Copyright © 2003 - 2010"
             VALUE "OriginalFilename", "sw.exe"
             VALUE "ProductName", "Savage Wheels"
-            VALUE "ProductVersion", "1, 0, 4, 0"
+            VALUE "ProductVersion", "1, 4, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x402, 1200
+        VALUE "Translation", 0x9, 1200
     END
 END
 
@@ -94,7 +93,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "sw1.ico"
+IDI_ICON1               ICON                    "..\\sw1.ico"
 #endif    // Bulgarian resources
 /////////////////////////////////////////////////////////////////////////////
 

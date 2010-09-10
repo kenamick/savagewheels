@@ -35,9 +35,10 @@ extern int attribARMOUR[4];
 /*POINT	pos_opt_but[13] = { 230, 50, 230, 80, 230, 110, 230, 140, 230, 170, 230, 200,
 							470, 50, 300, 80, 300, 110, 300, 140, 400, 170, 400, 200, 
 							420, 400 };*/
-POINT	pos_options[7]	= {37, 60, 37, 110, 37, 160, 37, 210, 37, 260, 37, 310, 37, 360 };
-POINT	pos_opt_but[15] = { 230, 50, 230, 100, 230, 150, 230, 200, 230, 250, 230, 300, 230, 350,
-							470, 50, 330, 100, 300, 150, 300, 200, 400, 250, 400, 300, 400, 350,
+POINT	pos_options[6]	= {37, 60, 37, 110, 37, 160, 37, 210, 37, 260, 37, 310, //37, 360 
+							};
+POINT	pos_opt_but[13] = { 230, 50, 230, 100, 230, 150, 230, 200, 230, 250, 230, 300, //230, 350,
+							470, 50, 330, 100, 300, 150, 300, 200, 400, 250, 400, 300, //400, 350,
 							520, 420 };
 
 POINT   pos_sel[8]		= { 20, 100, 590, 100, 440, 420, 520, 420, 
@@ -349,10 +350,10 @@ int CMainMenu::Initialize( CGame *game )
 	for ( j = 0, i = 0; i < NUM_BUTTONS_OPTIONS - 1; i += 2, j+=1 )
 	{
 		buttons_options[i].Initialize( &pos_opt_but[j], BUTTON_LEFTC_UP );
-		buttons_options[i+1].Initialize( &pos_opt_but[j+7], BUTTON_RIGHTC_UP );
+		buttons_options[i+1].Initialize( &pos_opt_but[j+6], BUTTON_RIGHTC_UP );
 	}
 	// back button
-	buttons_options[NUM_BUTTONS_OPTIONS].Initialize( &pos_opt_but[14], BUTTON_OK_UP, 6, BTXT_MENU );
+	buttons_options[NUM_BUTTONS_OPTIONS].Initialize( &pos_opt_but[12], BUTTON_OK_UP, 6, BTXT_MENU );
 
 	
 	// create select buttons
@@ -364,9 +365,8 @@ int CMainMenu::Initialize( CGame *game )
 	buttons_select[4].Initialize( &pos_sel[4], BUTTON_LEFTC_UP );
 	buttons_select[5].Initialize( &pos_sel[5], BUTTON_RIGHTC_UP );
 	
-	//buttons_select[6].Initialize( &pos_sel[6], BUTTON_LEFTC_UP );
-	//buttons_select[7].Initialize( &pos_sel[7], BUTTON_RIGHTC_UP );
-
+	buttons_select[6].Initialize( &pos_sel[6], BUTTON_LEFTC_UP );
+	buttons_select[7].Initialize( &pos_sel[7], BUTTON_RIGHTC_UP );
 
 	// load settings
 	//LoadSettings();
@@ -386,12 +386,12 @@ int CMainMenu::Initialize( CGame *game )
 void CMainMenu::Update()
 {
 	Uint32		   i		=0;
-	SDL_Rect	   rsrc;
+	SDL_Rect	   rsrc = { 0, 0, 0, 0 };
 	int			   dx		= 0, 
 				   //dy, 
 				   dxx		= 0, 
 				   dxxx		= 0;
-	SDL_Rect	   rTemp, rcursor;
+	SDL_Rect	   rTemp = { 0, 0, 0, 0 }, rcursor = { 0, 0, 0, 0 };
 	char	 	   buf[32];
 	static float   cur_frame		= 0;
 	static int	   select_menu		= 0;
@@ -896,6 +896,9 @@ void CMainMenu::Update()
 			_game->Sdl.BlitNow( pos_options[i].x, pos_options[i].y, ssStrings[BTXT_OPTIONS], &rsrc );
 		}
 
+		// blit/update buttons
+		for ( i = 0; i < NUM_BUTTONS_OPTIONS + 1; i++ )
+			buttons_options[i].Update( _game );
 
 		// check buttons
 		for ( i = 0; i < NUM_BUTTONS_OPTIONS + 1; i++ )
@@ -928,6 +931,7 @@ void CMainMenu::Update()
 					break;
 
 				case 8:
+					_game->Gamestate = CONST_GAMESTATE::GS_EXIT;
 					_game->Sdl.ChangeSoundVolume( -10 );
 					break;
 
@@ -943,7 +947,6 @@ void CMainMenu::Update()
 					_game->Sdl.ChangeMusicVolume( 10 );
 					break;
 
-
 				//case 12:
 				//case 13:
 				//	_game->game_hitmode = !_game->game_hitmode;
@@ -954,9 +957,6 @@ void CMainMenu::Update()
 					break;
 
 				}
-
-				// exit for
-				break;
 			}
 			else if ( buttons_options[i].GetState() == BS_DOWN )
 			{
@@ -997,18 +997,9 @@ void CMainMenu::Update()
 						frag_time = _game->Timer.Time() + 85;
 					}
 					break;
-
-
 				}
-
-				break;
-
-			}
-		}
-
-		// blit/update buttons
-		for ( i = 0; i < NUM_BUTTONS_OPTIONS + 1; i++ )
-			buttons_options[i].Update( _game );
+			} // end if
+		} // end for
 
 		dx = pos_options[0].x + 235;
 		
@@ -1172,27 +1163,29 @@ void CButton::Update( CGame *game )
 	if ( game->Sdl.Collide( NULL, &rcursor, &rbutton ) )
 	{
 		pIndex += 1;
+		state = BS_MOUSEOVER;
 
 		// check mickey
 		if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_DOWN )
 			state = BS_DOWN;
-		else if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_UP )
+		
+		if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_UP )
 		{
 			state = BS_UP;
 			// PLAY SOUND
 			game->Snd.Play( SND_MENU_CLICK );
 			//over_sound = false;
 		}
-		else
-		{
-			state = BS_MOUSEOVER;
-			// PLAYSOUND
-			/*if ( !over_sound )
-			{		
-				_game->Snd.Play( SND_MENU_OVERBUTTON );
-				over_sound = true;
-			}*/
-		}
+		//else
+		//{
+		//	state = BS_MOUSEOVER;
+		//	// PLAYSOUND
+		//	/*if ( !over_sound )
+		//	{		
+		//		_game->Snd.Play( SND_MENU_OVERBUTTON );
+		//		over_sound = true;
+		//	}*/
+		//}
 
 	}
 	else
