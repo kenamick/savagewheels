@@ -23,6 +23,7 @@ Requirements:
 * libSDL 1.2.x - You should install this using your package manager.
 * FMod 3.75.x - Since it is no longer maintained, the package is included with the sources in the SVN.
 * CMake 2.6 and above
+* (On Ubuntu) build-essential
 
 Instructions
 ------------
