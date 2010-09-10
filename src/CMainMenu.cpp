@@ -931,7 +931,6 @@ void CMainMenu::Update()
 					break;
 
 				case 8:
-					_game->Gamestate = CONST_GAMESTATE::GS_EXIT;
 					_game->Sdl.ChangeSoundVolume( -10 );
 					break;
 
