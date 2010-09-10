@@ -39,6 +39,36 @@ struct _timeb  time_struct;
 
 static std::ofstream	   debug_file;
 
+
+
+///////////////////////////////////////////////////////////////////////
+// Ime: GetFormattedTime()
+// Opisanie:
+///////////////////////////////////////////////////////////////////////
+inline String GetFormattedTime()
+{
+    char buf[255];
+
+#ifdef LINUX_BUILD
+    time_t cur_time;
+    tm *ptm = NULL;
+    
+    time ( &cur_time );
+    ptm = localtime( &cur_time );
+    
+    sprintf ( buf, "%d:%d:%d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
+    //sprintf ( buf1, "%s", ctime( &cur_time ) );
+#else
+    _strtime ( buf );
+#endif
+  
+    _ftime ( &time_struct );
+    sprintf ( buf, "%s.%.3u ", buf, time_struct.millitm );
+    
+    return buf;
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 // Ime: FixAngle()
 // Opisanie: angle E{ 0, PI*2 ) (RAD)
@@ -64,7 +94,6 @@ void FixAngle ( float *angle )
 
     *angle = myangle;
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -167,31 +196,20 @@ bool InRange ( float val, float bound1, float bound2 )
 ///////////////////////////////////////////////////////////////////////
 int OpenLog ( const char* filename )
 {
-    char buf1[64];
-
-#ifdef LINUX_BUILD
-    time_t cur_time;
-    time ( &cur_time );
-    sprintf ( buf1, "%s", ctime ( &cur_time ) );
-#else
-    _strtime ( buf1 );
-#endif
-
-    _ftime ( &time_struct );
-    sprintf ( buf1, "%s.%.3u", buf1, time_struct.millitm );
+    String time( GetFormattedTime() );
 
     // open debug file
     debug_file.open ( "debug.html", std::ios::out ); //ios::ate );
-	if ( ! debug_file.good() )
-		return 0;
+    if ( ! debug_file.good() )
+      return 0;
 
     debug_file << "<html><head><title>Savage Wheels Log File</title></head><body><h1>Savage Wheels V" << VER_MAJ << "." << VER_MIN << " - Log File</h1>";
     debug_file << "<hr/><pre>";
-	debug_file <<  buf1 << " Build: " << APP_NAME << " <br/>";
-    debug_file <<  buf1 << " " << "Copyright &copy; 2003-2010 KenamicK Entertainment <br />";
-    debug_file <<  buf1 << " " <<"Opened on: " << __DATE__ << "<br />";
-    debug_file <<  buf1 << " " <<"Opened at: " << __TIME__ << "<br /><br />";
-    debug_file <<  buf1 << " " << LOG_DASH;
+    debug_file <<  time << "Build: " << APP_NAME << " <br/>";
+    debug_file <<  time << "Copyright &copy; 2003-2010 KenamicK Entertainment <br />";
+    debug_file <<  time << "Opened on: " << __DATE__ << "<br />";
+    debug_file <<  time << "Opened at: " << __TIME__ << "<br />";
+    debug_file <<  time << LOG_DASH << "<br />";
 
     return 1;
 }
@@ -203,21 +221,8 @@ int OpenLog ( const char* filename )
 ///////////////////////////////////////////////////////////////////////
 void AppendToLog ( const char *dbgstring )
 {
-    char buf1[64];
-
-#ifdef LINUX_BUILD
-    time_t	cur_time;
-    time ( &cur_time );
-    sprintf ( buf1, "%s", ctime ( &cur_time ) );
-#else
-    _strtime ( buf1 );
-#endif
-
-    _ftime ( &time_struct );
-    sprintf ( buf1, "%s.%.3u", buf1, time_struct.millitm );
-
-    debug_file << buf1 << " " << dbgstring << "\n";
-
+    String time( GetFormattedTime() );
+    debug_file << time << dbgstring << "\n";
     debug_file.flush();
 }
 

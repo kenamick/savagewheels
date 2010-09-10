@@ -30,7 +30,7 @@
 #define PI		   3.1415926f
 #define PI2		   6.2831853f
 #define PI_2	   1.5707963f
-#define LOG_DASH   " ------------------------------------------------\n"
+#define LOG_DASH   "------------------------------------------------"
 
 #ifdef _DEBUG
 #	define DBG(x)	LOG( "DBG: " << x )

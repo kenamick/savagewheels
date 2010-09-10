@@ -50,11 +50,11 @@ int main( int argc, char *argv[] )
 	bool fullscreen = true, hardware_support = true;
 
 #ifdef LINUX_BUILD
-	// SDL Env vars
-	setenv("SDL_VIDEO_CENTERED", "1", 1); // center screen
-	fullscreen = false;	// on Linux fullscreen seems to crash some systems (if KDE?!)
+	// SDL environment vars
+	setenv("SDL_VIDEO_CENTERED", "1", 1);
+	fullscreen = false;	// on some video drivers fullscreen seems to crash the gfx manager
 #else
-	_putenv("SDL_VIDEO_CENTERED=1"); // center window
+	_putenv("SDL_VIDEO_CENTERED=1");
 #endif
 
 	if ( argc > 1 )
@@ -68,9 +68,9 @@ int main( int argc, char *argv[] )
 	    else if ( !strcmp( argv[i], "-force-fullscreen" ) )
 	      fullscreen = true;
 	    else if ( !strcmp( argv[i], "-snd_alsa" ) )
-	      putenv("SW_SND_ALSA=1");
+	      putenv("SW_SND_ALSA=1"); // on the majority Linux distros this seems to be required !
 	    else if ( !strcmp( argv[i], "-snd_22khz" ) )
-	      putenv("SW_SND_22KHZ=1");	    
+	      putenv("SW_SND_22KHZ=1"); // 44KHz somehow seems to be a problem for FMod on Linux
 	    else
 	    {
 	      perror("Unknown command line parameter passed!");

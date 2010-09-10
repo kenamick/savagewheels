@@ -1167,13 +1167,12 @@ void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
-	
  
  //static bool bputmine = false, bputminekey = false;
  char		 buf[64];
  float		 perc		= 0.0f;
  Uint32		 width		= 0U, 
-			 height		= 0U;
+		 height		= 0U;
  SDL_Rect	 rect;
  SDL_Surface 	 *surf		= NULL;
  Uint32		 *cur_mask	= NULL;

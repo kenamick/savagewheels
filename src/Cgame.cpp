@@ -408,7 +408,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
   while( bRunning )
   {
 
-    // do hires timing
+	// do hires timing
 	ftimediff = SDL_GetTicks() - ftimer;
 	mpf = ftimediff / 1000.0f;
 	ftimer = (float)SDL_GetTicks();
@@ -422,11 +422,11 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	frames++;
 	//fps = 1.0 / mpf;
 
-
   
-   	// get input  
+	// get input  
 	Sdl.GetInput(); 
-	//if ( Sdl.keys[SDLK_ESCAPE] ) bRunning = false;
+	//if ( Sdl.keys[SDLK_ESCAPE] ) 
+	//bRunning = false;
 
 	// map-change
 	if ( Sdl.keys[SDLK_F5] && !change_map_key ) 
@@ -441,8 +441,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			change_map = false;
 		}
 	}
-	if ( !Sdl.keys[SDLK_F5] ) change_map_key = false;
-
+	if ( !Sdl.keys[SDLK_F5] ) 
+	  change_map_key = false;
 
 	// shadows on/off
 	if ( Sdl.keys[SDLK_F9] && !change_shadows_key ) 
@@ -469,7 +469,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	  Sdl.ToggleFullscreen();
 	}
 	if ( !Sdl.keys[SDLK_F11] ) 
-		toggle_fullscreen = false;
+	  toggle_fullscreen = false;
 
 	// music on/off
 	if ( Sdl.keys[SDLK_F3] && !music_off_key ) 
@@ -618,7 +618,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 		}
 
-		if ( !Sdl.keys[SDLK_p] ) game_paused_key = false;
+		if ( !Sdl.keys[SDLK_p] ) 
+		  game_paused_key = false;
 
 
 		if ( !game_paused && !quit_dialog ) 
@@ -883,7 +884,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 				}
 			}
 
-			if ( time_destroyem == 0 ) time_destroyem = Timer.Time() + intGetRnd( 1800, 3000 );
+			if ( time_destroyem == 0 ) 
+			  time_destroyem = Timer.Time() + intGetRnd( 1800, 3000 );
 
 			if ( Gamemode == GM_2V2 )
 			{
@@ -915,7 +917,6 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			}
 			else
 			{
-
 				if ( winner_index == 9999 )
 				{
 					// a draw game
@@ -1195,6 +1196,8 @@ void CGame::SetupVehicles()
 			return;
 		}
 		
+		Auto[0].SetControl( VC_PLAYER1 ); // player 1 controls
+		
 		switch( player_level )
 		{
 
@@ -1334,6 +1337,8 @@ void CGame::SetupVehicles()
 			AppendToLog( "Error initializing vehicle KEETH vehicle !" );
 			return;
 		}
+		
+		Auto[0].SetControl( VC_PLAYER1 ); // player 1 controls
 		
 		switch( player_level )
 		{
