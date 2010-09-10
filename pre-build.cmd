@@ -11,8 +11,8 @@ del /Q %TARGET%\README-SDL.txt
 
 del /Q %TARGET%\fmod.dll
 
-del /Q %1
-del /Q %TARGET%\s*.exe
+del /Q %TARGET%\sw*.exe
+del /Q %TARGET%\sw*.map
 
 echo [post-build] Done.
 

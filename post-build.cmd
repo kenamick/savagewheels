@@ -11,8 +11,9 @@ copy /Y libsdl\README-SDL.txt %TARGET%
 echo Copying fmod.dll ...
 copy /Y fmod\win32\api\fmod.dll %TARGET%
 
-echo Copying EXE ...
-copy /Y %1 %TARGET%
+echo Copying executable(s) ...
+copy /Y %1\*.exe %TARGET%
+copy /Y %1\*.map %TARGET%
 
 echo [post-build] Done.
 

@@ -27,7 +27,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Pre build steps"
-				CommandLine="pre-build.cmd $(TargetPath)"
+				CommandLine="pre-build.cmd $(TargetDir)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -79,6 +79,7 @@
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="./libsdl/lib;./fmod/win32/api/lib"
 				ProgramDatabaseFile="$(IntDir)\sw.pdb"
+				GenerateMapFile="true"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -106,7 +107,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Post build steps ..."
-				CommandLine="post-build.cmd $(TargetPath)"
+				CommandLine="post-build.cmd $(TargetDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -122,7 +123,7 @@
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Pre build steps"
-				CommandLine="pre-build.cmd $(TargetPath)"
+				CommandLine="pre-build.cmd $(TargetDir)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -203,7 +204,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Post build steps ..."
-				CommandLine="post-build.cmd $(TargetPath)"
+				CommandLine="post-build.cmd $(TargetDir)"
 			/>
 		</Configuration>
 	</Configurations>

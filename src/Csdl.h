@@ -239,8 +239,8 @@ public:
 	int  GetMusicVolume() { return volume_music; };
 	void SetSoundVolume( int );
 	void SetMusicVolume( int );
-	void ChangeSoundVolume( int s_vol ) { volume_sound += s_vol; SetSoundVolume( volume_sound ); };
-	void ChangeMusicVolume( int m_vol ) { volume_music += m_vol; SetMusicVolume( volume_music ); };
+	void ChangeSoundVolume( int );
+	void ChangeMusicVolume( int );
 	
   private:
 	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );

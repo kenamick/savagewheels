@@ -38,11 +38,11 @@ class CMainMenu;
 #define NUM_BUTTONS_SELECT		8
 
 #define NUM_BUTTONS_MENU		5
-#define NUM_BUTTONS_OPTIONS		14 //12
+#define NUM_BUTTONS_OPTIONS		12 //14
 #define NUM_BUTTONS_PLAY		1
 #define NUM_BUTTONS_EXIT		1
 
-#define MENU_OPTIONS			7//6
+#define MENU_OPTIONS			6 //7
 #define MENU_TEXTHEIGHT			20
 #define MENU_TEXTWIDTH			190
 

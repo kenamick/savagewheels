@@ -460,15 +460,16 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			change_shadows = false;
 		}
 	}
-	if ( !Sdl.keys[SDLK_F9] ) change_shadows_key = false;
+	if ( !Sdl.keys[SDLK_F9] ) 
+		change_shadows_key = false;
 	
 	if ( Sdl.keys[SDLK_F11] && !toggle_fullscreen )
 	{
 	  toggle_fullscreen = true;
 	  Sdl.ToggleFullscreen();
 	}
-	if ( !Sdl.keys[SDLK_F11] ) toggle_fullscreen = false;
-
+	if ( !Sdl.keys[SDLK_F11] ) 
+		toggle_fullscreen = false;
 
 	// music on/off
 	if ( Sdl.keys[SDLK_F3] && !music_off_key ) 
@@ -502,7 +503,6 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	// GAME_STATES
 	switch( Gamestate )
 	{
-
 	case GS_EXIT:
 
 		if ( !at_exit )

@@ -364,8 +364,8 @@ int CMainMenu::Initialize( CGame *game )
 	buttons_select[4].Initialize( &pos_sel[4], BUTTON_LEFTC_UP );
 	buttons_select[5].Initialize( &pos_sel[5], BUTTON_RIGHTC_UP );
 	
-	buttons_select[6].Initialize( &pos_sel[6], BUTTON_LEFTC_UP );
-	buttons_select[7].Initialize( &pos_sel[7], BUTTON_RIGHTC_UP );
+	//buttons_select[6].Initialize( &pos_sel[6], BUTTON_LEFTC_UP );
+	//buttons_select[7].Initialize( &pos_sel[7], BUTTON_RIGHTC_UP );
 
 
 	// load settings
@@ -927,12 +927,29 @@ void CMainMenu::Update()
 					
 					break;
 
-				case 12:
-				case 13:
-					_game->game_hitmode = !_game->game_hitmode;
+				case 8:
+					_game->Sdl.ChangeSoundVolume( -10 );
 					break;
 
-				case 14:
+				case 9:
+					_game->Sdl.ChangeSoundVolume( 10 );
+					break;
+
+				case 10:
+					_game->Sdl.ChangeMusicVolume( -10 );
+					break;
+
+				case 11:
+					_game->Sdl.ChangeMusicVolume( 10 );
+					break;
+
+
+				//case 12:
+				//case 13:
+				//	_game->game_hitmode = !_game->game_hitmode;
+				//	break;
+
+				case 12://14:
 					Menustate = MS_STARTSCREEN;
 					break;
 
@@ -981,30 +998,13 @@ void CMainMenu::Update()
 					}
 					break;
 
-				case 8:
-					_game->Sdl.ChangeSoundVolume( -2 );
-					break;
-
-				case 9:
-					_game->Sdl.ChangeSoundVolume( 2 );
-					break;
-
-				case 10:
-					_game->Sdl.ChangeMusicVolume( -1 );
-					break;
-
-				case 11:
-					_game->Sdl.ChangeMusicVolume( 1 );
-					break;
 
 				}
 
 				break;
 
 			}
-			
 		}
-
 
 		// blit/update buttons
 		for ( i = 0; i < NUM_BUTTONS_OPTIONS + 1; i++ )
@@ -1048,11 +1048,10 @@ void CMainMenu::Update()
 		
 		_game->Sdl.BlitNow( dx, pos_options[3].y, ssStrings[BTXT_ONOFF], &rsrc );
 
-		// HitMode
-		rsrc.x = (_game->game_hitmode ? 1 : 0) * 30;
-		rsrc.w = rsrc.x + 30;
-		
-		_game->Sdl.BlitNow( dx, pos_options[6].y, ssStrings[BTXT_ONOFF], &rsrc );
+		//// HitMode
+		//rsrc.x = (_game->game_hitmode ? 1 : 0) * 30;
+		//rsrc.w = rsrc.x + 30;
+		//_game->Sdl.BlitNow( dx, pos_options[6].y, ssStrings[BTXT_ONOFF], &rsrc );
 
 		// sound volume
 		if ( _game->Sdl.GetSoundVolume() > 0 )
@@ -1089,22 +1088,18 @@ void CMainMenu::Update()
 			rsrc.h = MENU_TEXTHEIGHT;
 			_game->Sdl.BlitNow( dx, pos_options[5].y, ssStrings[BTXT_ONOFF], &rsrc );
 		}
-
-
 	break;
-
 
 	case MS_EXIT:
 		_game->Gamestate = GS_EXIT;
 		break;
-		
-	
 	}
 
 	// blit cursor
 	_game->Sdl.BlitNow( _game->Sdl.GetMouseX(), _game->Sdl.GetMouseY(), ssCursor[(int)cur_frame] );
 	cur_frame += _game->getMpf() * 25;
-	if ( cur_frame > 16 ) cur_frame = 0;
+	if ( cur_frame > 16 ) 
+		cur_frame = 0;
 
 }
 
@@ -1127,7 +1122,6 @@ void CButton::Initialize( POINT *pos, Uint32 picture_index )
 
 	width = ssButtons[pic_index]->w;
 	height = ssButtons[pic_index]->h;
-
 }
 
 
@@ -1138,7 +1132,6 @@ void CButton::Initialize( POINT *pos, Uint32 picture_index )
 //////////////////////////////////////////////////////////////////////
 void CButton::Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Uint32 txtpicture_index )
 {
-	
 	x = pos->x;
 	y = pos->y;
 	tx = x + 10;
@@ -1377,14 +1370,12 @@ int CMainMenu::ReloadCarsAttribs()
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::ReleaseCarsAttribs()
 {
-
 	for ( int i = 0; i < _game->Swv.GetVehicles(); i++ )
 	{
 		RELEASE_SURF( ssCarFace[i] );
 		RELEASE_SURF( ssDriverFace[i] );
 		RELEASE_SURF( ssDriverName[i] );
 	}
-
 
 	delete[] ssCarFace;
 	delete[] ssDriverFace;

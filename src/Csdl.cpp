@@ -1675,15 +1675,15 @@ void CSdl::PlaySound( int snd_index, int position )
 // Ime: SetMusicVolume()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CSdl::SetMusicVolume( int music_vol )
+void CSdl::SetMusicVolume( int new_vol )
 {
 #ifdef WITH_FMOD  
-	volume_music = music_vol;
-	
-	if ( volume_music > 128 ) 
-		volume_music = 128;
-	else if ( volume_music < 0 ) 
-		volume_music = 0;
+	if ( new_vol > 128 ) 
+		new_vol = 128;
+	else if ( new_vol < 0 ) 
+		new_vol = 0;
+
+	volume_music = new_vol;
 
 	_game->Snd.setMusicVolume( volume_music );
 	//CSnd.setMusicVolume( volume_music );
@@ -1695,20 +1695,41 @@ void CSdl::SetMusicVolume( int music_vol )
 // Ime: SetSoundVolume()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-  void CSdl::SetSoundVolume( int snd_vol )
+ void CSdl::SetSoundVolume( int new_vol )
 {
 #ifdef WITH_FMOD
-	volume_sound = snd_vol;
-	
-	if ( volume_sound > 256 ) 
-		volume_sound = 256;
-	else if ( volume_sound < 0 ) 
-		volume_sound = 0;
+	if ( new_vol > 256 ) 
+		new_vol = 256;
+	else if ( new_vol < 0 ) 
+		new_vol = 0;
+
+	volume_sound = new_vol;
 
 	FSOUND_SetSFXMasterVolume( volume_sound );
 #endif
 }
 
+///////////////////////////////////////////////////////////////////////
+// Ime: ChangeSoundVolume()
+// Opisanie: 
+///////////////////////////////////////////////////////////////////////
+void CSdl::ChangeSoundVolume( int s_vol ) 
+{ 
+#ifdef WITH_FMOD
+	SetSoundVolume( volume_sound + s_vol ); 
+#endif
+};
+
+ ///////////////////////////////////////////////////////////////////////
+// Ime: ChangeMusicVolume()
+// Opisanie: 
+///////////////////////////////////////////////////////////////////////
+void CSdl::ChangeMusicVolume( int m_vol ) 
+{ 
+#ifdef WITH_FMOD
+	SetMusicVolume( volume_music + m_vol ); 
+#endif
+};
 
 
 /*///////////////////////////////////////////////////////////////////////
