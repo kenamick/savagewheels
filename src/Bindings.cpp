@@ -173,9 +173,9 @@ bool CBindings::Load( const String strFilepath )
 
 #ifdef _DEBUG
 	for( int i = 0; i < BIND_PLAYER_MAX_KEYS; i++ )
-		LOG( "dbg: Player 1 key[" << i << "]=" << _DefaultKeys[BIND_PLAYER1][i] );
+		DBG( "Player 1 key[" << i << "]=" << _DefaultKeys[BIND_PLAYER1][i] );
 	for( int i = 0; i < BIND_PLAYER_MAX_KEYS; i++ )
-		LOG( "dbg: Player 2 key[" << i << "]=" << _DefaultKeys[BIND_PLAYER2][i] );
+		DBG( "Player 2 key[" << i << "]=" << _DefaultKeys[BIND_PLAYER2][i] );
 #endif
 
 	LOG( "Loading bindings...done" );
@@ -195,6 +195,8 @@ int	CBindings::GetP2Key( CBindings::BindKeys Key )
 
 void CBindings::Release()
 {
+	LOG("Closing CBindings class ...");
+
 	if ( _xmlDoc )
 	{
 		delete _xmlDoc;

@@ -374,6 +374,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
   bool	   change_shadows		= false;
   bool	   change_shadows_key		= false;
   bool	   game_paused_key		= false;
+  bool	   menu_escape_key		= false;
   bool	   music_off			= false;
   bool	   music_off_key		= false;
   bool	   toggle_fullscreen		= false;
@@ -488,8 +489,9 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	if ( !Sdl.keys[SDLK_F4] ) 
 		music_off_key = false;
 
-	if ( Sdl.keys[SDLK_F12] ) 
-		bRunning = false; //{!}
+	//if ( Sdl.keys[SDLK_F12] ) 
+	//	bRunning = false; //{!}
+
 	if ( Sdl.keys[SDLK_F6] ) 
 		show_fps != show_fps;
 
@@ -519,7 +521,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 			for ( i = 0; i < 255; i++ )
 			{
-				if ( Sdl.keys[i] )
+				if ( Sdl.keys[i] && !Sdl.keys[SDLK_ESCAPE] )
 				{
 					bRunning = false;
 					RELEASE_SURF( splash );
@@ -533,7 +535,18 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	break;
 
 	case GS_MENU:
+
+		if ( !Sdl.keys[SDLK_ESCAPE]  )
+			menu_escape_key = false;
+
 		Menu.Update();
+
+		if ( Sdl.keys[SDLK_ESCAPE] && !menu_escape_key )
+		{
+			menu_escape_key = true;
+			Menu.SetMenuState( MS_EXIT );
+		}
+
 	break;
 
 

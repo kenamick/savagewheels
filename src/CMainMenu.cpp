@@ -71,7 +71,7 @@ CMainMenu::CMainMenu()
 	for ( i = 0; i < STRINGS_SURFACES; i++ )
 		ssStrings[i] = NULL;
 
-	RELEASE_SURF( ssVolume );
+	ssVolume = NULL;
 	
 	for ( i = 0; i < 17; i++ )
 		ssCursor[i] = NULL;
@@ -436,7 +436,6 @@ void CMainMenu::Update()
 				}
 			}
 		}
-
 
 		for ( i = 0; i < 5; i++ )
 		{

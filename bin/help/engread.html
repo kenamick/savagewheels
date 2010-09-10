@@ -2,10 +2,10 @@
 <HEAD>
 
 <STYLE TYPE="text/css"><!-- 
-body { font-family: Verdana; }
+body { font-family: Verdana; background-color: black; }
 a { font-family: Courier;}
 a:link {color: #BBBBFF  }
-a:visited {color: #014DD7 }
+a:visited {color: #888888 }
 a:hover { color: #C0C7C0 }
 li 	{ font-family: Arial,Helvetica,Sans-Serif;  font-size: 10pt; }
 
@@ -63,7 +63,7 @@ HR {  COLOR: #3F45B7 }
 
 <TITLE>Savage Wheels - Readme.html</TITLE>
 </HEAD>
-<BODY BGCOLOR=#000009 VLINK="#AAAAAA" ALINK="#00CCFF">
+<BODY>
 
 
 <!--Menu-->
@@ -109,11 +109,7 @@ HR {  COLOR: #3F45B7 }
 <A NAME = "#HOWTO"><SPAN class=titleone>About this game</SPAN></A><BR><BR><BR>
 Hey, many thanks for downloading <SPAN class=alight>Savage Wheels</SPAN>.
 <br><br>
-<SPAN class=alight>Savage Wheels</SPAN> is a car-crashing game, where up to four vehicles take part in a deadly tournament.The goal is to eleminate the other derby contestants.You can choose between a variety of vehicles, each with its unique characteristics: speed,acceleration,armour,damage...and driver!Gameplay modes include a campaign, hotseat mode between two human players or melee mode where other vehicles are controled by AI.
-<br><br>
-It is not easy to compete with three dimensional games these days, so we hope you will enjoy this 2D one and play it in your spare time.
-<br><br>
- The Developers
+<SPAN class=alight>Savage Wheels</SPAN> is a 2D car crashing arcade game, where up to 4 vehicles take part in a deadly tournament.The goal is to eliminate the other derby contestants. Player may choose from a variety of vehicles, each with it's unique characteristics: speed,acceleration,armor,damage and driver. Players can collect various bonuses to increase their speed and damage or to fix their car. All drivers have their background stories, which are uncovered in the campaign mode. Gameplay modes includes a campaign, hot-seat mode between two players or melee mode where other vehicles are controlled by fearsome game AI ;-).
 <br>
 
 
@@ -123,16 +119,18 @@ It is not easy to compete with three dimensional games these days, so we hope yo
 
 
 <A NAME = "#SR"><SPAN class=titleone>System Requirements</SPAN></A><BR><BR><BR>
-<SPAN class=alight>Savage Wheels</SPAN> requires at least:<br><br>
-Windows 95/98SE/ME/2000/XP<br>
-200 MHz Pentium or better<br>
-32 mb Ram<br>
-35 mb hard drive space<br>
+<SPAN class=alight>Savage Wheels</SPAN> will need at least:<br><br>
+Windows XP/Vista or <br>
+Linux with X11 and SDL installed<br>
+<br>
+200MHz CPU or better ;)<br>
+32MB RAM<br>
 Video Card able to display 640x480x16bit<br>
 Sound Card<br>
-Keyboard<br>
 2-Button Mouse<br>
-
+Keyboard<br>
+<BR>
+<small>As you may see the requirements are as low as they can get ;)</small>
 <BR><BR><BR>
 <HR WIDTH = "65%" ALIGN = LEFT>
 <BR><BR><BR>
@@ -183,6 +181,8 @@ You can <SPAN class=alight>change</SPAN> the <SPAN class=alight>terrain</SPAN> b
 During the game you can also <SPAN class=alight>turn on</SPAN>/<SPAN class=alight>off</SPAN> change the <FONT COLOR = #ffffff>music</FONT> with the <SPAN class=alight>F4</SPAN> key.
 <br>
 To <SPAN class=alight>turn on</SPAN>/<SPAN class=alight>off</SPAN> the <SPAN class=alight>shadows</SPAN> use <SPAN class=alight>F9</SPAN> key.
+<br>
+(Linux Only) To <SPAN class=alight>toggle on</SPAN>/<SPAN class=alight>off</SPAN> <SPAN class=alight>fullscreen</SPAN> mode use the <SPAN class=alight>F11</SPAN> key.
 <br><br>
 
 <TABLE>
@@ -208,14 +208,13 @@ The <FONT COLOR = #ffffff>white</FONT> numbers are your frags.
 <br><LI>You will <SPAN CLASS=alight>not</SPAN> suffer any damage if you run over a <SPAN CLASS=alight>landmine you 
 put</SPAN>.
 <br><LI>To do <SPAN CLASS=alight>full damage</SPAN> hit enemies with your <SPAN CLASS=alight>highest</SPAN> speed.
-<br><LI>If you hit an enemy at <SPAN CLASS=alight>low speed</SPAN> you will <SPAN CLASS=alight>not</SPAN> do your full anger.
+<br><LI>If you hit an enemy at <SPAN CLASS=alight>low speed</SPAN> you will <SPAN CLASS=alight>not</SPAN> do your full 'anger' damage.
 
 <br><br>
 <br><br>
 
 When you run over a bug, you get a specific <FONT COLOR = #ffffff>bonus</FONT>.A good hint is always<br>
-to run for a <FONT COLOR = #ffffff>frag</FONT>, or <FONT COLOR = #ffffff>anger</FONT> giving bug.Below is a table of them bugs and the <br>
-bonuses they give.
+to run for a <FONT COLOR = #ffffff>frag</FONT>, or <FONT COLOR = #ffffff>anger</FONT> giving bug. Below is a table describing the bonuses.
 
 <BR><BR><BR>
 
@@ -276,16 +275,33 @@ Gives +3 Landmines.
 
 
 
-<A NAME = "#TRB"><SPAN class=titleone>Troubleshooting</SPAN></A>
+<A NAME = "#TRB"><SPAN class=titleone>Troubleshooting and Q&A</SPAN></A>
 <BR><BR><BR>
-If the game screen flickers or it runs too slow, you should try run it with the -hw command line.Here is how to do that:
+<SPAN class=alight>1. Game sound does not work on Linux.</SPAN>
 <br>
-First click the right button on the <SPAN class=alight>sw.exe</SPAN> file and select <SPAN class=alight>Create Shortcut</SPAN>.Then click the right button on the shortcut's
+This seems to happen on Debian systems. Try to start the game with a command line parameter <SPAN class=alight>sw.exe -snd_alsa</SPAN> 
 <br>
-<SPAN class=alight>Properties</SPAN> option.In the <SPAN class=alight>Target</SPAN> area, after the path name, leave a space and add <SPAN class=alight>-hw</SPAN> and then click <SPAN class=alight>Apply</SPAN> or <SPAN class=alight>OK</SPAN>.
 <br>
-Run the game from the shortcut.
+<SPAN class=alight>2. The game crashes on Linux when I start it with the -snd_alsa parameter.</SPAN>
+<br>
+Try to start the game with command line parameters <SPAN class=alight>sw.exe -snd_alsa -snd_22khz</SPAN> 
+<br>
+<br>
+<SPAN class=alight>3. The game always starts in a window on Linux.</SPAN>
+<br>
+Yes. Due to some bugs (probably in the display drivers of some video cards) the game always starts in a window on Linux installations. To force the game to start in fullscreen use <SPAN class=alight>sw.exe -force-fullscreen</SPAN> 
+<br>
+<br>
+<SPAN class=alight>4. How can I start the game in a window on a Windows machine ?</SPAN>
+<br>
+To start in a window use the command line parameter <SPAN class=alight>sw.exe -wnd</SPAN> 
+<br>
+<br>
+<SPAN class=alight>5. The game crashes every time I start it.</SPAN>
+<br>
+Try to start the game with software video mode using <SPAN class=alight>sw.exe -sw</SPAN>. If that doesn't work ...well, that's bad karma ;) Anyway, check the <SPAN class=alight>debug.html</SPAN> log file in your game folder for some additional info. <A HREF="#CONTACT">Report</A> the problem with some details on the issues page.
 
+<br>
 
 <BR><BR><BR>
 <HR WIDTH = "65%" ALIGN = LEFT>
@@ -298,23 +314,24 @@ Run the game from the shortcut.
 <FONT SIZE = 1>
 <TABLE>
 <TR>
-<TD class=support><b>Savage Wheels</b> page:</TD><TD class=support><A HREF="http://www.kenamick.com/savagewheels">click here</A></TD>
+<TD class=support>Official page:</TD><TD class=support><A HREF="http://www.kenamick.com/savagewheels">Savage Wheels</A></TD>
+</TR>
+
+<TR>
+<TD class=support>
+Please report bugs or errors on the </TD><TD class=support><A HREF="http://code.google.com/p/savagewheels/issues/list">issues page</A></TD>
+<TD>
 </TR>
 
 <TR>
 <TD class=support><b>KenamicK Entertainment</b>:</TD><TD class=support><A HREF="http://www.kenamick.com/">www.kenamick.com</A></TD>
 </TR>
 
-<TR>
-<TD class=support>
-Please, report bugs or errors at</TD><TD class=support><A HREF="mailto:support@kenamick.com">support@kenamick.com</A></TD>
-<TD>
-</TR>
 
 <TR>
 <TD class=support><br><b>Savage Wheels</b> is powered by:</TD>
-<TD class=support><br><A HREF="http://www.libsdl.org/">Simple DirectMedia Layer</A></TD>
-<TD class=support><br> and <A HREF="http://www.fmod.org">FMOD</A></TD>
+<TD class=support><A HREF="http://www.libsdl.org"><img src="http://www.tr0ll.net/libsdl/logo/sdl_minibox.png" border="0"></A></TD>
+<TD class=support><A HREF="http://www.fmod.org"><img src="fmod-logo.jpg" border="0"></A></TD>
 
 </TR>
 
@@ -325,6 +342,9 @@ Please, report bugs or errors at</TD><TD class=support><A HREF="mailto:support@k
 
 </UL>
 <BR><BR><BR>
+<div align="center">
+<small>2003-2010 &copy; KenamicK Entertainment
+</div>
 <BR><BR><BR>
 </DIV>
 

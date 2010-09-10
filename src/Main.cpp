@@ -47,12 +47,14 @@
 
 int main( int argc, char *argv[] )
 {
+	bool fullscreen = true, hardware_support = true;
+
+#ifdef LINUX_BUILD
 	// SDL Env vars
 	setenv("SDL_VIDEO_CENTERED", "1", 1); // center screen
-  
-	bool fullscreen = true, hardware_support = true;
-#ifdef LINUX_BUILD
 	fullscreen = false;	// on Linux fullscreen seems to crash some systems (if KDE?!)
+#else
+	_putenv("SDL_VIDEO_CENTERED=1"); // center window
 #endif
 
 	if ( argc > 1 )

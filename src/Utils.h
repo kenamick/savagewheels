@@ -33,7 +33,7 @@
 #define LOG_DASH   " ------------------------------------------------\n"
 
 #ifdef _DEBUG
-#	define DBG	LOG
+#	define DBG(x)	LOG( "DBG: " << x )
 #else
 #	define DBG(x)	
 #endif

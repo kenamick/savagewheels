@@ -75,21 +75,21 @@ CSdl::~CSdl()
 ///////////////////////////////////////////////////////////////////////
 void CSdl::Close()
 {
-	AppendToLog("Closing SDL class...");
+	AppendToLog("Closing CSdl ...");
 
 	// free all sounds
 #ifdef WITH_FMOD	
 	if ( bsound_initialized )
 	{
-		AppendToLog("FMod Status: Releasing Game Sounds... ");
-		//for ( Uint32 i = 0; i < MAX_SOUNDS; i++ )
-		//{
-		//	if ( sounds[i].loaded )
-		//		sounds[i].Release();
-		//}
-
 		AppendToLog("FMod: Closing...");
+		AppendToLog("FMod: Releasing game sounds... ");
+		for ( Uint32 i = 0; i < MAX_SOUNDS; i++ )
+		{
+			if ( sounds[i].loaded )
+				sounds[i].Release();
+		}
 		FSOUND_Close();
+		AppendToLog( "FMod closed successfully." );
 	}
 #endif
 
@@ -103,7 +103,7 @@ void CSdl::Close()
 
 	SDL_Quit();
 
-	AppendToLog( "SDL Status: CSdl closed" );
+	AppendToLog( "CSdl closed successfully." );
 }
 
 
@@ -696,12 +696,10 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 	Uint32 h = surf->h;
 	Uint16	  *pixel = NULL;
 	
-	DBG("Making bool mask (16bit) with W: " << w << " H: " << h );
-	
+	//DBG("Making bool mask (16bit) with W: " << w << " H: " << h );
 	mask = new Uint32[w*h];
 
 	_Slock( surf );
-	
 	pixel = (Uint16 *)((Uint8 *)surf->pixels );
 	
 	for ( Uint32 j = 0; j < h; j++ )
@@ -730,11 +728,10 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 	Uint32 	w = surf->w;
 	Uint32 	h = surf->h;
 	
-	DBG("Making bool mask (32bit) with W: " << w << " H: " << h );
+	//DBG("Making bool mask (32bit) with W: " << w << " H: " << h );
 	mask = (Uint32 *) new Uint32[w*h];
 	
 	_Slock( surf );
-
 	pixel = (Uint32 *)surf->pixels;
 
 	for ( Uint32 j = 0; j < h; j++ )
@@ -762,14 +759,17 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 {
 
-	SDL_Rect  rt1, rt2, rret;
-	SDL_Rect  rSurf1, rSurf2;
+	SDL_Rect  rt1 = { 0, 0, 0, 0 }, 
+			rt2 = { 0, 0, 0, 0 }, 
+			rret = { 0, 0, 0, 0 };
+	SDL_Rect  rSurf1 = {0, 0, 0, 0}, 
+			rSurf2 = { 0, 0, 0, 0 };
 	Sint32    col_width, col_height;
 	Sint32	  x_off1, y_off1;
 	Sint32	  x_off2, y_off2;
 	bool	  bcollision = false;
-	Uint32 	  *pm1, *pm2;
-	Sint32	  w1, w2; //, h1, h2;
+	Uint32 	  *pm1 = NULL, *pm2 = NULL;
+	Sint32	  w1 = 0, w2 = 0; //, h1, h2;
 
 	SetRect( &rt1, r1->x, r1->y, r1->w, r1->h );
 	SetRect( &rt2, r2->x, r2->y, r2->w, r2->h );
@@ -805,7 +805,8 @@ int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 		// dimensii na intersekciqta
 		col_width = (rret.w - rret.x);
 		col_height = (rret.h - rret.y);
-		DBG("Collision dimensions => OffsetX1: " << x_off1 << " OffsetX2:" << x_off2 << " W: " << col_width << " H:" << col_height );
+		
+		DBG("Collision rect => Rect-X: " << rret.x << " Rect-Y:" << rret.y << " W: " << col_width << " H:" << col_height );
 
 		for ( int j = 0; j < col_height; j++ )
 		{
@@ -823,7 +824,8 @@ int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 			}
 
 			// zatvori cikyla
-			if ( bcollision ) break;
+			if ( bcollision ) 
+				break;
 		}
 
 		/*Slock( surf1 );
@@ -856,14 +858,9 @@ int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 
 		_Sunlock( surf1 );
 		_Sunlock( surf2 );*/
-
-		if ( bcollision ) 
-		  return 1;
-
 	}
 
-	// no collision
-	return 0;
+	return bcollision;
 }
 
 
@@ -942,7 +939,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	AppendToLog("Initializing SDL ... " );
+	AppendToLog("Initializing SDL ..." );
 
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
@@ -973,7 +970,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 // 		flags |= SDL_SWSURFACE;
 
 	// init na glawanata powyrhnost i video rejim
-	Uint32 flags = 0 ;//SDL_DOUBLEBUF | SDL_ANYFORMAT;
+	Uint32 flags = 0 ;
 	
 	if ( bFullscreen )
 	  flags |= SDL_FULLSCREEN;
@@ -1004,7 +1001,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	}
 
 	// switch to desired video mode
-	flags = SDL_DOUBLEBUF | SDL_ANYFORMAT;
+	flags |= SDL_DOUBLEBUF | SDL_ANYFORMAT;
 
 	int vd = SDL_VideoModeOK( nWidth, nHeight, nBpp, flags ); 
 	LOG( "SDL_VideoModeOK() recommends " << vd << " bit mode." );
@@ -1047,14 +1044,16 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 		}
 	}
 
+	AppendToLog( "SDL initialized successfully." );
+
 #ifdef WITH_FMOD
 	// inicializirai Sound-a
-	AppendToLog("FMod Status: Opening... " );
+	AppendToLog("Initializing FMod ..." );
 
 	// check Fmod version and initialize
 	if ( FSOUND_GetVersion() < FMOD_VERSION )
 	{
-		LOG( "FMod Error: You are using lesser FMOD DLL version! Required version is at least FMOD" << FMOD_VERSION );
+		LOG( "FMod Error: You are using an old FMOD DLL version! Required version is at least FMOD" << FMOD_VERSION );
 		bsound_initialized = false;
 	}
 	else
@@ -1074,7 +1073,6 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 			bsound_initialized = false;
 		}
 
-
 		LOG( "FMod Driver: " << FSOUND_GetDriverName( FSOUND_GetDriver() ) << " " << FSOUND_GetOutputRate() << " " << FSOUND_GetMaxChannels() );
 
 		//sprintf( temp, "%s %d %d", FSOUND_GetDriverName( FSOUND_GetDriver() ), 
@@ -1084,7 +1082,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 		//memset( this->sounds, 0, sizeof(CSound) * MAX_SOUNDS );
 	}
 
-	AppendToLog( "FMod Status: Opened successfully" );
+	AppendToLog( "FMod initialized successfully." );
 
 	// get volumes
 	volume_sound = 255;
@@ -1741,6 +1739,9 @@ void CSound::Release()
 {
 #ifdef WITH_FMOD
 	if ( sound )
+	{
+		DBG( "Freeing FMod sample data ..." );
 		FSOUND_Sample_Free( sound );
+	}
 #endif
 }

@@ -4,12 +4,15 @@ SET TARGET=bin
 
 echo [post-build] Starting ...
 
-del %TARGET%\debug.html
+del /Q %TARGET%\debug.html
 
-del %TARGET%\SDL.dll
-del %TARGET%\README-SDL.txt 
+del /Q %TARGET%\SDL.dll
+del /Q %TARGET%\README-SDL.txt 
 
-del %TARGET%\fmod.dll
+del /Q %TARGET%\fmod.dll
+
+del /Q %1
+del /Q %TARGET%\s*.exe
 
 echo [post-build] Done.
 

@@ -136,7 +136,6 @@ public:
 	void Update( CGame *game );
 	
 	CONST_BUTTONSTATE GetState() { return state; };
-
 };
 
 
@@ -206,6 +205,7 @@ public:
 	wouldn't work before playing music!! */ 
 	void LoadSettings();
 
+	void SetMenuState(CONST_MENUSTATE state) { Menustate = state; };
 };
 
 
