@@ -3,11 +3,13 @@ SAVAGE WHEELS - History
 
 $ V1.4 Release
  - fixed a large number of memory leaks
- - fixed problems in showing ingame shadows when in 32 bit color mode
+ - fixed problems in showing ingame shadows when in 32 bit color mode. Might sitll be buggy on x64 systems :(
  - fixed crash on exit the game
  - fixed problem where when in windowed mode the game window was not centered
  - fixed - changing sound/music volume on fullscreen was almost impossible because of the fast gfx rendering. No the volume changes
            step by step. 
+ - fixed - F4 key to start/stop ingame music now working
+ - fixed - one of the background available was not being selected from the random map selector
  - changed - To prevent problems on Linux systems the game will start in windowed mode by default.
              Use F11 when playing to toggle fullscreen mode or start the game with a command line parameter '-force-fullscreen'.
              NOTE: Fullscreen may crash your Linux desktop. So, far problems where detected only on KDE.

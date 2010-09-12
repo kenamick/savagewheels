@@ -7,6 +7,7 @@ BIN_PATH="$CUR_DIR/bin"
 TMP_PATH="$CUR_DIR/dist-build.temp"
 EXEC_PATH="$CUR_DIR/savagewheels"
 LIBSDL_PATH="$CUR_DIR/libsdl"
+FMOD_PATH="$CUR_DIR/fmod"
 VERMAJ=`perl -nle 'print $1 if /.*VER_MAJ\s(\d+).*/' src/Main.h`
 VERMIN=`perl -nle 'print $1 if /.*VER_MIN\s(\d+).*/' src/Main.h`
 VERSION="$VERMAJ.$VERMIN"
@@ -57,6 +58,8 @@ build() {
 	cp $BIN_PATH/* $TMP_PATH -R
 	cp $EXEC_PATH $TMP_PATH
 	cp $LIBSDL_PATH/README*.txt $TMP_PATH
+
+	cp $FMOD_PATH/linux/api/lib*.so $TMP_PATH
 
 	rm $TMP_PATH/debug*.html -f
 	rm $TMP_PATH/pref -f

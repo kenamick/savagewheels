@@ -86,6 +86,12 @@ else (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-O3 -DNDEBUG)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
+# if (ARCH_TYPE STREQUAL "x64")
+#   add_definitions(-DARCH_X64)
+# else (ARCH_TYPE STREQUAL "x64")
+#   add_definitions(-DARCH_X86)
+# endif (ARCH_TYPE STREQUAL "x64")
+
 ### set runtime directory
 set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")
 
