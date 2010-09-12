@@ -177,6 +177,11 @@ TAB - self destruction
 </TABLE>
 
 <br>
+<small>The ingame keys are also configurable within the <i>bindings.xml</i> file in the game folder.</small>
+<br>
+<br>
+
+<br>
 You can <SPAN class=alight>change</SPAN> the <SPAN class=alight>terrain</SPAN> by pressing <SPAN class=alight>F5</SPAN>.<br>
 During the game you can also <SPAN class=alight>turn on</SPAN>/<SPAN class=alight>off</SPAN> change the <FONT COLOR = #ffffff>music</FONT> with the <SPAN class=alight>F4</SPAN> key.
 <br>
@@ -298,7 +303,13 @@ Yes. Due to some bugs (probably in the display drivers of some video cards) the 
 To start in a window use the command line parameter <SPAN class=alight>sw.exe -wnd</SPAN> 
 <br>
 <br>
-<SPAN class=alight>5. The game crashes every time I start it.</SPAN>
+<SPAN class=alight>5. I get an error message <i>./savagewheels: error while loading shared libraries: libfmod-3.75.so</i></SPAN>
+<br>
+The FMod shared object library responsible for sound and music was not found. Try to specify the LD_LIBRARY_PATH environment variable before starting the game, i.e., <SPAN class=alight>export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH</SPAN>.
+The shared object file libfmod-3.75.so should already be available within the game directory.
+<br>
+<br>
+<SPAN class=alight>6. The game crashes every time I start it.</SPAN>
 <br>
 Try to start the game with software video mode using <SPAN class=alight>sw.exe -sw</SPAN>. If that doesn't work ...well, that's bad karma ;) Anyway, check the <SPAN class=alight>debug.html</SPAN> log file in your game folder for some additional info. <A HREF="#CONTACT">Report</A> the problem with some details on the issues page.
 

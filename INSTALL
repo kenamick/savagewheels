@@ -1,6 +1,8 @@
 Savage Wheels installation instructions
----------------------------------------
+=======================================
 
+Last updated on 12 Sep 2010
+---------------------------
 
 SVN development download
 ------------------------
@@ -23,7 +25,7 @@ Requirements:
 * libSDL 1.2.x - You should install this using your package manager.
 * FMod 3.75.x - Since it is no longer maintained, the package is included with the sources in the SVN.
 * CMake 2.6 and above
-* (On Ubuntu) build-essential
+* (Ubuntu specific) Install the package - build-essential
 
 Instructions
 ------------
@@ -33,6 +35,9 @@ Instructions
 2. Install the libSDL package using the package manager on your Linux distribution.
 
 3. Install the FMod shared object. Go to the sources folder and copy the file "fmod/linux/api/libfmod-3.75.so" to /usr/local/lib.
+   Note: If you do not have super use rights to copy the .so file in /usr/local/lib specify on the cmake command line the relative path
+   to the .so file, e.g.,
+   $ cmake CMakeLists.txt -DFMOD_SO_PATH=./fmod/linux/api
    Note: For x64 bit installation I was not able to locate the proper .so file, therefore Savage Wheels runs without sound on a x64 bit Linux :( It's sad.
 
 4. Go to the sources directory and start CMake via:
@@ -52,7 +57,7 @@ Instructions
   
    ...Oh, one more thing. If you want to create distributable you may use the dist-build.sh script to do so:
    $ ./dist-build build
-   This will create a folder dist-build.tmp/ and an archive inside, containing the "Ready For Playing" game. 
+   This will create a folder dist-build.tmp/ and an archive inside, containing a tar.gz file with the "Ready For Playing" game. 
 
 
 Installation on Windows

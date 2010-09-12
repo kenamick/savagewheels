@@ -55,7 +55,7 @@ if ( NOT NO_SOUND )
   find_library( 
     FMOD_LIBRARY
     NAMES ${FMOD_LIB_NAME}
-    PATHS "/usr/local/lib/" 
+    PATHS "/usr/local/lib/" ${FMOD_SO_PATH}
   )
 
   if ( NOT FMOD_LIBRARY )

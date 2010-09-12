@@ -157,7 +157,7 @@ void CSounds::StopMusic()
 	
 	//Mix_RewindMusic();
 
-	//music_stopped = true;
+	music_stopped = true;
 #endif
 }
 

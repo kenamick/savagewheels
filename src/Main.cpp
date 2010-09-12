@@ -38,7 +38,7 @@
   Final Release: 10.02.2004
   Patch 1.02:    ??.03.2004
   Patch 1.03:    ??.05.2004
-  Release 1.4:   ??.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 09.09.2010
+  Release 1.4:   12.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 12.09.2010
   
 
 */

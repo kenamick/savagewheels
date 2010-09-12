@@ -472,7 +472,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	  toggle_fullscreen = false;
 
 	// music on/off
-	if ( Sdl.keys[SDLK_F3] && !music_off_key ) 
+	if ( Sdl.keys[SDLK_F4] && !music_off_key ) 
 	{
 		music_off_key = true;
 		music_off = true;
@@ -497,7 +497,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		show_fps != show_fps;
 
 	// check music sequence
-	if ( Gamestate != GS_MENU ) Snd.CheckMusic();
+	if ( Gamestate != GS_MENU ) 
+	  Snd.CheckMusic();
 
 
 	// GAME_STATES
@@ -564,7 +565,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 					wait_key = false;
 
 					// choose random start_map
-					cur_map = intGetRnd( 1, NUM_BACKGROUNDS - 1 );
+					cur_map = intGetRnd( 2, NUM_BACKGROUNDS );
 
 					// stop menu-music
 					Snd.StopMusic();
