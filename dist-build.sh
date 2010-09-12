@@ -54,11 +54,12 @@ build() {
 	fi
 
 	cp $CUR_DIR/LICENSE $TMP_PATH
+	cp $CUR_DIR/HISTORY $TMP_PATH
 
 	cp $BIN_PATH/* $TMP_PATH -R
 	cp $EXEC_PATH $TMP_PATH
 	cp $LIBSDL_PATH/README*.txt $TMP_PATH
-
+	
 	cp $FMOD_PATH/linux/api/lib*.so $TMP_PATH
 
 	rm $TMP_PATH/debug*.html -f
