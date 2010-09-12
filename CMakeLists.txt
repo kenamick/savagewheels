@@ -86,12 +86,13 @@ else (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-O3 -DNDEBUG)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-# if (ARCH_TYPE STREQUAL "x64")
-#   add_definitions(-DARCH_X64)
-# else (ARCH_TYPE STREQUAL "x64")
-#   add_definitions(-DARCH_X86)
-# endif (ARCH_TYPE STREQUAL "x64")
+if (UNIX AND NOT WIN32)
+  if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    add_definitions(-DARCH_X64)
+  else (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    add_definitions(-DARCH_X86)
+  endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
+endif (UNIX AND NOT WIN32)
 
 ### set runtime directory
 set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")
-

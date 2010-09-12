@@ -1476,7 +1476,7 @@ void CGame::SetupVehicles()
 String CGame::GetWindowTitle()
 {
 	char buf[512];
-	sprintf( buf, "Savage Wheels - KenamicK Entertainment V%d.%d", VER_MAJ, VER_MIN );
+	sprintf( buf, "Savage Wheels - KenamicK Entertainment V%d.%d %s", VER_MAJ, VER_MIN, VER_ARCH );
 	return String(buf);
 }
 
