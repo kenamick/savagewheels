@@ -1,0 +1,21 @@
+TODO-List:
+-------------
+
+* implement gamepad (+feedback) support
+* check collision iteractions ( for (i) v->update() );
+* fix physics (or AI) problem with blocking vehicles
+[WONT FIX] * revise game sounds
+[done] * clean-up code (remove externs)
+[done] * clean-up code (replace old-logging)
+[done] * use STL instead of char* for string operations wherever possible
+[done] * modify-automate resource loading procedure
+[done] integrate support for custom controls via XML file (bindings.xml)
+[NOT-NEEDED] * Precalculate 1000-10000 range of sqrt() values !!! (optimze for speed against memory!)
+
+
+Nice-To-Have
+--------------
+* possiblity for screen resolutions 800x600, 1024x768 with centered screen
+* create UI (win32 or preferable XWidgets SDK) for player mods - to create additional vehicles
+* network play
+* make blood green (add parent control setting in mainmenu)
