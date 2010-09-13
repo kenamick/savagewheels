@@ -4,6 +4,7 @@
 
 ==SVN development download==
 Get the latest source code by using subversion:
+
 $ svn co checkout http://savagewheels.googlecode.com/svn/trunk/ savagewheels
 
 ==Supported Platforms==
@@ -67,7 +68,7 @@ $ svn co checkout http://savagewheels.googlecode.com/svn/trunk/ savagewheels
 
 3. Open the solution (.sln) file in your VS2005. 
 
-4. Choose [Release] (or [Debug]) from the Build settings and compile.
+4. Choose "Release" (or "Debug") from the Build settings and compile.
 
 5. All the required files should be available in the relative \bin folder. You should be able to start the EXE file from there.
 
