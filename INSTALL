@@ -4,7 +4,7 @@ _.o0 Savage Wheels installation instructions 0o._
 Last updated on 12 Sep 2010
 
 
-1) SVN development download
+1) Git development download
 
 Get the latest source code from GitHub:
 
@@ -21,13 +21,13 @@ git clone git://github.com/petarov/savagewheels.git savagewheels
 
 3.1) Requirements:
   * libSDL 1.2.x - You should install this using your package manager.
-  * FMod 3.75.x - Since it is no longer maintained, the package is included with the sources in the SVN.
+  * FMod 3.75.x - Since it is no longer maintained, the package is included with the sources.
   * CMake 2.6 and above
   * (Ubuntu specific) Install the package - build-essential
 
 3.2) Instructions
 
-1. Download the sources from the SVN.
+1. Download the sources from the repository.
 
 2. Install the libSDL package using the package manager on your Linux distribution.
 
@@ -64,7 +64,7 @@ git clone git://github.com/petarov/savagewheels.git savagewheels
 
 4.2) Instructions
 
-1. Download the sources from the SVN.
+1. Download the sources from the repository.
 
 2. Download the Savage Wheels data files. You will need those, since they contain all graphics, sound, and vehicles data.
    Extract the downloaded archive into the relative bin\ folder. The important folders are - autos/, graphics/, sounds/.
@@ -76,7 +76,7 @@ git clone git://github.com/petarov/savagewheels.git savagewheels
 5. All the required files should be available in the relative \bin folder. You should be able to start the EXE file from there.
 
 
-==Notes about compiling on x64 systems==
+5) Notes about compiling on x64 systems
 
 Well, it will compile but ...it may not work :( The game is 10 years old and much of the code was not written 
 to be portable.
@@ -90,7 +90,7 @@ I have not made any tests on Windows x64, since I do not have yet such system. T
 in there as well.
 
 
-==Compiling a Debug version==
+6) Compiling a Debug version
 
 When issuing the command:
 $ cmake CMakeLists.txt
@@ -99,7 +99,7 @@ If you want to build a Debug version to catch a bug or something, use the follow
 $ cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Debug
 
 
-==Links==
+7) Links
 
   * Somehow "official" game page - http://kenamick.com/savagewheels/
   * More recent Google Code page - http://code.google.com/p/savagewheels/
