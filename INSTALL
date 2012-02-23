@@ -1,28 +1,31 @@
-=Savage Wheels installation instructions=
+_.o0 Savage Wheels installation instructions 0o._
 
-==Last updated on 12 Sep 2010==
 
-==SVN development download==
-Get the latest source code by using subversion:
+Last updated on 12 Sep 2010
 
-$ svn co checkout http://savagewheels.googlecode.com/svn/trunk/ savagewheels
 
-==Supported Platforms==
+1) SVN development download
+
+Get the latest source code from GitHub:
+
+git clone git://github.com/petarov/savagewheels.git savagewheels
+
+2) Supported Platforms
   * Linux x86/x64
   * Windows x86/x64
   * Tested on Linux distros - Debian/Archlinux/Ubuntu
   * Tested on Windows XP/2003/Vista
 
 
-==Installation on Linux platforms==
+3) Installation on Linux platforms
 
-===Requirements:===
+3.1) Requirements:
   * libSDL 1.2.x - You should install this using your package manager.
   * FMod 3.75.x - Since it is no longer maintained, the package is included with the sources in the SVN.
   * CMake 2.6 and above
   * (Ubuntu specific) Install the package - build-essential
 
-===Instructions===
+3.2) Instructions
 
 1. Download the sources from the SVN.
 
@@ -54,12 +57,12 @@ $ svn co checkout http://savagewheels.googlecode.com/svn/trunk/ savagewheels
    This will create a folder dist-build.tmp/ and an archive inside, containing a tar.gz file with the "Ready For Playing" game. 
 
 
-==Installation on Windows==
+4) Installation on Windows
 
-===Requirements===
+4.1) Requirements
   * Microsoft Visual Studio 2005
 
-===Instructions===
+4.2) Instructions
 
 1. Download the sources from the SVN.
 
