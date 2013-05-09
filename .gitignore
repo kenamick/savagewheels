@@ -6,6 +6,9 @@ bin/pref
 bin/savagewheels
 bin/sound/
 
+# Build
+debug/*
+
 # Eclipse
 .classpath
 .settings/*
