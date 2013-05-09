@@ -81,7 +81,7 @@ void CDeadtoys::Release()
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Reset()
 {
-	memset( CDt, NULL, sizeof(CDeadtoy) * DT_MAX_DEADTOYS ) ;
+	memset( CDt, 0, sizeof(CDeadtoy) * DT_MAX_DEADTOYS ) ;
 }
 
 
@@ -308,7 +308,7 @@ void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range )
 CLandMines::CLandMines()
 : _game(NULL)
 {
-  memset( sprite, NULL, sizeof(SDL_Surface) * LANDMINE_FRAMES );
+  memset( sprite, 0, sizeof(SDL_Surface) * LANDMINE_FRAMES );
 }
 
 
@@ -346,7 +346,7 @@ void CLandMines::Release()
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Reset()
 {
-	memset( child, NULL, sizeof(CLandMine) * LANDMINE_CHILDS );
+	memset( child, 0, sizeof(CLandMine) * LANDMINE_CHILDS );
 }
 
 
