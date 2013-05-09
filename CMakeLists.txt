@@ -8,7 +8,7 @@ find_package(SDL REQUIRED)
 include_directories(src/)
 include_directories(tinyxml/)
 #include_directories(fmod/linux/api)
-include_directories(fmod/linux/api/inc)
+#include_directories(fmod/linux/api/inc)
 
 set (
     SOURCES 
@@ -49,21 +49,22 @@ target_link_libraries(
 
 # check if sound support is required
 if ( NOT NO_SOUND )
-  set( FMOD_LIB_NAME "libfmod-3.75.so" )
+  set( FMOD_LIB_NAME "libfmodex.so" )
 
   # try to find fmod lib
   find_library( 
     FMOD_LIBRARY
     NAMES ${FMOD_LIB_NAME}
-    PATHS "/usr/local/lib/" ${FMOD_SO_PATH}
+    PATHS "/usr/lib" "/usr/local/lib/" ${FMOD_SO_PATH}
   )
 
   if ( NOT FMOD_LIBRARY )
-      message( STATUS "FMod lib(${FMOD_LIB_NAME}) not found! Will compile without sound support." )
+      message( STATUS "FModEx lib(${FMOD_LIB_NAME}) not found! Will compile without sound support." )
   else ( NOT FMOD_LIBRARY )
       add_definitions(-DWITH_FMOD)
+      add_definitions(-I/usr/include/fmodex)
       target_link_libraries(savagewheels ${FMOD_LIBRARY})
-      message( STATUS "FMod lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
+      message( STATUS "FModEx lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
   endif ( NOT FMOD_LIBRARY )
 
 else ( NOT NO_SOUND )
