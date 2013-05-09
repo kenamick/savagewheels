@@ -1,0 +1,12 @@
+# Bin folders
+bin/autos/
+bin/debug.html
+bin/graphics/
+bin/pref
+bin/savagewheels
+bin/sound/
+
+# Eclipse
+.classpath
+.settings/*
+.project
