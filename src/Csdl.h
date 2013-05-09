@@ -99,11 +99,11 @@ public:
 	};
 
 #ifdef WITH_FMOD	
-	FSOUND_SAMPLE   *sound;
+	FMOD_SOUND   *sound;
 #endif
-	bool		buffered;				// bufferiran li shte e zvukyt 
-	int		play_channel;			// ne-bufferiran zvuk se nujdae ot otdelen kanal
-	bool		loaded;
+	bool	buffered;				// buffered sound?
+	int		play_channel;			// unbuffered sounds do not need separate channels
+	bool	loaded;
 	
 	void Release();
 
@@ -125,25 +125,25 @@ protected:
 
 	typedef std::vector<int>	udtButtonsBuffer;
    
-	SDL_Surface   	*screen;			    // glavna powyrhnost(buffer) na Sdl-to
-	STRUCT_BLIT   	surface[MAX_SPRITES];
+	SDL_Surface *screen;			    // glavna powyrhnost(buffer) na Sdl-to
+	STRUCT_BLIT surface[MAX_SPRITES];
 	Uint32		num_surfaces;			// broi kartinki koito da bydat rendirani pri sledwashitq kadyr  
-	int		mouse_x, mouse_y;
-	int		mouse_lbutton, mouse_rbutton;
+	int			mouse_x, mouse_y;
+	int			mouse_lbutton, mouse_rbutton;
 
-	Uint16		  magenta16;
-	Uint16		  shadow_mask16;
-	Uint16		  bytes_per_color;
-	CGame		  *_game;	
-
+	Uint16		magenta16;
+	Uint16		shadow_mask16;
+	Uint16		bytes_per_color;
+	CGame		*_game;
 
 #ifdef FONT_TTF
-   TTF_Font       *font_ttf;
+   TTF_Font			*font_ttf;
 #else
-   SDL_Surface    *font_bmp;
-   Uint16	  font_size;
+   SDL_Surface		*font_bmp;
+   Uint16			font_size;
 #endif
 
+   FMOD_SYSTEM      *fmod_system;
    CSound		  sounds[MAX_SOUNDS];	
    bool			  bsound_initialized;	 // flag-rezultat inicializaciqta na zvuka
    int			  volume_sound;
@@ -158,20 +158,17 @@ protected:
    udtButtonsBuffer	_JoystickButtons;
  
 public:
-
-	Uint8				*keys;				// masiv s aktivnite klavishi (natisnati)
+	Uint8			*keys;				// masiv s aktivnite klavishi (natisnati)
 	int				JoystickAxisX;
 	int				JoystickAxisY;
-	Uint8				JoystickHatState;
-	
+	Uint8			JoystickHatState;
 
 protected:
-	void		_Blitall();
-	Uint32		_GetPixel(SDL_Surface *surface, int x, int y);
+	void	_Blitall();
+	Uint32	_GetPixel(SDL_Surface *surface, int x, int y);
 	int		_Slock( SDL_Surface *surface );
-	void		_Sunlock( SDL_Surface *surface );
+	void	_Sunlock( SDL_Surface *surface );
 	int		_ClipRect( int *x , int *y, SDL_Rect *rSurf );
-
 //	SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
 
 public:
@@ -228,7 +225,6 @@ public:
 	int  GetMouseLButton() { return mouse_lbutton; };
 	int  GetMouseRButton() { return mouse_rbutton; };
 
-
 	// Sound functions
 	int  LoadSound( const char *filename, bool buffered_sound );
 	void PlaySound( int snd_index, int position = -1 );
@@ -243,6 +239,7 @@ public:
 	void ChangeMusicVolume( int );
 	
   private:
+
 	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf );

@@ -26,6 +26,7 @@
 
 #include "Main.h"
 
+#define FM_OK	CSounds::IsOK
 
 ///////////////////////////////////////////////////////////////////////
 // Ime: CSdl()
@@ -1048,50 +1049,82 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 
 #ifdef WITH_FMOD
 	// inicializirai Sound-a
-	AppendToLog("Initializing FMod ..." );
+	AppendToLog("Initializing FModEx ..." );
 
-	// check Fmod version and initialize
-	if ( FSOUND_GetVersion() < FMOD_VERSION )
+	FMOD_RESULT 	result;
+	unsigned int	version;
+
+    result = FMOD_System_Create(&fmod_system);
+    if (FM_OK(result)) {
+    	result = FMOD_System_GetVersion(fmod_system, &version);
+    	bsound_initialized = FM_OK(result);
+    }
+
+    if (!bsound_initialized)
+    {
+    	AppendToLog( "FModEx failed to initialize! Game will start without sound." );
+    }
+    else if ( version < FMOD_VERSION )
 	{
-		LOG( "FMod Error: You are using an old FMOD DLL version! Required version is at least FMOD" << FMOD_VERSION );
+		LOG( "FModEx Error: You are using an old FMOD version " << version << "! Required version is " << FMOD_VERSION );
 		bsound_initialized = false;
 	}
 	else
 	{
-		bsound_initialized = true;
+//		bsound_initialized = true;
 
 #ifdef LINUX_BUILD
-		// seems ALSA is preferred for FMod on Debian
+		// ALSA is preferred for FMod on Debian
 		if ( getenv("SW_SND_ALSA") && !strcmp( getenv("SW_SND_ALSA"), "1" ) )
-		  FSOUND_SetOutput(FSOUND_OUTPUT_ALSA);
+		{
+			result = FMOD_System_SetOutput(fmod_system, FMOD_OUTPUTTYPE_ALSA)
+			FM_OK(result);
+		}
 #endif
 		int mixrate = getenv("SW_SND_22KHZ") && !strcmp( getenv("SW_SND_22KHZ"), "1" ) ? 22050 : 44100;
+		// mixrate ???
 		
-		if( ! FSOUND_Init(mixrate, 32, 0) )
+		result = FMOD_System_Init(fmod_system, 32, FMOD_INIT_NORMAL, NULL);
+		if(!FM_OK(result))
 		{
-			LOG( "FMod Error: ...failed to initialize :" << FMOD_ErrorString( FSOUND_GetError() ) );
+			LOG( "FModEx Error: ...failed to initialize :" << FMOD_ErrorString( FSOUND_GetError() ) );
 			bsound_initialized = false;
 		}
+		else
+		{
+			// Get driver information
 
-		LOG( "FMod Driver: " << FSOUND_GetDriverName( FSOUND_GetDriver() ) << " " << FSOUND_GetOutputRate() << " " << FSOUND_GetMaxChannels() );
+			int driver = -1;
+			result = FMOD_System_GetDriver(fmod_system, &driver);
+			if (FM_OK(result)) {
 
-		//sprintf( temp, "%s %d %d", FSOUND_GetDriverName( FSOUND_GetDriver() ), 
-		//	FSOUND_GetOutputRate(), 
-		//	FSOUND_GetMaxChannels() 
-		//	);
-		//memset( this->sounds, 0, sizeof(CSound) * MAX_SOUNDS );
+				char driver_name[255];
+
+				result = FMOD_System_GetDriverInfo(fmod_system, driver, driver_name, 255, NULL);
+				if (FM_OK(result)) {
+					LOG( "FModEx Driver: " << driver_name);
+				}
+
+			}
+
+			//sprintf( temp, "%s %d %d", FSOUND_GetDriverName( FSOUND_GetDriver() ),
+			//	FSOUND_GetOutputRate(),
+			//	FSOUND_GetMaxChannels()
+			//	);
+			//memset( this->sounds, 0, sizeof(CSound) * MAX_SOUNDS );
+
+			AppendToLog( "FModEx initialized successfully." );
+
+			// set default volume
+			volume_sound = 255;
+			volume_music = 255;
+		}
 	}
-
-	AppendToLog( "FMod initialized successfully." );
-
-	// get volumes
-	volume_sound = 255;
-	volume_music = 255;
 #else
 
   // Nothing else is supported for sound right now.
   
-  AppendToLog( "No sound support. Savage Wheels was compiled with no sound support !" );
+  AppendToLog( "No sound support. Game was compiled without sound support!" );
   
   bsound_initialized = false;
 
@@ -1513,20 +1546,23 @@ void CSdl::DrawNum( int x, int y, char *text )
 int CSdl::LoadSound( const char *filename, bool buffered_sound )
 {
 #ifdef WITH_FMOD
-	if ( !bsound_initialized ) return -1;
+	if ( !bsound_initialized )
+		return -1;
 
-	Uint32		   i			= 0;
-	static int	   cur_channel	= 0;
-	CSound		   *ptr_snd		= sounds;
-	bool		   bsnd_loaded	= false;
-
+	static int		cur_channel	= 0;		// TODO: remove the 'static'
+	Uint32			i			= 0;
+	CSound			*ptr_snd	= sounds;
+	bool			bsnd_loaded	= false;
+	FMOD_RESULT		result;
 
 	while ( i < MAX_SOUNDS )
 	{
 		if ( !ptr_snd->loaded )
 		{
-			ptr_snd->sound = FSOUND_Sample_Load( FSOUND_UNMANAGED, filename, FSOUND_NORMAL, 0, 0 );  //Mix_LoadWAV( filename ); //LoadWav( filename, 0, 55000 ); 
-			if ( ptr_snd == NULL )
+//			ptr_snd->sound = FSOUND_Sample_Load( FSOUND_UNMANAGED, filename, FSOUND_NORMAL, 0, 0 );
+//			if ( ptr_snd == NULL )
+			result = FMOD_System_CreateSound(fmod_system, filename, FMOD_DEFAULT, 0, &ptr_snd->sound);
+			if (!FM_OK(result))
 			{
 				LOG("...failed to load sound file : " << filename );
 				return -1;
@@ -1539,11 +1575,13 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound )
 				cur_channel++;
 			}
 			else
+			{
 				ptr_snd->buffered = true;
+			}
 			
 			ptr_snd->loaded = true;
-			
 			bsnd_loaded = true;
+			
 			break;
 		}
 
@@ -1553,7 +1591,7 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound )
 
 	if ( !bsnd_loaded ) 
 	{
-		//... no slots available
+		LOG("Sound load error: No slots available!");
 		return -1;
 	}
 
@@ -1617,12 +1655,10 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 void CSdl::PlaySound( int snd_index, int position )
 {
 #ifdef WITH_FMOD
-	 //return;  // {!}
-	int chn = -1;
+	if ( !bsound_initialized || GetSoundVolume() <= 0 )
+		return;
 
-	if ( !bsound_initialized || GetSoundVolume() <= 0 ) return;
-
-	// izchisli posiciqta na zvuka
+	// calculate sound position
 	if ( position != -1 )
 	{
 
@@ -1641,30 +1677,36 @@ void CSdl::PlaySound( int snd_index, int position )
 		}
  	}
 	else
+	{
 		position = FSOUND_STEREOPAN;
+	}
 
+	FMOD_CHANNEL 	*channel;
 
-	// play sound...
 	if ( sounds[snd_index].buffered )
 	{
-		// nameri svoboden kanal i pusni zvuka
+		// find a free channel to play the sound
 		for ( Uint8 i = 0; i < 255; i++ )
 		{
-			if ( !FSOUND_IsPlaying( i ) )
+			FMOD_BOOL is_playing = 0;
+			FMOD_System_GetChannel(fmod_system, i, &channel);
+			FMOD_Channel_IsPlaying(channel, &is_playing);
+			if ( !is_playing )
 			{
-				chn = FSOUND_PlaySound( i, sounds[snd_index].sound );
-				FSOUND_SetPan( chn , position );
+				FMOD_System_PlaySound(fmod_system, FMOD_CHANNEL_FREE, sounds[snd_index].sound, 0, &channel);
+				FMOD_Channel_SetPan(channel, position);
+//				chn = FSOUND_PlaySound( i, sounds[snd_index].sound );
+//				FSOUND_SetPan( chn , position );
 				break;
 			}
 		}
 	}
 	else
 	{
-		// pusni prez nebuferiraniq kanal
+		// play through unbuffered channel
 		//FSOUND_StopSound( sounds[snd_index].play_channel );
-		chn = FSOUND_PlaySound( sounds[snd_index].play_channel, sounds[snd_index].sound );
-		FSOUND_SetPan( chn, position );		
-
+		FMOD_System_PlaySound(fmod_system, sounds[snd_index].play_channel, sounds[snd_index].sound, 0, &channel);
+		FMOD_Channel_SetPan(channel, position);
 	}
 #endif
 }
