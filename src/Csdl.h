@@ -80,7 +80,6 @@ typedef struct _BITMAPFILEHEADER {	// bmfh
     Uint32  bfOffBits; 
 } __BITMAPFILEHEADER; 
 
-
 // (SDL_Mixer) Sound Class
 class CSound
 {
@@ -226,6 +225,9 @@ public:
 	int  GetMouseRButton() { return mouse_rbutton; };
 
 	// Sound functions
+#ifdef WITH_FMOD
+	static bool IsFModOK(FMOD_RESULT result);
+#endif
 	int  LoadSound( const char *filename, bool buffered_sound );
 	void PlaySound( int snd_index, int position = -1 );
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );

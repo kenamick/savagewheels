@@ -3,7 +3,9 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.exe.debug.1020531586">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.exe.debug.1020531586" moduleId="org.eclipse.cdt.core.settings" name="Debug">
-				<externalSettings/>
+				<externalSettings>
+					<externalSetting/>
+				</externalSettings>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
@@ -28,6 +30,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/savagewheels/tinyxml}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/c++/4.8.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/fmodex"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.2063951667" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="LINUX_BUILD=1"/>
@@ -40,6 +43,8 @@
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.187962940" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.137819151" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/c++/4.8.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/fmodex"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.354359548" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -87,6 +92,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/savagewheels/tinyxml}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/c++/4.8.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/fmodex"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1067760147" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="LINUX_BUILD=1"/>
@@ -98,6 +104,8 @@
 								<option id="gnu.c.compiler.exe.release.option.debugging.level.966136198" name="Debug Level" superClass="gnu.c.compiler.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.444093765" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/c++/4.8.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/fmodex"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1070777664" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>

@@ -321,14 +321,14 @@ bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
     if ( _pStats )
     {
         //pStats = _pStats;
-        if ( -1 != ::stat ( strPath.c_str(), _pStats ) )
+        if ( -1 != stat( strPath.c_str(), _pStats ) )
             return true;
     }
     else
     {
         struct stat _stats;
 
-        if ( -1 != stat ( strPath.c_str(), &_stats ) )
+        if ( -1 != stat( strPath.c_str(), &_stats ) )
             return true;
     }
 

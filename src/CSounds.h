@@ -67,7 +67,7 @@ private:
 	CSdl	*_sdl;
 #ifdef WITH_FMOD
 	int		sounds[NUM_SOUNDS];
-	FMUSIC_MODULE	*music[NUM_MUSIX];
+	FMOD_SOUND	*music[NUM_MUSIX];
 #endif
 
 	int		current_track;
@@ -91,9 +91,6 @@ public:
 	bool IsMusicPlaying() { return !music_stopped; };
 
 	void setMusicVolume( int volume );
-
-	static bool IsOK(FMOD_RESULT result);
-
 };
 
 
