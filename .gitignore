@@ -7,7 +7,8 @@ bin/savagewheels
 bin/sound/
 
 # Build
-debug/*
+#debug/*
+#release/*
 
 # Eclipse
 .classpath
