@@ -92,6 +92,8 @@ public:
 
 	void setMusicVolume( int volume );
 
+	static bool IsOK(FMOD_RESULT result);
+
 };
 
 

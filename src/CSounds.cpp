@@ -231,3 +231,13 @@ void CSounds::Release()
 	//Mix_FreeMusic( music[i] );
 #endif
 }
+
+static bool CSounds::IsOK(FMOD_RESULT result) {
+	if (result != FMOD_OK)
+	{
+		LOG( "FMOD error! (" << result << ") " << FMOD_ErrorString(result));
+		return false;
+	}
+
+	return true;
+}
