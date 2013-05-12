@@ -143,6 +143,7 @@ protected:
 #endif
 
    FMOD_SYSTEM      *fmod_system;
+   FMOD_CHANNEL 	*fmod_musicChannel;
    CSound		  sounds[MAX_SOUNDS];	
    bool			  bsound_initialized;	 // flag-rezultat inicializaciqta na zvuka
    int			  volume_sound;
@@ -230,6 +231,9 @@ public:
 #endif
 	int  LoadSound( const char *filename, bool buffered_sound );
 	void PlaySound( int snd_index, int position = -1 );
+	void PlayMusic( int snd_index );
+	void StopMusic();
+	bool IsMusicPlaying();
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );
 	//void PlaySound( int snd_index );
 

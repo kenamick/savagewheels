@@ -230,6 +230,12 @@ void CSdl::Flip()
 
   SDL_Flip(screen);
 
+#ifdef WITH_FMOD
+  if (bsound_initialized)
+  {
+	  FMOD_System_Update(fmod_system);
+  }
+#endif
 }
 
 
@@ -1723,6 +1729,77 @@ void CSdl::PlaySound( int snd_index, int position )
 }
 
 
+///////////////////////////////////////////////////////////////////////
+// Ime: PlayMusic()
+// Opisanie: Plays a specified sound in the music channel
+///////////////////////////////////////////////////////////////////////
+void CSdl::PlayMusic(int snd_index)
+{
+#ifdef WITH_FMOD
+	if ( !bsound_initialized || GetMusicVolume() <= 0 )
+		return;
+
+	FMOD_RESULT result;
+
+	if (fmod_musicChannel != NULL )
+	{
+		result = FMOD_Channel_Stop(fmod_musicChannel);
+		CSdl::IsFModOK(result);
+	}
+
+	result = FMOD_System_PlaySound(fmod_system, FMOD_CHANNEL_REUSE, sounds[snd_index].sound, 0, &fmod_musicChannel);
+	CSdl::IsFModOK(result);
+	result = FMOD_Channel_SetLoopCount(fmod_musicChannel, 0);
+//	CSdl::IsFModOk(result);
+	FMOD_Channel_SetPriority(fmod_musicChannel, 255);
+	CSdl::IsFModOK(result);
+#endif
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Ime: StopMusic()
+// Opisanie: Stop sound playing in the music channel.
+///////////////////////////////////////////////////////////////////////
+void CSdl::StopMusic()
+{
+#ifdef WITH_FMOD
+	if ( !bsound_initialized )
+		return;
+
+	if (fmod_musicChannel != NULL )
+	{
+		FMOD_RESULT result = FMOD_Channel_Stop(fmod_musicChannel);
+		CSdl::IsFModOK(result);
+	}
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////
+// Ime: IsMusicPlaying()
+// Opisanie: Checks if there is a sound currently being played in the
+// music channel.
+///////////////////////////////////////////////////////////////////////
+bool CSdl::IsMusicPlaying()
+{
+#ifdef WITH_FMOD
+	if ( !bsound_initialized )
+		return false;
+
+	FMOD_RESULT result;
+	FMOD_BOOL 	is_playing = 0;
+
+	if (fmod_musicChannel != NULL )
+	{
+		result = FMOD_Channel_IsPlaying(fmod_musicChannel, &is_playing);
+//		CSdl::IsFModOk(result);
+		return (bool) is_playing;
+	}
+#endif
+
+	return false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////
 // Ime: SetMusicVolume()
@@ -1738,8 +1815,10 @@ void CSdl::SetMusicVolume( int new_vol )
 
 	volume_music = new_vol;
 
-	_game->Snd.setMusicVolume( volume_music );
-	//CSnd.setMusicVolume( volume_music );
+	if (fmod_musicChannel) {
+		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fRangeGet0255(volume_music, 0.0f, 1.0f));
+		CSdl::IsFModOK(result);
+	}
 #endif
 }
 

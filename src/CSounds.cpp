@@ -36,9 +36,7 @@ CSounds::CSounds()
 {
 #ifdef WITH_FMOD
 	memset( sounds, 0, sizeof(int) * NUM_SOUNDS );
-	for( int i = 0; i < NUM_MUSIX; i++ )
-		music[i] = NULL;
-	//memset( music, NULL, sizeof(FMUSIC_MODULE) * NUM_MUSIX);
+	memset( music, 0, sizeof(int) * NUM_MUSIX );
 #endif
 }
 
@@ -67,10 +65,6 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOG( "Failed to load " << name << " ! "); \
 	return false; }
 
-#define LOAD_MUSIC( container, name ) if ( (music[container] = FMUSIC_LoadSong( name )) == NULL ) { \
-	LOG( "Failed to load " << name << " ! "); \
-	return false; }
-
 	LOAD_SOUND( SND_CRASHLIGHT1, "sound/crash3.wav", true );
 	LOAD_SOUND( SND_CRASHLIGHT2, "sound/crash2.wav", true );
 	LOAD_SOUND( SND_CRASHBRAKE, "sound/crash1.wav", true );
@@ -84,10 +78,10 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
 	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", false );
 
-	LOAD_MUSIC( MUS_MENU, "sound/seek.it" );
-	LOAD_MUSIC( MUS_INGAME1, "sound/inertia.it" );
-	LOAD_MUSIC( MUS_INGAME2, "sound/desert.it" );
-	LOAD_MUSIC( MUS_INGAME3, "sound/vixens.it" );
+	LOAD_SOUND( MUS_MENU, "sound/seek.it", false );
+	LOAD_SOUND( MUS_INGAME1, "sound/inertia.it", false );
+	LOAD_SOUND( MUS_INGAME2, "sound/desert.it", false );
+	LOAD_SOUND( MUS_INGAME3, "sound/vixens.it", false );
 
 	music_stopped = false;
 
@@ -136,8 +130,7 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 			return;
 
 		current_track = (int)music_to_play;
-		FMUSIC_PlaySong( music[current_track] );
-		FMUSIC_SetLooping( music[current_track], looped );
+		_sdl->PlaySound( music[current_track], looped );
 
 		//music_stopped = false;
 	}
@@ -153,10 +146,9 @@ void CSounds::StopMusic()
 {
 #ifdef WITH_FMOD
 	if ( music[current_track] )
-		FMUSIC_StopSong( music[current_track] );
-	
-	//Mix_RewindMusic();
-
+	{
+		_sdl->StopMusic();
+	}
 	music_stopped = true;
 #endif
 }
@@ -165,9 +157,7 @@ void CSounds::StopMusic()
 void CSounds::FadeMusic( int milliseconds )
 {
 #ifdef WITH_FMOD
-	if ( music[current_track] )
-		FMUSIC_StopSong( music[current_track] );
-//	Mix_FadeOutMusic(milliseconds);
+	StopMusic();
 #endif
 }
 
@@ -182,11 +172,8 @@ void CSounds::CheckMusic()
 #ifdef WITH_FMOD  
 	if ( !music_stopped )
 	{
-	
-		if ( FMUSIC_IsFinished( music[current_track] ) ) // FMUSIC_IsPlaying( music[current_track] ) )
-		{
+		if (!_sdl->IsMusicPlaying()) {
 			StopMusic();
-			FMUSIC_SetLooping( music[current_track], false );
 
 			current_track++;
 			if ( current_track >= NUM_MUSIX )
@@ -199,20 +186,20 @@ void CSounds::CheckMusic()
 }
 
 
-//////////////////////////////////////////////////////////////////////
-// Ime: setMusicVolume()
-// Opisanie: 
-//////////////////////////////////////////////////////////////////////
-void CSounds::setMusicVolume( int volume )
-{ 
-#ifdef WITH_FMOD  
-	for ( int i = 0; i < NUM_MUSIX; i++ ) 
-	{
-		if ( music[i] )
-			FMUSIC_SetMasterVolume( music[i], volume ); 
-	}
-#endif	
-}
+////////////////////////////////////////////////////////////////////////
+//// Ime: setMusicVolume()
+//// Opisanie:
+////////////////////////////////////////////////////////////////////////
+//void CSounds::setMusicVolume( int volume )
+//{
+//#ifdef WITH_FMOD
+//	for ( int i = 0; i < NUM_MUSIX; i++ )
+//	{
+//		if ( music[i] )
+//			FMUSIC_SetMasterVolume( music[i], volume );
+//	}
+//#endif
+//}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -222,13 +209,7 @@ void CSounds::setMusicVolume( int volume )
 void CSounds::Release()
 {
 #ifdef WITH_FMOD  
-	for ( int i = 0; i < NUM_MUSIX; i++ )
-	{
-		if ( music[i] )
-			FMUSIC_FreeSong( music[i] );
-	}
-		
-	//Mix_FreeMusic( music[i] );
+	// TODO
 #endif
 }
 
