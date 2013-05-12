@@ -101,6 +101,12 @@
 #define HRESULT(x)	( (x) == NULL : LOAD_OK ? LOAD_FAILED )
 #define NLPTR_SURF	0 //((SDL_Surface *)NULL)
 
+#ifdef WITH_FMOD
+#define FM_OK(x) CSdl::IsFModOK(x)
+#else
+#define FM_OK(x)
+#endif
+
 struct POINT 
 {
 	Uint16 x, y;
