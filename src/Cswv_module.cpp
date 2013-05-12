@@ -225,7 +225,7 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 //// Name: SearchAndLoad()
 //// Desc: scans a folder for SWV files and loads them all
 ///////////////////////////////////////////////////////////////////////////////
-int CSwv_module::SearchAndLoad( char *search_dir )
+int CSwv_module::SearchAndLoad( const char *search_dir )
 {
 #ifdef LINUX_BUILD
 	struct stat file_stat;

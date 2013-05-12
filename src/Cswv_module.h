@@ -126,7 +126,7 @@ class CSwv_module
 	~CSwv_module();
 
 	int Create( const char *destPath, SWV_HEADER *swm );
-	int  SearchAndLoad( char *search_dir );
+	int  SearchAndLoad( const char *search_dir );
 	void Release();
 	unsigned int GetVehicles() { return num_vehicles; };
 	const SWV_HEADER* GetVehiclesData();
