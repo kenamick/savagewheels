@@ -206,7 +206,7 @@ int OpenLog ( const char* filename )
     debug_file << "<html><head><title>Savage Wheels Log File</title></head><body><h1>Savage Wheels V" << VER_MAJ << "." << VER_MIN << " - Log File</h1>";
     debug_file << "<hr/><pre>";
     debug_file <<  time << "Build: " << APP_NAME << " <br/>";
-    debug_file <<  time << "Copyright &copy; 2003-2010 KenamicK Entertainment <br />";
+    debug_file <<  time << "Copyright &copy; 2003-2013 KenamicK Entertainment <br />";
     debug_file <<  time << "Opened on: " << __DATE__ << "<br />";
     debug_file <<  time << "Opened at: " << __TIME__ << "<br />";
     debug_file <<  time << LOG_DASH << "<br />";

@@ -41,7 +41,7 @@ class CLandMines;
 //////////////////////
 
 
-#define APP_NAME	"Savage Wheels 1.4"
+#define APP_NAME	"Savage Wheels"
 #define NUM_MPS		   4
 #define NUM_BACKGROUNDS    5
 #define SCREEN_WIDTH       640

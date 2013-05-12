@@ -85,7 +85,7 @@
 
 // --- version
 #define VER_MAJ 1
-#define VER_MIN 4
+#define VER_MIN 5
 #ifdef ARCH_X86
 #define VER_ARCH "X86"
 #endif
