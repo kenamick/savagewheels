@@ -343,7 +343,7 @@ bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
 ///////////////////////////////////////////////////////////////////////
 float	fRangeGet0255(int in, float min, float max)
 {
-	float result; // = min + (max - min) / 2.0f;
+	float result;
 
 	in = in < 0 ? 0 : in;
 	in = in > 255 ? 255 : in;

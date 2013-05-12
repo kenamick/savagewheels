@@ -65,6 +65,10 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOG( "Failed to load " << name << " ! "); \
 	return false; }
 
+#define LOAD_MUSIC( container, name ) if ( (music[container] = _sdl->LoadSound( name, false )) == -1 ) { \
+	LOG( "Failed to load music " << name << " ! "); \
+	return false; }
+
 	LOAD_SOUND( SND_CRASHLIGHT1, "sound/crash3.wav", true );
 	LOAD_SOUND( SND_CRASHLIGHT2, "sound/crash2.wav", true );
 	LOAD_SOUND( SND_CRASHBRAKE, "sound/crash1.wav", true );
@@ -78,10 +82,10 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
 	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", false );
 
-	LOAD_SOUND( MUS_MENU, "sound/seek.it", false );
-	LOAD_SOUND( MUS_INGAME1, "sound/inertia.it", false );
-	LOAD_SOUND( MUS_INGAME2, "sound/desert.it", false );
-	LOAD_SOUND( MUS_INGAME3, "sound/vixens.it", false );
+	LOAD_MUSIC( MUS_MENU, "sound/seek.it" );
+	LOAD_MUSIC( MUS_INGAME1, "sound/inertia.it" );
+	LOAD_MUSIC( MUS_INGAME2, "sound/desert.it" );
+	LOAD_MUSIC( MUS_INGAME3, "sound/vixens.it" );
 
 	music_stopped = false;
 
