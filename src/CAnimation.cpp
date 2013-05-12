@@ -32,10 +32,10 @@
 CAnimations::CAnimations()
 : _game(NULL)
 {
-	memset( sprite_explosion, NULL, sizeof(SDL_Surface) * MAX_EXPLOSION_FRAMES );
-	memset( sprite_blood, NULL, sizeof(SDL_Surface) * MAX_BLOOD_FRAMES );
-	memset( sprite_splat, NULL, sizeof(SDL_Surface) * MAX_SPLATS );
-	memset( sprite_bmsg, NULL, sizeof(SDL_Surface) * MAX_BGETS );
+	memset( sprite_explosion, NLPTR_SURF, sizeof(SDL_Surface) * MAX_EXPLOSION_FRAMES );
+	memset( sprite_blood, NLPTR_SURF, sizeof(SDL_Surface) * MAX_BLOOD_FRAMES );
+	memset( sprite_splat, NLPTR_SURF, sizeof(SDL_Surface) * MAX_SPLATS );
+	memset( sprite_bmsg, NLPTR_SURF, sizeof(SDL_Surface) * MAX_BGETS );
 }
 
 ///////////////////////////////////////////////////////////////////////

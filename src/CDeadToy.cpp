@@ -308,7 +308,7 @@ void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range )
 CLandMines::CLandMines()
 : _game(NULL)
 {
-  memset( sprite, 0, sizeof(SDL_Surface) * LANDMINE_FRAMES );
+  memset( sprite, NLPTR_SURF, sizeof(SDL_Surface) * LANDMINE_FRAMES );
 }
 
 

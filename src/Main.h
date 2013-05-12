@@ -99,6 +99,7 @@
 #define LOAD_OK         (-1)
 #define LOAD_FAILED     (0)
 #define HRESULT(x)	( (x) == NULL : LOAD_OK ? LOAD_FAILED )
+#define NLPTR_SURF	0 //((SDL_Surface *)NULL)
 
 struct POINT 
 {
