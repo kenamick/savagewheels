@@ -194,8 +194,8 @@ public:
 	void MakeBoolMask( SDL_Surface *surf, Uint32 *& );
 	//SDL_Surface* LoadBitmap( char *filename, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
 	//SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
-	SDL_Surface* LoadBitmap( char *filename, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
-	SDL_Surface* LoadBitmap( char *filename, int32_t file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
+	SDL_Surface* LoadBitmap( const char *filename, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
+	SDL_Surface* LoadBitmap( const char *filename, int32_t file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
 	SDL_Surface* CreateEmptySurface( int width, int height );
 	void	SetRect( SDL_Rect *rect, int x, int y, int width, int height );
 
