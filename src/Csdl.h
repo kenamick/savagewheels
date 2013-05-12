@@ -142,8 +142,11 @@ protected:
    Uint16			font_size;
 #endif
 
+#ifdef WITH_FMOD
    FMOD_SYSTEM      *fmod_system;
    FMOD_CHANNEL 	*fmod_musicChannel;
+#endif
+
    CSound		  sounds[MAX_SOUNDS];	
    bool			  bsound_initialized;	 // flag-rezultat inicializaciqta na zvuka
    int			  volume_sound;
@@ -210,15 +213,11 @@ public:
 	void DrawNum( int x, int y, char *text );
 #endif
 
-	// sdl_colors
 	SDL_Color CreateColor( int r, int g, int b, int a );
 	SDL_Color CreateColor( int r, int g, int b );
-	/*bool operator==( SDL_Color clr1, SDL_Color clr2 ) { return clr1.r == clr2.r && clr1.g == clr2.g && clr1.b == clr2.b; }
-	bool operator!=( SDL_Color clr1, SDL_Color clr2 ) { return clr1.r != clr2.r || clr1.g != clr2.g || clr1.b != clr2.b; }
-    */
 
-	// sdl input
-	void GetInput();					// za klavishite
+	// Input methods
+	void GetInput();
 	bool GetJoystickButtonPressed( int idx );
 	int  GetMouseX() { return mouse_x; };
 	int  GetMouseY() { return mouse_y; };
@@ -229,13 +228,12 @@ public:
 #ifdef WITH_FMOD
 	static bool IsFModOK(FMOD_RESULT result);
 #endif
-	int  LoadSound( const char *filename, bool buffered_sound );
+	int  LoadSound( const char *filename, bool buffered_sound, bool IsStream = false );
 	void PlaySound( int snd_index, int position = -1 );
 	void PlayMusic( int snd_index, bool looped );
 	void StopMusic();
 	bool IsMusicPlaying();
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );
-	//void PlaySound( int snd_index );
 
 	int  GetSoundVolume() { return volume_sound; };
 	int  GetMusicVolume() { return volume_music; };
@@ -253,9 +251,6 @@ public:
 	void MakeBoolMask16( SDL_Surface *surf, Uint32 *& );
 	void MakeBoolMask32( SDL_Surface *surf, Uint32 *& );
 };
-
-
-
 
 
 #endif

@@ -42,7 +42,9 @@ CSdl::CSdl()
 	_yJoystick( ANALOG_THRESHOLD ),
 	JoystickHatState( SDL_HAT_CENTERED ),
 	mouse_lbutton( MOUSE_BUTTON_UNPRESSED ),
-	mouse_rbutton( MOUSE_BUTTON_UNPRESSED )
+	mouse_rbutton( MOUSE_BUTTON_UNPRESSED ),
+	fmod_system(NULL),
+	fmod_musicChannel(NULL)
 {
 
 	// reset na powyrhnostite za blitvane
@@ -1545,10 +1547,11 @@ void CSdl::DrawNum( int x, int y, char *text )
 /* ---------- AUDIO ---------- */
 
 #ifdef WITH_FMOD
-bool CSdl::IsFModOK(FMOD_RESULT result) {
+inline bool CSdl::IsFModOK(FMOD_RESULT result) {
 	if (result != FMOD_OK)
 	{
-		LOG( "FMOD error! (" << result << ") " << FMOD_ErrorString(result));
+		LOG( "FMOD error! (" << result << ") " << FMOD_ErrorString(result) );
+//				<< " in " << __FILE__ << " on line " << __LINE__);
 		return false;
 	}
 	return true;
@@ -1559,7 +1562,7 @@ bool CSdl::IsFModOK(FMOD_RESULT result) {
 // Ime: LoadSound()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-int CSdl::LoadSound( const char *filename, bool buffered_sound )
+int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 {
 #ifdef WITH_FMOD
 	if ( !bsound_initialized )
@@ -1575,15 +1578,32 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound )
 	{
 		if ( !ptr_snd->loaded )
 		{
-//			ptr_snd->sound = FSOUND_Sample_Load( FSOUND_UNMANAGED, filename, FSOUND_NORMAL, 0, 0 );
-//			if ( ptr_snd == NULL )
-			result = FMOD_System_CreateSound(fmod_system, filename, FMOD_DEFAULT, 0, &ptr_snd->sound);
+			if (IsStream)
+			{
+				result = FMOD_System_CreateSound(fmod_system,
+						filename,
+						FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM | FMOD_LOOP_NORMAL,
+						0,
+						&ptr_snd->sound);
+			}
+			else
+			{
+				result = FMOD_System_CreateSound(fmod_system,
+						filename,
+						FMOD_DEFAULT,
+						0,
+						&ptr_snd->sound);
+			}
+
 			if (!IsFModOK(result))
 			{
 				LOG("...failed to load sound file : " << filename );
 				return -1;
 			}
 			
+			// disable loop by default
+			FMOD_Sound_SetLoopCount(ptr_snd->sound, 0);
+
 			if ( !buffered_sound )
 			{
 				ptr_snd->buffered = false;
@@ -1743,20 +1763,26 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 
 	FMOD_RESULT result;
 
-	if (fmod_musicChannel != NULL )
-	{
-		result = FMOD_Channel_Stop(fmod_musicChannel);
-		CSdl::IsFModOK(result);
-	}
+	DBG("Playing music idx " << snd_index);
+//	if (fmod_musicChannel != NULL )
+//	{
+//		result = FMOD_Channel_Stop(fmod_musicChannel);
+//		FM_OK(result);
+//	}
 
-	LOG("playing music " << snd_index);
+	result = FMOD_System_PlaySound(fmod_system,
+			FMOD_CHANNEL_REUSE, //FMOD_CHANNEL_FREE
+			sounds[snd_index].sound,
+			0,
+			&fmod_musicChannel);
+	FM_OK(result);
 
-	result = FMOD_System_PlaySound(fmod_system, FMOD_CHANNEL_REUSE, sounds[snd_index].sound, 0, &fmod_musicChannel);
-	CSdl::IsFModOK(result);
 	result = FMOD_Channel_SetLoopCount(fmod_musicChannel, looped ? -1 : 0);
-//	CSdl::IsFModOk(result);
-	FMOD_Channel_SetPriority(fmod_musicChannel, 255);
-	CSdl::IsFModOK(result);
+	FM_OK(result);
+	result = FMOD_Channel_SetPosition(fmod_musicChannel, 0, FMOD_TIMEUNIT_MS);
+	FM_OK(result);
+//	result = FMOD_Channel_SetPriority(fmod_musicChannel, 255);
+//	FM_OK(result);
 #endif
 }
 
@@ -1768,13 +1794,15 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 void CSdl::StopMusic()
 {
 #ifdef WITH_FMOD
+	DBG("StopMusic");
 	if ( !bsound_initialized )
 		return;
 
 	if (fmod_musicChannel != NULL )
 	{
 		FMOD_RESULT result = FMOD_Channel_Stop(fmod_musicChannel);
-		CSdl::IsFModOK(result);
+		FM_OK(result);
+		fmod_musicChannel = NULL;
 	}
 #endif
 }
@@ -1796,8 +1824,11 @@ bool CSdl::IsMusicPlaying()
 	if (fmod_musicChannel != NULL )
 	{
 		result = FMOD_Channel_IsPlaying(fmod_musicChannel, &is_playing);
-//		CSdl::IsFModOk(result);
-		return (bool) is_playing;
+		if (FM_OK(result)) {
+//			if (!is_playing)
+//				DBG("valid channel but not playing...");
+			return (bool) is_playing;
+		}
 	}
 #endif
 
@@ -1817,14 +1848,14 @@ void CSdl::SetMusicVolume( int new_vol )
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
-	volume_music = new_vol * 2 - 1; // 0 - 255 range
+	volume_music = new_vol * 2; // 0 - 256 range
 	float fineVol = fRangeGet0255(volume_sound, 0.0f, 1.0f);
 
 	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
 
 	if (fmod_musicChannel) {
 		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fineVol);
-		CSdl::IsFModOK(result);
+		FM_OK(result);
 	}
 #endif
 }
@@ -1849,9 +1880,9 @@ void CSdl::SetMusicVolume( int new_vol )
 
 	FMOD_CHANNELGROUP *channelGroup;
 	FMOD_RESULT result = FMOD_System_GetMasterChannelGroup(fmod_system, &channelGroup);
-	if (CSdl::IsFModOK(result)) {
+	if (FM_OK(result)) {
 		result = FMOD_ChannelGroup_SetVolume(channelGroup, fineVol);
-		CSdl::IsFModOK(result);
+		FM_OK(result);
 	}
 #endif
 }
@@ -1910,7 +1941,7 @@ void CSound::Release()
 	{
 		DBG( "Freeing FMod sample data ..." );
 		FMOD_RESULT result = FMOD_Sound_Release(sound);
-		CSdl::IsFModOK(result);
+		FM_OK(result);
 	}
 #endif
 }

@@ -65,7 +65,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOG( "Failed to load " << name << " ! "); \
 	return false; }
 
-#define LOAD_MUSIC( container, name ) if ( (music[container] = _sdl->LoadSound( name, false )) == -1 ) { \
+#define LOAD_MUSIC( container, name ) if ( (music[container] = _sdl->LoadSound( name, false, true )) == -1 ) { \
 	LOG( "Failed to load music " << name << " ! "); \
 	return false; }
 
@@ -128,16 +128,13 @@ void CSounds::Play( CONST_SOUNDS snd_to_play, int pos )
 void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 {
 #ifdef WITH_FMOD  
-	if ( _sdl )
-	{
-		if ( _sdl->GetMusicVolume() <= 0 ) 
-			return;
 
-		current_track = (int)music_to_play;
-		_sdl->PlayMusic( music[current_track], looped );
+	if ( _sdl->GetMusicVolume() <= 0 )
+		return;
 
-		//music_stopped = false;
-	}
+	current_track = (int)music_to_play;
+	_sdl->PlayMusic( music[current_track], looped );
+
 #endif
 }
 
@@ -149,10 +146,14 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 void CSounds::StopMusic()
 {
 #ifdef WITH_FMOD
+	if (music_stopped)
+		return;
+
 	if ( music[current_track] )
 	{
 		_sdl->StopMusic();
 	}
+
 	music_stopped = true;
 #endif
 }
@@ -177,7 +178,8 @@ void CSounds::CheckMusic()
 	if ( !music_stopped )
 	{
 		if (!_sdl->IsMusicPlaying()) {
-			StopMusic();
+//			StopMusic();
+			DBG("CheckMusic playing ...");
 
 			current_track++;
 			if ( current_track >= NUM_MUSIX )
