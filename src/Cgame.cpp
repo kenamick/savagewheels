@@ -494,11 +494,11 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	//	bRunning = false; //{!}
 
 	if ( Sdl.keys[SDLK_F6] ) 
-		show_fps != show_fps;
+		show_fps = !show_fps;
 
 	// check music sequence
-	if ( Gamestate != GS_MENU ) 
-	  Snd.CheckMusic();
+	if ( Gamestate != GS_MENU )
+		Snd.CheckMusic();
 
 
 	// GAME_STATES
