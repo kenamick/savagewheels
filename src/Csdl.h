@@ -231,7 +231,7 @@ public:
 #endif
 	int  LoadSound( const char *filename, bool buffered_sound );
 	void PlaySound( int snd_index, int position = -1 );
-	void PlayMusic( int snd_index );
+	void PlayMusic( int snd_index, bool looped );
 	void StopMusic();
 	bool IsMusicPlaying();
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );

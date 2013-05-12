@@ -130,7 +130,7 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 			return;
 
 		current_track = (int)music_to_play;
-		_sdl->PlaySound( music[current_track], looped );
+		_sdl->PlayMusic( music[current_track], looped );
 
 		//music_stopped = false;
 	}

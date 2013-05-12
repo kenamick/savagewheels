@@ -1697,6 +1697,8 @@ void CSdl::PlaySound( int snd_index, int position )
 		}
  	}
 
+	pos = 0.0f; //fRangeGet0255(position, -0.1f, 1.0f);
+
 	FMOD_CHANNEL 	*channel;
 
 	if ( sounds[snd_index].buffered )
@@ -1733,7 +1735,7 @@ void CSdl::PlaySound( int snd_index, int position )
 // Ime: PlayMusic()
 // Opisanie: Plays a specified sound in the music channel
 ///////////////////////////////////////////////////////////////////////
-void CSdl::PlayMusic(int snd_index)
+void CSdl::PlayMusic(int snd_index, bool looped)
 {
 #ifdef WITH_FMOD
 	if ( !bsound_initialized || GetMusicVolume() <= 0 )
@@ -1747,9 +1749,11 @@ void CSdl::PlayMusic(int snd_index)
 		CSdl::IsFModOK(result);
 	}
 
+	LOG("playing music " << snd_index);
+
 	result = FMOD_System_PlaySound(fmod_system, FMOD_CHANNEL_REUSE, sounds[snd_index].sound, 0, &fmod_musicChannel);
 	CSdl::IsFModOK(result);
-	result = FMOD_Channel_SetLoopCount(fmod_musicChannel, 0);
+	result = FMOD_Channel_SetLoopCount(fmod_musicChannel, looped ? -1 : 0);
 //	CSdl::IsFModOk(result);
 	FMOD_Channel_SetPriority(fmod_musicChannel, 255);
 	CSdl::IsFModOK(result);
@@ -1813,10 +1817,13 @@ void CSdl::SetMusicVolume( int new_vol )
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
-	volume_music = new_vol;
+	volume_music = new_vol * 2 - 1; // 0 - 255 range
+	float fineVol = fRangeGet0255(volume_sound, 0.0f, 1.0f);
+
+	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
 
 	if (fmod_musicChannel) {
-		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fRangeGet0255(volume_music, 0.0f, 1.0f));
+		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fineVol);
 		CSdl::IsFModOK(result);
 	}
 #endif
@@ -1836,11 +1843,14 @@ void CSdl::SetMusicVolume( int new_vol )
 		new_vol = 0;
 
 	volume_sound = new_vol;
+	float fineVol = fRangeGet0255(volume_sound, 0.0f, 1.0f);
+
+	DBG("Setting Sound volume to " << volume_sound << " / fine volume " << fineVol);
 
 	FMOD_CHANNELGROUP *channelGroup;
 	FMOD_RESULT result = FMOD_System_GetMasterChannelGroup(fmod_system, &channelGroup);
 	if (CSdl::IsFModOK(result)) {
-		result = FMOD_ChannelGroup_SetVolume(channelGroup, fRangeGet0255(volume_sound, 0.0f, 1.0f));
+		result = FMOD_ChannelGroup_SetVolume(channelGroup, fineVol);
 		CSdl::IsFModOK(result);
 	}
 #endif
