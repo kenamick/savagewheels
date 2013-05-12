@@ -64,11 +64,11 @@ bool CSounds::Initialize( CSdl *pSdl )
 		return false;
 
 #define LOAD_SOUND( container, name, buffered ) if ( (sounds[container] = _sdl->LoadSound( name, buffered )) == -1 ) { \
-	LOG( "Failed to load " << name << " ! " << FMOD_ErrorString(FSOUND_GetError()) << " (fmod_error=" << FSOUND_GetError() << ") ." ); \
+	LOG( "Failed to load " << name << " ! "); \
 	return false; }
 
 #define LOAD_MUSIC( container, name ) if ( (music[container] = FMUSIC_LoadSong( name )) == NULL ) { \
-	LOG( "Failed to load " << name << " ! " << FMOD_ErrorString(FSOUND_GetError()) << " (fmod_error=" << FSOUND_GetError() << ") ." ); \
+	LOG( "Failed to load " << name << " ! "); \
 	return false; }
 
 	LOAD_SOUND( SND_CRASHLIGHT1, "sound/crash3.wav", true );
