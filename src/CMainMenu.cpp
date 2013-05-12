@@ -27,7 +27,7 @@
 
 extern int attribACC[3];
 extern int attribSPEED[5];
-extern int attribROT[3]; 
+//extern int attribROT[3];
 extern int attribDAMAGE[4];
 extern int attribARMOUR[4];
 
