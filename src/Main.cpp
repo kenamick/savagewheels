@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2003-2010 KenamicK Entertainment
+    Copyright (c) 2003-2013 KenamicK Entertainment
 
     Permission is hereby granted, free of charge, to any person
     obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 /*
   "Savage Wheels" - we're goin' deadly...
 
-  Copyright (c) 2003-2010 KenamicK Entertainment
+  Copyright (c) 2003-2013 KenamicK Entertainment
   http://www.kenamick.com/
 
   coded by Peter Petrov
@@ -39,6 +39,7 @@
   Patch 1.02:    ??.03.2004
   Patch 1.03:    ??.05.2004
   Release 1.4:   12.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 12.09.2010
+  Release 1.5:   ??.??.2013
   
 
 */
