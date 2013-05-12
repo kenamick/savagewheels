@@ -57,26 +57,23 @@ int main( int argc, char *argv[] )
 	_putenv("SDL_VIDEO_CENTERED=1");
 #endif
 
-	if ( argc > 1 )
-	{
-	  for( int i = 1; i < argc; i++ )
-	  {
-	    if ( !strcmp( argv[i], "-wnd" ) )
-	      fullscreen = false;
-	    else if ( !strcmp( argv[i], "-sw" ) )
-	      hardware_support = false;
-	    else if ( !strcmp( argv[i], "-force-fullscreen" ) )
-	      fullscreen = true;
-	    else if ( !strcmp( argv[i], "-snd_alsa" ) )
-	      putenv("SW_SND_ALSA=1"); // on the majority Linux distros this seems to be required !
-	    else if ( !strcmp( argv[i], "-snd_22khz" ) )
-	      putenv("SW_SND_22KHZ=1"); // 44KHz somehow seems to be a problem for FMod on Linux
-	    else
-	    {
-	      perror("Unknown command line parameter passed!");
-	      exit(0);
-	    }
-	  }
+	if (argc > 1) {
+		for (int i = 1; i < argc; i++) {
+			if (!strcmp(argv[i], "-wnd"))
+				fullscreen = false;
+			else if (!strcmp(argv[i], "-sw"))
+				hardware_support = false;
+			else if (!strcmp(argv[i], "-force-fullscreen"))
+				fullscreen = true;
+			else if (!strcmp(argv[i], "-snd_alsa"))
+				setenv("SW_SND_ALSA", "1", 0); // on the majority Linux distros this seems to be required !
+			else if (!strcmp(argv[i], "-snd_22khz"))
+				setenv("SW_SND_22KHZ", "1", 0); // 44KHz somehow seems to be a problem for FMod on Linux
+			else {
+				perror("Unknown command line parameter passed!");
+				exit(0);
+			}
+		}
 	}
 	
 	// Start Game
