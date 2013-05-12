@@ -1758,7 +1758,12 @@ void CSdl::SetMusicVolume( int new_vol )
 
 	volume_sound = new_vol;
 
-	FSOUND_SetSFXMasterVolume( volume_sound );
+	FMOD_CHANNELGROUP *channelGroup;
+	FMOD_RESULT result = FMOD_System_GetMasterChannelGroup(fmod_system, &channelGroup);
+	if (CSdl::IsFModOK(result)) {
+		result = FMOD_ChannelGroup_SetVolume(channelGroup, fRangeGet0255(volume_sound, 0.0f, 1.0f));
+		CSdl::IsFModOK(result);
+	}
 #endif
 }
 
