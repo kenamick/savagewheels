@@ -58,14 +58,11 @@ CSwv_module::CSwv_module()
 ///////////////////////////////////////////////////////////////////////////////
 CSwv_module::~CSwv_module()
 {
-  
-  // clean up allocated memory
-  if ( vehicles != NULL )
-  {
-    delete[] vehicles;
-    vehicles = NULL;
-  }
-
+	// clean up allocated memory
+	if (vehicles != NULL) {
+		delete[] vehicles;
+		vehicles = NULL;
+	}
 }
 
 
@@ -120,9 +117,7 @@ int CSwv_module::Create( const char *destPath, SWV_HEADER *swm )
 		return SWVERROR_OPENSWVFILE;
 
 	// write headers
-	//sprintf( swm->header, "%s", "SWV" );
 	strncpy( swm->header, header, 3 );
-	//fwrite( header, sizeof(header)*3, 1, fp );
 	fwrite( swm, sizeof(SWV_HEADER), 1, fp );
 
 	// get number of animations ( +2 face.bmp dface.bmp )
@@ -178,39 +173,40 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 		return SWVERROR_OPENSWVFILE;
 
 	// read header
-	//CBufferedReader reader(fp);
-
-	//reader.readCharArray( swv_file->header, 3 );
 	fread( swv_file, sizeof(SWV_HEADER), 1, fp );
 	if ( swv_file->header[0] != 'S' && swv_file->header[1] != 'W' && swv_file->header[2] != 'V' ) 
 		return SWVERROR_INCORRECTHEADER;
-	
-	// read elements
-// 	reader.readCharArray( swv_file->filename, 64 );
-// 	reader.readCharArray( swv_file->vehiclename, 8 );
-// 	swv_file->max_vel = static_cast<CONST_VSPEED>(reader.readInt16());
-// 	swv_file->acc = static_cast<CONST_VACC>(reader.readInt16());
-// 	swv_file->dec_acc = static_cast<CONST_VACC>(reader.readInt16());
-// 	swv_file->rot_speed = static_cast<CONST_VROTSPEED>(reader.readInt16());
-// 	swv_file->lbs = reader.readInt16();
-// 	swv_file->damage = static_cast<CONST_VDAMAGE>(reader.readInt16());
-// 	swv_file->hp = static_cast<CONST_VARMOUR>(reader.readInt16());
-// 	swv_file->hp_crash = reader.readInt16();
-// 	swv_file->animation_frames = reader.readInt16();
-	
+
+#ifdef ARCH_X64
+	/*
+	 * This is a nasty hack to load the BITMAP file positions of each animation frame correctly.
+	 * The hack comes from a stupidity I made 10 years ago to actually serialize the pointer to
+	 * the SVW_FILES structure stored inside the SWV_HEADER structure. This was all done under
+	 * 32 bit Windows where (of course) the pointer size would be 4 bytes.
+	 * When we want to load back the data under 64 bit machine the fread() routine will read
+	 * the complete SWV_HEADER structure in memory and map the pointer to SWV_HEADER as 64 bit ->
+	 * 8 bytes. This actually "eats" some of the data further on and breaks the fread() below.
+	 *
+	 * So, the solution is quite "simple". Just rewind the file cursor position enough so we
+	 * can get back on track to read the SVW_FILES array.
+	 *
+	 * This is an important lesson how NOT to serialize structures. :)
+	 */
+	fseek(fp, ftell(fp) - sizeof(SWV_FILES *) / 2, SEEK_SET);
+#endif
+
 	// read file_positions
 	int num_anims = swv_file->animation_frames * 2 + 3; // (+3 face.bmp dface.bmp, name.bmp)
 	swv_file->pfiles = new SWV_FILES[num_anims];
-	fread( swv_file->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp ); 
+	fread( swv_file->pfiles, sizeof(SWV_FILES) * (num_anims), 1, fp );
 
-// 	for ( int i = 0; i < num_anims; i ++ )
-// 	{
-// 	  swv_file->pfiles[i].pos = reader.readInt64();
-// 	  swv_file->pfiles[i].length = reader.readInt64();
-// 	  reader.readCharArray(swv_file->pfiles[i].filename, 255 );
-// 	}
+// 	for (int i = 0; i < num_anims; i++) {
+// 		DBG("pos: " << swv_file->pfiles[i].pos
+// 				<< " size (KB): " << swv_file->pfiles[i].length
+// 				<< " name: " << swv_file->pfiles[i].filename);
+//	}
 	
-	// copy module_filename
+	// set module filename
 	sprintf( swv_file->filename, "%s", filename );
 
 	if ( fp != NULL )
@@ -280,9 +276,7 @@ int CSwv_module::SearchAndLoad( const char *search_dir )
 			{
 				sprintf( buf, "%s/%s", search_dir, pDirEntry->d_name );
 
-				#ifdef __DEBUG
-					LOG( "[SWV] loading: " << buf );
-				#endif
+				DBG( "[SWV] loading: " << buf );
 				
 				if ( 0 == stat( buf, &file_stat ) )
 				{
@@ -313,47 +307,38 @@ int CSwv_module::SearchAndLoad( const char *search_dir )
 	return SWV_SUCCESS;
 }
 
-const SWV_HEADER* CSwv_module::GetVehiclesData()
-{
-  return static_cast<const SWV_HEADER *>(vehicles);
+const SWV_HEADER* CSwv_module::GetVehiclesData() {
+	return static_cast<const SWV_HEADER *>(vehicles);
 }
 
-int32_t CSwv_module::GetFacePos( unsigned int car_index ) 
-{ 
-  return (vehicles[car_index].pfiles[0].pos); 
+int32_t CSwv_module::GetFacePos(unsigned int car_index) {
+	return (vehicles[car_index].pfiles[0].pos);
 }
 
-int32_t CSwv_module::GetFaceSize( unsigned int car_index ) 
-{ 
-  return (vehicles[car_index].pfiles[0].length); 
+int32_t CSwv_module::GetFaceSize(unsigned int car_index) {
+	return (vehicles[car_index].pfiles[0].length);
 }
 
-int32_t CSwv_module::GetDriverFacePos( unsigned int car_index ) 
-{ 
-  return (vehicles[car_index].pfiles[1].pos); 
+int32_t CSwv_module::GetDriverFacePos(unsigned int car_index) {
+	return (vehicles[car_index].pfiles[1].pos);
 }
 
-int32_t CSwv_module::GetDriverFaceSize( unsigned int car_index ) 
-{ 
-  return (vehicles[car_index].pfiles[1].length); 
+int32_t CSwv_module::GetDriverFaceSize(unsigned int car_index) {
+	return (vehicles[car_index].pfiles[1].length);
 }
 
-int32_t CSwv_module::GetNamePos( unsigned int car_index ) 
-{ 
-  return (vehicles[car_index].pfiles[2].pos); 
+int32_t CSwv_module::GetNamePos(unsigned int car_index) {
+	return (vehicles[car_index].pfiles[2].pos);
 }
 
-int32_t CSwv_module::GetNameSize( unsigned int car_index ) 
-{ 
-  return (vehicles[car_index].pfiles[2].length);
+int32_t CSwv_module::GetNameSize(unsigned int car_index) {
+	return (vehicles[car_index].pfiles[2].length);
 }
 
-int32_t CSwv_module::GetFramePos( unsigned int car_index, int frame ) 
-{ 
-  return (vehicles[car_index].pfiles[frame+2].pos); 
+int32_t CSwv_module::GetFramePos(unsigned int car_index, int frame) {
+	return (vehicles[car_index].pfiles[frame + 2].pos);
 }
 
-int32_t CSwv_module:: GetFrameSize( unsigned int car_index, int frame ) 
-{ 
-  return (vehicles[car_index].pfiles[frame+2].length); 
+int32_t CSwv_module::GetFrameSize(unsigned int car_index, int frame) {
+	return (vehicles[car_index].pfiles[frame + 2].length);
 }

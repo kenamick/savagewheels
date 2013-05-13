@@ -97,26 +97,24 @@ enum CONST_VARMOUR
 struct SWV_FILES {
 	int32_t pos;
 	int32_t length;
-	char filename[255];
+	char 	filename[255];
 };
-
 
 struct SWV_HEADER {
-	char		header[3];
-	char		filename[64];
-	char		vehiclename[8];
-	CONST_VSPEED    max_vel;
-	CONST_VACC 	acc;
-	int32_t		dec_acc;
+	char 			header[3];
+	char 			filename[64];
+	char 			vehiclename[8];
+	CONST_VSPEED 	max_vel;
+	CONST_VACC 		acc;
+	int32_t 		dec_acc;
 	CONST_VROTSPEED rot_speed;
-	int32_t	lbs;
-	CONST_VDAMAGE   damage;
-	CONST_VARMOUR   hp;
-	int32_t	hp_crash;
-	int32_t	animation_frames;
-	SWV_FILES	*pfiles;
+	int32_t 		lbs;
+	CONST_VDAMAGE 	damage;
+	CONST_VARMOUR 	hp;
+	int32_t 		hp_crash;
+	int32_t 		animation_frames;
+	SWV_FILES 		*pfiles;
 };
-
 
 class CSwv_module
 {
