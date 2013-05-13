@@ -39,9 +39,9 @@ class CBufferedReader
     unsigned char readUChar();
     void readCharArray( char *dest, int size );
     void readUCharArray( unsigned char *dest, int size );
-    short readInt16();
-    int readInt32();
-    long readInt64();
+    int16_t readInt16();
+    int32_t readInt32();
+    int64_t readInt64();
     
   private:
     FILE *_fpSource;

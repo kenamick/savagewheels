@@ -1328,7 +1328,7 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 	SDL_FreeSurface( sdl_surf );
 	sdl_surf = NULL;
 	
-	//DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );	
+//	DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );
 	
 	return new_surf;
 }

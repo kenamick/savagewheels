@@ -28,62 +28,50 @@
 
 #define READ_OK(res) if (0 == (res)) LOG( "Error: CBufferedReader could not read bytes or reached end of stream." )
 
-CBufferedReader::CBufferedReader(FILE* fp)
-: _fpSource(fp)
-{
+CBufferedReader::CBufferedReader(FILE* fp) :
+		_fpSource(fp) {
 //   if ( NULL == fp )
 //     throw std::exception("Null reference to Stream passed!");
 }
 
-CBufferedReader::~CBufferedReader()
-{
+CBufferedReader::~CBufferedReader() {
 
 }
 
-char CBufferedReader::readChar()
-{
-  char c;
-  READ_OK( fread( &c, sizeof(char), 1, _fpSource ) );
-
-  return c;
+char CBufferedReader::readChar() {
+	char c;
+	READ_OK(fread(&c, sizeof(char), 1, _fpSource));
+	return c;
 }
 
-unsigned char CBufferedReader::readUChar()
-{
-  unsigned char c;
-  READ_OK( fread( &c, sizeof(unsigned char), 1, _fpSource ) );
-
-  return c;
+unsigned char CBufferedReader::readUChar() {
+	unsigned char c;
+	READ_OK(fread(&c, sizeof(unsigned char), 1, _fpSource));
+	return c;
 }
 
-void CBufferedReader::readCharArray(char* dest, int size)
-{
-  READ_OK( fread( dest, sizeof(char), size, _fpSource ) );
+void CBufferedReader::readCharArray(char* dest, int size) {
+	READ_OK(fread(dest, sizeof(char), size, _fpSource));
 }
 
-void CBufferedReader::readUCharArray(unsigned char* dest, int size)
-{
-  READ_OK( fread( dest, sizeof(unsigned char), size, _fpSource ) );
+void CBufferedReader::readUCharArray(unsigned char* dest, int size) {
+	READ_OK(fread(dest, sizeof(unsigned char), size, _fpSource));
 }
 
-short CBufferedReader::readInt16()
-{
-  char buf[2];
-  READ_OK( fread( buf, sizeof(char), 2, _fpSource ) );
-  short aa = ATOW(buf);
-  return aa;
+int16_t CBufferedReader::readInt16() {
+	char buf[2];
+	READ_OK(fread(buf, sizeof(char), 2, _fpSource));
+	return ATOW(buf);
 }
 
-int CBufferedReader::readInt32()
-{
-  char buf[4];
-  READ_OK( fread( buf, sizeof(char), 4, _fpSource ) );
-  return ATODW(buf);
+int32_t CBufferedReader::readInt32() {
+	char buf[4];
+	READ_OK(fread(buf, sizeof(char), 4, _fpSource));
+	return ATODW(buf);
 }
 
-long CBufferedReader::readInt64()
-{
-  char buf[8];
-  READ_OK( fread( buf, sizeof(char), 8, _fpSource ) );
-  return ATOQW(buf);
+int64_t CBufferedReader::readInt64() {
+	char buf[8];
+	READ_OK(fread(buf, sizeof(char), 8, _fpSource));
+	return ATOQW(buf);
 }
