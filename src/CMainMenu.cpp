@@ -1332,23 +1332,23 @@ int CMainMenu::ReloadCarsAttribs()
 	for ( int i = 0; i < _game->Swv.GetVehicles(); i++ )
 	{
 		// load car faces
-		loaded = loaded && ( ssCarFace[i] = _game->Sdl.LoadBitmap(
+		loaded = ( ssCarFace[i] = _game->Sdl.LoadBitmap(
 				_game->Swv.GetVehicleFilename( i ),
 				_game->Swv.GetFacePos( i ),
-				_game->Swv.GetFaceSize( i ))) == NULL;
+				_game->Swv.GetFaceSize( i ))) == NULL && loaded;
 
 		// load drivers
-		loaded = loaded && ( ssDriverFace[i] = _game->Sdl.LoadBitmap(
+		loaded = ( ssDriverFace[i] = _game->Sdl.LoadBitmap(
 				_game->Swv.GetVehicleFilename( i ),
 				_game->Swv.GetDriverFacePos( i ),
-				_game->Swv.GetDriverFaceSize( i ))) == NULL;
+				_game->Swv.GetDriverFaceSize( i ))) == NULL && loaded;
 
 		// load driver names
-		loaded = loaded && ( ssDriverName[i] = _game->Sdl.LoadBitmap(
+		loaded = ( ssDriverName[i] = _game->Sdl.LoadBitmap(
 				_game->Swv.GetVehicleFilename( i ),
 				_game->Swv.GetNamePos( i ) ,
 				_game->Swv.GetNameSize( i ),
-				BLACK)) == NULL;
+				BLACK)) == NULL && loaded;
 	}
 
 	faces_released = false;
