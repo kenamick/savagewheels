@@ -1327,31 +1327,33 @@ int CMainMenu::ReloadCarsAttribs()
 	ssDriverFace = (SDL_Surface **) new SDL_Surface[_game->Swv.GetVehicles()];
 	ssDriverName = (SDL_Surface **) new SDL_Surface[_game->Swv.GetVehicles()];
 
+	bool loaded = true;
+
 	for ( int i = 0; i < _game->Swv.GetVehicles(); i++ )
 	{
 		// load car faces
-		if ( ( ssCarFace[i] = _game->Sdl.LoadBitmap( _game->Swv.GetVehicleFilename( i ),
-											   _game->Swv.GetFacePos( i ),
-										   	   _game->Swv.GetFaceSize( i ) 
-											   ) ) == NULL ) return false;
+		loaded = loaded && ( ssCarFace[i] = _game->Sdl.LoadBitmap(
+				_game->Swv.GetVehicleFilename( i ),
+				_game->Swv.GetFacePos( i ),
+				_game->Swv.GetFaceSize( i ))) == NULL;
 
 		// load drivers
-		if ( ( ssDriverFace[i] = _game->Sdl.LoadBitmap( _game->Swv.GetVehicleFilename( i ),
-									   		      _game->Swv.GetDriverFacePos( i ),
-										   	      _game->Swv.GetDriverFaceSize( i ) 
-											      ) ) == NULL ) return false;
+		loaded = loaded && ( ssDriverFace[i] = _game->Sdl.LoadBitmap(
+				_game->Swv.GetVehicleFilename( i ),
+				_game->Swv.GetDriverFacePos( i ),
+				_game->Swv.GetDriverFaceSize( i ))) == NULL;
 
 		// load driver names
-		if ( ( ssDriverName[i] = _game->Sdl.LoadBitmap( _game->Swv.GetVehicleFilename( i ),
-									   		      _game->Swv.GetNamePos( i ) ,
-										   	      _game->Swv.GetNameSize( i ),
-												  BLACK
-											      ) ) == NULL ) return false;
+		loaded = loaded && ( ssDriverName[i] = _game->Sdl.LoadBitmap(
+				_game->Swv.GetVehicleFilename( i ),
+				_game->Swv.GetNamePos( i ) ,
+				_game->Swv.GetNameSize( i ),
+				BLACK)) == NULL;
 	}
 
 	faces_released = false;
 	
-	return true;
+	return loaded;
 }
 
 
@@ -1369,9 +1371,14 @@ void CMainMenu::ReleaseCarsAttribs()
 		RELEASE_SURF( ssDriverName[i] );
 	}
 
-	delete[] ssCarFace;
-	delete[] ssDriverFace;
-	delete[] ssDriverName;
+	if (ssCarFace)
+		delete[] ssCarFace;
+
+	if (ssDriverFace)
+		delete[] ssDriverFace;
+
+	if (ssDriverName)
+		delete[] ssDriverName;
 
 	faces_released = true;
 }
