@@ -1290,66 +1290,44 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, Uint32 color_key, Uint8 alp
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32 file_size, Uint32 color_key, Uint16 alpha_value )
 {
-
 	SDL_Surface  *sdl_surf	= NULL;						// temp surface
 	FILE		 *fp		= NULL;						// file pointer
-	char		 *pimg		= NULL;						// image data
 	SDL_RWops	 *sdl_rw	= NULL;						// sdl_read_write_operations
-	//__BITMAPFILEHEADER bmf;
-	// 19778 
 
-	// otvori file-a i zaredi kartinkata v temp buffer
 	if ( ( fp = fopen( filename, "rb")) == NULL ) 
 	{
-		LOG("...failed to load graphics from : " << filename );
+		LOG("...failed to open file : " << filename );
 		return NULL;
 	}
 
 	fseek( fp, file_offset, SEEK_CUR );
-	// vzemi bitmap-info
-	//fread( &bmf, sizeof(bmf), 1, fp );
-	// info->mem
-	pimg = new char[file_size];
-	fread( pimg, file_size, 1, fp );
-	fclose(fp);
-	
-	// syzdai read_write_operaciq
-	if ( ( sdl_rw = SDL_RWFromMem( pimg, file_size )) == NULL ) 
+
+//	if ( ( sdl_rw = SDL_RWFromMem( pimg, file_size )) == NULL )
+	if ( ( sdl_rw = SDL_RWFromFP( fp, 1 )) == NULL )
 	{
-		LOG("...failed to create RWops with : " << filename );
-
-		if ( pimg )
-			delete[] pimg;
-
+		LOG("...failed to create RWops with : " << filename << " Error: " << SDL_GetError());
 		return NULL;
 	}
-	// zaredi bitmap ot mem
+
+	// load bitmap from memory handler
 	if ( ( sdl_surf = SDL_LoadBMP_RW( sdl_rw, 1 )) == NULL ) 
 	{
-		LOG("...failed to load surface into memory from : " << filename );
-
-		if ( pimg )
-			delete[] pimg;
-
+		LOG("...failed to load surface into memory from : " << filename
+				<< " Error: " << SDL_GetError());
 		return NULL;
 	}
 
-	// colorkey i alpha BEFORE dispformat vinagi !
+	// set color key & alpha BEFORE setting DisplayFormat!
 	if ( color_key != NO_COLORKEY )
 		SDL_SetColorKey( sdl_surf, SDL_SRCCOLORKEY, color_key );
 
 	if ( alpha_value != NO_ALPHA )
 		SDL_SetAlpha( sdl_surf, SDL_SRCALPHA, (Uint8)alpha_value );
 	
-	//DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << sdl_surf->w << " H: " << sdl_surf->h );
-
 	SDL_Surface *new_surf = SDL_DisplayFormat( sdl_surf );
 	SDL_FreeSurface( sdl_surf );
 	sdl_surf = NULL;
 	
-	if ( pimg )
-	  delete[] pimg;
-
 	//DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );	
 	
 	return new_surf;
