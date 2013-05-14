@@ -231,21 +231,40 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
  {
 	 // normal sprites
 	 index = cn + 3;
-	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) 
-	   return 0;
+	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( vehicle_filename,
+			 swv->pfiles[index].pos,
+			 swv->pfiles[index].length,
+			 MAGENTA,
+			 NO_ALPHA )) == NULL )
+	 {
+		 return 0;
+	 }
+
 	 // create a mask for this sprite
 	  _game->Sdl.MakeBoolMask( sprite_norm[cn], mask_norm[cn] );
 		 
 	 // crashed sprites
 	 index = cn + 3 + frames; // calc.offset to the crashed sprites
-	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA, NO_ALPHA )) == NULL ) 
-	   return 0;
+	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( vehicle_filename,
+			 swv->pfiles[index].pos,
+			 swv->pfiles[index].length,
+			 MAGENTA,
+			 NO_ALPHA )) == NULL )
+	 {
+		 return 0;
+	 }
+
 	 // create a mask for this sprite
 	 _game->Sdl.MakeBoolMask( sprite_crash[cn], mask_crash[cn] );
  }
 
- // load driver_name surface
- if ( (driver_name = _game->Sdl.LoadBitmap( vehicle_filename, swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA )) == NULL ) return 0;
+	 // load driver_name surface
+	if ((driver_name = _game->Sdl.LoadBitmap(vehicle_filename,
+			swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA))
+			== NULL)
+	{
+		return 0;
+	}
 
  display_frame = tire_frame = 0;
 
@@ -264,7 +283,7 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
  team = carIndex;
 
  released = false;
- this->set_stop = false;
+ set_stop = false;
  
  return 1;
  
@@ -376,112 +395,106 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 void CVehicle::Create()
 {
  
- Uint32	   dist;
- CVehicle  *ptr_veh;
- bool	   do_not_warp = true;
- int	   i = 0, j = 0;
+	Uint32 		dist;
+	CVehicle 	*ptr_veh;
+	bool 		do_not_warp = true;
+	int 		i = 0, j = 0;
 
   
  // proveri dali ima avotmobil do izhodqshtata tochka za warp-vane
- while ( do_not_warp )
- {
-   j = (int)(rand()%4);
-   do_not_warp = false;
- 
-   ptr_veh = _game->Auto;
+	while (do_not_warp) {
+		j = (int) (rand() % 4);
+		do_not_warp = false;
 
-	for ( i = 0; i < _game->game_num_cars; i++ )
-	{
-		if ( i != myIndex )  
-		{
-			if ( ptr_veh->GetVisible() )
-			{
-				dist = GetDistanceNSR( ptr_veh->GetX(), ptr_veh->GetY(), pos_warp[j].x, pos_warp[j].y );
-				if ( dist < SAFE_WARP_DISTANCE )
-				{
-					do_not_warp = true;
-					break;
+		ptr_veh = _game->Auto;
+
+		for (i = 0; i < _game->game_num_cars; i++) {
+			if (i != myIndex) {
+				if (ptr_veh->GetVisible()) {
+					dist = GetDistanceNSR(ptr_veh->GetX(), ptr_veh->GetY(),
+							pos_warp[j].x, pos_warp[j].y);
+
+					if (dist < SAFE_WARP_DISTANCE) {
+						do_not_warp = true;
+						break;
+					}
 				}
-				
 			}
+
+			ptr_veh++;
 		}
 
-		ptr_veh++;
+		//if ( !do_not_warp ) break;
 	}
+
+	//if ( do_not_warp ) return;
+ 
+
+	x_acc = 0;
+	y_acc = 0;
+	hit_vel = 0;
+	landmines = 0;
+	vmove = VM_NONE;
+	vrot = VR_NONE;
+
+	// sprite_pointer sochi kym normal pix
+	sprite = sprite_norm;
+	mask = mask_norm;
+	bcrashlook = false;
+
+	// reset vars
+	x = pos_warp[j].x;
+	y = pos_warp[j].y;
+	speed_bonus = 0;
+ 
+	if ( j == 2 || j == 3 )
+	{
+		motion_frame = 18;
+		display_frame = motion_frame;
+		center_x = (Uint32)x + sprite[18]->w / 2;
+		center_y = (Uint32)y + sprite[18]->h / 2;
+
+		DBG( "18-X: " << x << " Y: " << y << " Sprite-W: " << sprite[18]->w << " Sprite-H:" << sprite[18]->h << " Sprite-NORM-W: " << sprite_norm[18]->w << " Sprite-NORM-H:" << sprite_norm[18]->h);
+		DBG( "18-CX: " << center_x << " 18CY: " << center_y);
+	}
+	else
+	{
+		motion_frame = 0;
+		display_frame = 0;
+		center_x = (Uint32)x + sprite[0]->w / 2;
+		center_y = (Uint32)y + sprite[0]->h / 2;
+
+		DBG( "X: " << x << " Y: " << y << " Sprite-W: " << sprite[0]->w << " Sprite-H:" << sprite[0]->h << " Sprite-NORM-W: " << sprite_norm[0]->w << " Sprite-NORM-H:" << sprite_norm[0]->h);
+		DBG( "CX: " << center_x << " CY: " << center_y);
+	}
+
+	tire_frame = 0;
+	vel = 0;
+	//bIshit = false;
+	tire_trails = VTT_NONE;
+	trails_time = 0;
+
+	// ai_facing
+	ai_cur_angle = motion_frame * 10;
+	ai_stuck = false;
+
+	visible = true;
+	self_destruct = self_destruction = false;
+	warning_time = 0;
 	
-	//if ( !do_not_warp ) break;
- }
+	hit_points = max_hitpoints;
 
- //if ( do_not_warp ) return;
- 
-
- x_acc = 0;
- y_acc = 0;
- hit_vel = 0;
- landmines = 0;
- vmove = VM_NONE;
- vrot = VR_NONE;
-
- // sprite_pointer sochi kym normal pix
- sprite = sprite_norm;
- mask = mask_norm;
- bcrashlook = false;
-
- // reset vars
- x = pos_warp[j].x;
- y = pos_warp[j].y;
- speed_bonus = 0;
- 
- if ( j == 2 || j == 3 )
- {
-	motion_frame = 18;
-	display_frame = motion_frame;
-	center_x = (Uint32)x + sprite[18]->w / 2;
-	center_y = (Uint32)y + sprite[18]->h / 2;
-
-	DBG( "18-X: " << x << " Y: " << y << " Sprite-W: " << sprite[18]->w << " Sprite-H:" << sprite[18]->h << " Sprite-NORM-W: " << sprite_norm[18]->w << " Sprite-NORM-H:" << sprite_norm[18]->h);
-	DBG( "18-CX: " << center_x << " 18CY: " << center_y);
- }
- else
- {
-	motion_frame = 0;
-	display_frame = 0;
-	center_x = (Uint32)x + sprite[0]->w / 2;
-	center_y = (Uint32)y + sprite[0]->h / 2;
-	
-	DBG( "X: " << x << " Y: " << y << " Sprite-W: " << sprite[0]->w << " Sprite-H:" << sprite[0]->h << " Sprite-NORM-W: " << sprite_norm[0]->w << " Sprite-NORM-H:" << sprite_norm[0]->h);
-	DBG( "CX: " << center_x << " CY: " << center_y);
- }
-
- 
- tire_frame = 0;
- vel = 0;
- //bIshit = false; 
- tire_trails = VTT_NONE;
- trails_time = 0;
-
- // ai_facing
- ai_cur_angle = motion_frame * 10;
- ai_stuck = false;
-
- visible = true;
- self_destruct = self_destruction = false;
- warning_time = 0;
-
- hit_points = max_hitpoints;
-
- // TEMP		
- /*acc = 160;
- max_vel = 180;
- dec_acc = acc - 50;
- rot_speed = 15;
- lbs = 1;
- damage = 3;		
- max_hitpoints = 100;
- hit_points = max_hitpoints;
- hit_points_crash = 50;
-*/
- 
+	 // TEMP
+	 /*acc = 160;
+	 max_vel = 180;
+	 dec_acc = acc - 50;
+	 rot_speed = 15;
+	 lbs = 1;
+	 damage = 3;
+	 max_hitpoints = 100;
+	 hit_points = max_hitpoints;
+	 hit_points_crash = 50;
+	*/
 }
 
 
@@ -1230,7 +1243,7 @@ void CVehicle::Update()
  _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
  _game->Sdl.Addtoblit( x, y, surf );
  
- DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
+// DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
  
  // blit status
  sprintf( buf, "%d", frags );

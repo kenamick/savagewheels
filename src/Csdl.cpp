@@ -147,40 +147,35 @@ void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf )
 void CSdl::_Blitall()
 {
 
-  if ( num_surfaces == 0 ) 
-    return;
-  
-  SDL_Rect      rdest = { 0, 0, 0, 0 };
-  bool          bFlag = true;
-  STRUCT_BLIT   surf;
-  Uint32	i = 0;
+	if (num_surfaces == 0)
+		return;
 
-  // sortirai kartinkite predi rendirane
-  while(bFlag)
-  {
-	bFlag = false;
+	SDL_Rect 	rdest = { 0, 0, 0, 0 };
+	bool 		bSorted = true;
+	STRUCT_BLIT surf;
+	Uint32 		i = 0;
 
-	for ( i = 0; i < num_surfaces - 1; i++)
-	{
-	  if ( surface[i].z > surface[i+1].z ) 
-	  {
-		surf = surface[i];
-		surface[i] = surface[i+1];
-		surface[i+1] = surf;
-		bFlag = true;
-	  }
+	// sort by z-order (TODO: use qsort)
+	while (bSorted) {
+		bSorted = false;
+
+		for (i = 0; i < num_surfaces - 1; i++) {
+			if (surface[i].z > surface[i + 1].z) {
+				surf = surface[i];
+				surface[i] = surface[i + 1];
+				surface[i + 1] = surf;
+				bSorted = true;
+			}
+		}
 	}
-  }
 
-  for ( i = 0; i < num_surfaces; i++ )
-  {
-	rdest.x = surface[i].x;
-	rdest.y = surface[i].y;
-	SDL_BlitSurface( surface[i].surf, NULL, screen, &rdest );
-  }
+	for (i = 0; i < num_surfaces; i++) {
+		rdest.x = surface[i].x;
+		rdest.y = surface[i].y;
+		SDL_BlitSurface(surface[i].surf, NULL, screen, &rdest);
+	}
 
-  // izchisti broqcha
-  num_surfaces = 0;
+	num_surfaces = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -204,19 +199,19 @@ void CSdl::ToggleFullscreen()
 int CSdl::Addtoblit( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
 
-  // proweri dali ima mqsto w masiva
-  if ( num_surfaces + 1 > MAX_SPRITES ) 
-    return SDL_FAIL;
- 
-  // dobawi powyrhnostta kym masiva za rendirane
-  
-  surface[num_surfaces].x = x;
-  surface[num_surfaces].y = y;
-  surface[num_surfaces].z = y + (surf->w / 2);
-  surface[num_surfaces].surf = surf;
-  num_surfaces++;
+	// proweri dali ima mqsto w masiva
+	if (num_surfaces >= MAX_SPRITES) {
+		return SDL_FAIL;
+	}
 
-  return SDL_OK;
+	// dobawi powyrhnostta kym masiva za rendirane
+	surface[num_surfaces].x = x;
+	surface[num_surfaces].y = y;
+	surface[num_surfaces].z = y + (surf->w / 2);
+	surface[num_surfaces].surf = surf;
+	num_surfaces++;
+
+	return SDL_OK;
 }
 
 
@@ -547,11 +542,9 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf )
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint16		i = 0U, 
-				j = 0U;
-	SDL_Rect		rSurf1;
-	Uint16			*pixel1 = NULL, 
-				*pixel2 = NULL;
+	register Uint16 i = 0U, j = 0U;
+	Uint16 *pixel1 = NULL, *pixel2 = NULL;
+	SDL_Rect rSurf1;
 
 	rSurf1.x = 0;
 	rSurf1.y = 0;
@@ -598,11 +591,9 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint16		i = 0U, 
-				j = 0U;
-	SDL_Rect		rSurf1;
-	Uint32			*pixel1 = NULL, 
-				*pixel2 = NULL;
+	Uint32 		i = 0U, j = 0U;
+	Uint32 		*pixel1 = NULL, *pixel2 = NULL;
+	SDL_Rect 	rSurf1;
 
 	rSurf1.x = 0;
 	rSurf1.y = 0;
@@ -621,7 +612,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 		for ( i = rSurf1.x; i < rSurf1.w; i++ )
 		{
 			if ( *pixel2 != MAGENTA_888 )
-				*pixel1 =  (*pixel1 & SHADOW_MASK888) >> 1;
+				*pixel1 = (*pixel1 & SHADOW_MASK888) >> 1;
 				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
 
 			pixel1++;
@@ -643,9 +634,9 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 ///////////////////////////////////////////////////////////////////////////
 int CSdl::_ClipRect( int *x , int *y, SDL_Rect *rSurf )
 {
-	SDL_Rect	rWld, rResult, rDest;
-	int		tx = *x, 
-			ty = *y;
+	SDL_Rect 	rWld, rResult, rDest;
+	int 		tx = *x,
+				ty = *y;
 
 	//tx -= rWorld.x;
 	//ty -= rWorld.y;
@@ -701,10 +692,10 @@ void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 {
-	Uint32 pos = 0;
-	Uint32 w = surf->w;
-	Uint32 h = surf->h;
-	Uint16	  *pixel = NULL;
+	Uint32 	pos = 0;
+	Uint32 	w = surf->w;
+	Uint32 	h = surf->h;
+	Uint16	*pixel = NULL;
 	
 	//DBG("Making bool mask (16bit) with W: " << w << " H: " << h );
 	mask = new Uint32[w*h];
@@ -769,17 +760,18 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 {
 
-	SDL_Rect  rt1 = { 0, 0, 0, 0 }, 
-			rt2 = { 0, 0, 0, 0 }, 
-			rret = { 0, 0, 0, 0 };
-	SDL_Rect  rSurf1 = {0, 0, 0, 0}, 
-			rSurf2 = { 0, 0, 0, 0 };
-	Sint32    col_width, col_height;
-	Sint32	  x_off1, y_off1;
-	Sint32	  x_off2, y_off2;
-	bool	  bcollision = false;
-	Uint32 	  *pm1 = NULL, *pm2 = NULL;
-	Sint32	  w1 = 0, w2 = 0; //, h1, h2;
+	SDL_Rect 	rt1 = { 0, 0, 0, 0 },
+				rt2 = { 0, 0, 0, 0 },
+				rret = { 0, 0, 0, 0 };
+	SDL_Rect 	rSurf1 = { 0, 0, 0, 0 },
+				rSurf2 = { 0, 0, 0, 0 };
+
+	Sint32 col_width, col_height;
+	Sint32 x_off1, y_off1;
+	Sint32 x_off2, y_off2;
+	bool bcollision = false;
+	Uint32 *pm1 = NULL, *pm2 = NULL;
+	Sint32 w1 = 0, w2 = 0; //, h1, h2;
 
 	SetRect( &rt1, r1->x, r1->y, r1->w, r1->h );
 	SetRect( &rt2, r2->x, r2->y, r2->w, r2->h );
@@ -1328,7 +1320,7 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 	SDL_FreeSurface( sdl_surf );
 	sdl_surf = NULL;
 	
-//	DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );
+	DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );
 	
 	return new_surf;
 }
