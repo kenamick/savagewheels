@@ -57,7 +57,7 @@
 #if !defined(_DEBUG) && !defined(DEBUG) && !defined(__DEBUG)
 #	ifdef ASSERT
 #	undef ASSERT
-#	define ASSERT ;
+#	define ASSERT(x)
 #	endif
 #endif
 
