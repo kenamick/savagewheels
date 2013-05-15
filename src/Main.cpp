@@ -29,7 +29,7 @@
   Copyright (c) 2003-2013 KenamicK Entertainment
   http://www.kenamick.com/
 
-  coded by Peter Petrov
+  coded by Petar Petrov
 
   // release history
   Alpha Release: 29.06.2003
@@ -40,7 +40,6 @@
   Patch 1.03:    ??.05.2004
   Release 1.4:   12.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 12.09.2010
   Release 1.5:   ??.??.2013
-  
 
 */
 
@@ -48,7 +47,8 @@
 
 int main( int argc, char *argv[] )
 {
-	bool fullscreen = true, hardware_support = true;
+	bool fullscreen = true;
+	bool hardware_support = true;
 
 #ifdef LINUX_BUILD
 	// SDL environment vars
@@ -60,17 +60,19 @@ int main( int argc, char *argv[] )
 
 	if (argc > 1) {
 		for (int i = 1; i < argc; i++) {
-			if (!strcmp(argv[i], "-wnd"))
+			if (!strcmp(argv[i], "-wnd")) {
 				fullscreen = false;
-			else if (!strcmp(argv[i], "-sw"))
+			} else if (!strcmp(argv[i], "-sw")) {
 				hardware_support = false;
-			else if (!strcmp(argv[i], "-force-fullscreen"))
+			} else if (!strcmp(argv[i], "-force-fullscreen")) {
 				fullscreen = true;
-			else if (!strcmp(argv[i], "-snd_alsa"))
+#ifdef LINUX_BUILD
+			} else if (!strcmp(argv[i], "-snd_alsa")) {
 				setenv("SW_SND_ALSA", "1", 0); // on the majority Linux distros this seems to be required !
-			else if (!strcmp(argv[i], "-snd_22khz"))
+			} else if (!strcmp(argv[i], "-snd_22khz")) {
 				setenv("SW_SND_22KHZ", "1", 0); // 44KHz somehow seems to be a problem for FMod on Linux
-			else {
+#endif
+			} else {
 				perror("Unknown command line parameter passed!");
 				exit(0);
 			}
@@ -79,7 +81,7 @@ int main( int argc, char *argv[] )
 	
 	// Start Game
 	  
-	OpenLog( "debug.html" );
+	OpenLog("debug.html");
 	
 	CGame game;
 	game.Execute(fullscreen, hardware_support);
