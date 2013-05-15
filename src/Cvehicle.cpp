@@ -201,92 +201,83 @@ void CVehicle::Release()
 int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
 
- int   cn	= 0;
- int   frames	= 0;
- int   index	= 0;
- 
- this->_game = game;
- ASSERT( _game != NULL );
+	int cn = 0;
+	int frames = 0;
+	int index = 0;
 
- LOG( "Loading vehicle " << swv->vehiclename << "..." );
+	this->_game = game;
+	ASSERT(_game != NULL);
 
- myIndex = carIndex;
- frames = swv->animation_frames;
- 
- // get tire frames
- tire_frames = frames / MAX_ROTATION_FRAMES;
- frags = 0; // reset fragovete
- anger = 0; // reset anger-a
+	LOG("Loading vehicle " << swv->vehiclename << "...");
 
+	myIndex = carIndex;
+	frames = swv->animation_frames;
 
- // allocate mem for images
- sprite_norm = (SDL_Surface **) new SDL_Surface[frames];
- sprite_crash = (SDL_Surface **) new SDL_Surface[frames];
- mask_norm = (Uint32 **) new Uint32[frames];
- mask_crash = (Uint32 **) new Uint32[frames];
- 
- char *vehicle_filename = const_cast<char *>(swv->filename);
+	// get tire frames
+	tire_frames = frames / MAX_ROTATION_FRAMES;
+	frags = 0; // reset fragovete
+	anger = 0; // reset anger-a
 
- for( cn = 0; cn < frames; cn++ )
- {
-	 // normal sprites
-	 index = cn + 3;
-	 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( vehicle_filename,
-			 swv->pfiles[index].pos,
-			 swv->pfiles[index].length,
-			 MAGENTA,
-			 NO_ALPHA )) == NULL )
-	 {
-		 return 0;
-	 }
+	// allocate mem for images
+	sprite_norm = new SDL_Surface*[frames];
+	sprite_crash = new SDL_Surface*[frames];
+	mask_norm = new Uint32*[frames];
+	mask_crash = new Uint32*[frames];
 
-	 // create a mask for this sprite
-	  _game->Sdl.MakeBoolMask( sprite_norm[cn], mask_norm[cn] );
-		 
-	 // crashed sprites
-	 index = cn + 3 + frames; // calc.offset to the crashed sprites
-	 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( vehicle_filename,
-			 swv->pfiles[index].pos,
-			 swv->pfiles[index].length,
-			 MAGENTA,
-			 NO_ALPHA )) == NULL )
-	 {
-		 return 0;
-	 }
+	char *vehicle_filename = const_cast<char *>(swv->filename);
 
-	 // create a mask for this sprite
-	 _game->Sdl.MakeBoolMask( sprite_crash[cn], mask_crash[cn] );
- }
+	for (cn = 0; cn < frames; cn++) {
+		// normal sprites
+		index = cn + 3;
 
-	 // load driver_name surface
+		if ((sprite_norm[cn] = _game->Sdl.LoadBitmap(vehicle_filename,
+				swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA,
+				NO_ALPHA)) == NULL) {
+			return 0;
+		}
+
+		// create a mask for this sprite
+		_game->Sdl.MakeBoolMask(sprite_norm[cn], mask_norm[cn]);
+
+		// crashed sprites (calc.offset to the crashed sprites)
+		index = cn + 3 + frames;
+
+		if ((sprite_crash[cn] = _game->Sdl.LoadBitmap(vehicle_filename,
+				swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA,
+				NO_ALPHA)) == NULL) {
+			return 0;
+		}
+
+		// create a mask for this sprite
+		_game->Sdl.MakeBoolMask(sprite_crash[cn], mask_crash[cn]);
+	}
+
+	// load driver_name surface
 	if ((driver_name = _game->Sdl.LoadBitmap(vehicle_filename,
 			swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA))
-			== NULL)
-	{
+			== NULL) {
 		return 0;
 	}
 
- display_frame = tire_frame = 0;
+	display_frame = tire_frame = 0;
 
+	// fill attribs
+	acc = attribACC[(int) swv->acc];
+	dec_acc = acc - swv->dec_acc;
+	max_hitpoints = attribARMOUR[(int) swv->hp];
+	hit_points_crash = max_hitpoints / swv->hp_crash;
+	lbs = swv->lbs;
+	max_vel = attribSPEED[(int) swv->max_vel];
+	rot_speed = attribROT[(int) swv->rot_speed];
+	damage = attribDAMAGE[(int) swv->damage];
 
- // fill attribs
- acc = attribACC[(int)swv->acc];
- dec_acc = acc - swv->dec_acc;
- max_hitpoints = attribARMOUR[(int)swv->hp];
- hit_points_crash = max_hitpoints / swv->hp_crash;
- lbs = swv->lbs;
- max_vel = attribSPEED[(int)swv->max_vel];
- rot_speed = attribROT[(int)swv->rot_speed]; 
- damage = attribDAMAGE[(int)swv->damage];
+	// set default-team
+	team = carIndex;
 
- // set default-team
- team = carIndex;
+	released = false;
+	set_stop = false;
 
- released = false;
- set_stop = false;
- 
- return 1;
- 
+	return 1;
 }
 
 
@@ -315,7 +306,7 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 	}
 	
 	// change attribs
-	acc			= (int)( (float)acc * diff_perc);
+	acc				= (int)( (float)acc * diff_perc);
 	dec_acc			= (int)( (float)dec_acc * diff_perc);
 	max_hitpoints	= (int)( (float)max_hitpoints * diff_perc);
 	hit_points_crash = max_hitpoints / 2;
@@ -394,14 +385,12 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Create()
 {
- 
 	Uint32 		dist;
 	CVehicle 	*ptr_veh;
 	bool 		do_not_warp = true;
 	int 		i = 0, j = 0;
 
-  
- // proveri dali ima avotmobil do izhodqshtata tochka za warp-vane
+	// proveri dali ima avotmobil do izhodqshtata tochka za warp-vane
 	while (do_not_warp) {
 		j = (int) (rand() % 4);
 		do_not_warp = false;
@@ -428,7 +417,6 @@ void CVehicle::Create()
 	}
 
 	//if ( do_not_warp ) return;
- 
 
 	x_acc = 0;
 	y_acc = 0;
@@ -451,26 +439,22 @@ void CVehicle::Create()
 	{
 		motion_frame = 18;
 		display_frame = motion_frame;
-		center_x = (Uint32)x + sprite[18]->w / 2;
-		center_y = (Uint32)y + sprite[18]->h / 2;
-
-		DBG( "18-X: " << x << " Y: " << y << " Sprite-W: " << sprite[18]->w << " Sprite-H:" << sprite[18]->h << " Sprite-NORM-W: " << sprite_norm[18]->w << " Sprite-NORM-H:" << sprite_norm[18]->h);
-		DBG( "18-CX: " << center_x << " 18CY: " << center_y);
 	}
 	else
 	{
 		motion_frame = 0;
 		display_frame = 0;
-		center_x = (Uint32)x + sprite[0]->w / 2;
-		center_y = (Uint32)y + sprite[0]->h / 2;
-
-		DBG( "X: " << x << " Y: " << y << " Sprite-W: " << sprite[0]->w << " Sprite-H:" << sprite[0]->h << " Sprite-NORM-W: " << sprite_norm[0]->w << " Sprite-NORM-H:" << sprite_norm[0]->h);
-		DBG( "CX: " << center_x << " CY: " << center_y);
 	}
+
+	center_x = (Uint32)x + sprite[motion_frame]->w / 2;
+	center_y = (Uint32)y + sprite[motion_frame]->h / 2;
+
+	// check for memory access violation
+	ASSERT(sprite_norm[cn]->w < 500);
+	ASSERT(sprite_norm[cn]->h < 500);
 
 	tire_frame = 0;
 	vel = 0;
-	//bIshit = false;
 	tire_trails = VTT_NONE;
 	trails_time = 0;
 
