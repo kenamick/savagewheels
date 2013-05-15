@@ -1323,9 +1323,9 @@ void CMainMenu::LoadSettings()
 int CMainMenu::ReloadCarsAttribs()
 {
 
-	ssCarFace = (SDL_Surface **) new SDL_Surface[_game->Swv.GetVehicles()];
-	ssDriverFace = (SDL_Surface **) new SDL_Surface[_game->Swv.GetVehicles()];
-	ssDriverName = (SDL_Surface **) new SDL_Surface[_game->Swv.GetVehicles()];
+	ssCarFace = new SDL_Surface*[_game->Swv.GetVehicles()];
+	ssDriverFace = new SDL_Surface*[_game->Swv.GetVehicles()];
+	ssDriverName = new SDL_Surface*[_game->Swv.GetVehicles()];
 
 	bool loaded = true;
 

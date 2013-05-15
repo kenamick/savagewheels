@@ -97,9 +97,6 @@ int CDeadtoys::Initialize( CGame *game )
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	//sprite = (SDL_Surface ***) new SDL_Surface[DT_MAX_DEADTOYS][1];
-	//sprite = (SDL_Surface ***)malloc( sizeof(SDL_Surface)*(DT_MAX_DEADTOYS)*2 );
-
 	// load frag-bug
 	//sprintf( dirname, "gfx/dtoys/dtoy%d.bmp", i );
 	if ( ( sprite[0][0] = _game->Sdl.LoadBitmap( "gfx/dtoys/dtoy01.bmp", MAGENTA )) == NULL ) return 0; 

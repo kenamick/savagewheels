@@ -446,12 +446,12 @@ void CVehicle::Create()
 		display_frame = 0;
 	}
 
-	center_x = (Uint32)x + sprite[motion_frame]->w / 2;
-	center_y = (Uint32)y + sprite[motion_frame]->h / 2;
+	center_x = (Uint32)x + (sprite[(int)motion_frame]->w / 2);
+	center_y = (Uint32)y + (sprite[(int)motion_frame]->h / 2);
 
 	// check for memory access violation
-	ASSERT(sprite_norm[cn]->w < 500);
-	ASSERT(sprite_norm[cn]->h < 500);
+	ASSERT(sprite_norm[(int)motion_frame]->w < 500);
+	ASSERT(sprite_norm[(int)motion_frame]->h < 500);
 
 	tire_frame = 0;
 	vel = 0;
