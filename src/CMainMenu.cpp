@@ -717,10 +717,12 @@ void CMainMenu::Update()
 		ScrollScreen();
 		
 		// block Truck if not cheats
-		if ( strcmp( _game->Swv.GetVehiclesData()[current_car].vehiclename, "DTRUCK" )==0 && !_game->game_cheats )
+		if ( !strncmp(_game->Swv.GetVehiclesData()[current_car].vehiclename, "DTRUCK", 5)
+				&& !_game->game_cheats )
 		{
 			current_car++;
-			if ( current_car > _game->Swv.GetVehicles() - 1 ) current_car = 0;
+			if ( current_car > _game->Swv.GetVehicles() - 1 )
+				current_car = 0;
 		}
 		
 		PreviewCar( current_car );
@@ -810,7 +812,10 @@ void CMainMenu::Update()
 		{
 			// scroll left
 			current_car--;
-			if ( current_car < 0 ) current_car = _game->Swv.GetVehicles() - 1;
+
+			if ( current_car < 0 )
+				current_car = _game->Swv.GetVehicles() - 1;
+
 			// PLAY SOUND
 			_game->Snd.Play( SND_MENU_NEXTCAR );
 		}
@@ -818,7 +823,10 @@ void CMainMenu::Update()
 		{
 			// scroll right
 			current_car++;
-			if ( current_car > _game->Swv.GetVehicles() - 1 ) current_car = 0;
+
+			if ( current_car > _game->Swv.GetVehicles() - 1 )
+				current_car = 0;
+
 			// PLAY SOUND
 			_game->Snd.Play( SND_MENU_NEXTCAR );
 		}
