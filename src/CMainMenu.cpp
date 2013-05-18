@@ -716,15 +716,6 @@ void CMainMenu::Update()
 		
 		ScrollScreen();
 		
-		// block Truck if not cheats
-		if ( !strncmp(_game->Swv.GetVehiclesData()[current_car].vehiclename, "DTRUCK", 5)
-				&& !_game->game_cheats )
-		{
-			current_car++;
-			if ( current_car > _game->Swv.GetVehicles() - 1 )
-				current_car = 0;
-		}
-		
 		PreviewCar( current_car );
 
 		// blit game-modes
@@ -813,6 +804,13 @@ void CMainMenu::Update()
 			// scroll left
 			current_car--;
 
+			// block Truck if cheat disabled
+			if ( !strncmp(_game->Swv.GetVehiclesData()[current_car].vehiclename, "DTRUCK", 5)
+					&& !_game->game_cheats )
+			{
+				current_car--;
+			}
+
 			if ( current_car < 0 )
 				current_car = _game->Swv.GetVehicles() - 1;
 
@@ -823,6 +821,13 @@ void CMainMenu::Update()
 		{
 			// scroll right
 			current_car++;
+
+			// block Truck if cheat disabled
+			if ( !strncmp(_game->Swv.GetVehiclesData()[current_car].vehiclename, "DTRUCK", 5)
+					&& !_game->game_cheats )
+			{
+				current_car++;
+			}
 
 			if ( current_car > _game->Swv.GetVehicles() - 1 )
 				current_car = 0;
