@@ -60,18 +60,18 @@ void CBufferedReader::readUCharArray(unsigned char* dest, int size) {
 
 int16_t CBufferedReader::readInt16() {
 	char buf[2];
-	READ_OK(fread(buf, sizeof(char), 2, _fpSource));
+	READ_OK(fread(buf, sizeof(int16_t), 1, _fpSource));
 	return ATOW(buf);
 }
 
 int32_t CBufferedReader::readInt32() {
 	char buf[4];
-	READ_OK(fread(buf, sizeof(char), 4, _fpSource));
+	READ_OK(fread(buf, sizeof(int32_t), 1, _fpSource));
 	return ATODW(buf);
 }
 
 int64_t CBufferedReader::readInt64() {
 	char buf[8];
-	READ_OK(fread(buf, sizeof(char), 8, _fpSource));
+	READ_OK(fread(buf, sizeof(int64_t), 1, _fpSource));
 	return ATOQW(buf);
 }
