@@ -46,7 +46,6 @@ CKdf_Packeger::CKdf_Packeger()
 	num_files(0)
 {
 
-
 }
 
 
@@ -66,7 +65,6 @@ CKdf_Packeger::~CKdf_Packeger()
 ///////////////////////////////////////////////////////////////////////////////////////
 void CKdf_Packeger::Reset()
 {
-
 	if ( pfiles != NULL )
 	{
 		delete[] pfiles;
@@ -124,8 +122,6 @@ int CKdf_Packeger::Open( const char *kdf_pathname )
 ///////////////////////////////////////////////////////////////////////////////////////
 int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name ) 
 {
-
-
 #ifndef LINUX_BUILD
 	struct   _finddata_t  ffile;
 	long     hFile;
@@ -143,7 +139,6 @@ int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name )
 	kdf_ver  ver;
 	long	 fh_pos; 
 	char	 *buf;
-
 
 	// make room for 600 entries
 	pfiles = new kdf_file[600];
@@ -290,9 +285,9 @@ long CKdf_Packeger::GetFilePosition( const char *file_name )
 //// Name: GetFilePosition()
 //// Desc: 
 ///////////////////////////////////////////////////////////////////////////////////////
-long CKdf_Packeger::GetFilePosition( int file_index ) 
-{ 
-  return ATODW(pfiles[file_index].pos); 
+long CKdf_Packeger::GetFilePosition(int file_index)
+{
+	return ATODW(pfiles[file_index].pos);
 }
 
 
@@ -304,9 +299,10 @@ long CKdf_Packeger::GetFileSize( const char *file_name )
 {
 	kdf_file *ptr = pfiles;
 
-	for ( int i = 0; i < num_files; i++ )
+	for (int i = 0; i < num_files; i++)
 	{
-		if ( !strcmp( file_name, ptr->filename ) )
+
+		if (!strcmp(file_name, ptr->filename))
 			return ATODW(ptr->size);
 
 		ptr++;
@@ -319,7 +315,7 @@ long CKdf_Packeger::GetFileSize( const char *file_name )
 //// Name: GetFileSize()
 //// Desc: 
 ///////////////////////////////////////////////////////////////////////////////////////
-long CKdf_Packeger::GetFileSize( int file_index ) 
-{ 
-  return ATODW(pfiles[file_index].size); 
+long CKdf_Packeger::GetFileSize(int file_index)
+{
+	return ATODW(pfiles[file_index].size);
 }
