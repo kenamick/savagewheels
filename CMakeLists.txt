@@ -47,6 +47,14 @@ target_link_libraries(
 	SDLmain
 )
 
+find_library(
+    SDL_LIBRARY_SO
+    NAMES "libSDL.so"
+    PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY}
+    )
+
+message( STATUS "SDL is ${SDL_LIBRARY_SO}" )
+
 # check if sound support is required
 if ( NOT NO_SOUND )
   set( FMOD_LIB_NAME "libfmodex.so" )
@@ -96,4 +104,9 @@ if (UNIX AND NOT WIN32)
 endif (UNIX AND NOT WIN32)
 
 ### set runtime directory
-set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")
+#set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")
+
+#set_target_properties(strelko_srv PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./build")
+file(COPY ${FMOD_LIBRARY} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${SDL_LIBRARY_SO} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
