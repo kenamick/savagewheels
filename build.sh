@@ -6,12 +6,19 @@ CPU_CORES="2"
 TAR="$(which tar)"
 CUR_DIR="$(dirname $(readlink -f $0))"
 BIN_PATH="$CUR_DIR/bin"
-TMP_PATH="$CUR_DIR/build.tmp"
 EXEC_PATH="$CUR_DIR/release"
 CMAKE="$(which cmake)"
 VERMAJ=`perl -nle 'print $1 if /.*VER_MAJ\s(\d+).*/' src/Main.h`
 VERMIN=`perl -nle 'print $1 if /.*VER_MIN\s(\d+).*/' src/Main.h`
 VERSION="$VERMAJ.$VERMIN"
+ARCH="$(uname -m)"
+TMP_PATH="$CUR_DIR/build/savagewheels-$VERSION-linux"
+
+if [ $ARCH = "x86_64" ]; then
+	TMP_PATH="$TMP_PATH-x64"
+else
+	TMP_PATH="$TMP_PATH-$ARCH"
+fi
 
 #for vr in `grep VER src/Main.h | awk '{ print $3 }' | tr -d \n\r\t`
 #do
