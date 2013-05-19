@@ -4,10 +4,11 @@
 # $Author: p.petrov
 
 CMD="$1"
+CPU_CORES="4"
 TAR="$(which tar)"
 CUR_DIR="$(dirname $(readlink -f $0))"
 BIN_PATH="$CUR_DIR/bin"
-TMP_PATH="$CUR_DIR/dist-build.tmp"
+TMP_PATH="$CUR_DIR/build.tmp"
 EXEC_PATH="$CUR_DIR/release"
 CMAKE="$(which cmake)"
 VERMAJ=`perl -nle 'print $1 if /.*VER_MAJ\s(\d+).*/' src/Main.h`
@@ -62,23 +63,25 @@ build() {
 		exit	
 	fi
 	
-	$CMAKE -E chdir $EXEC_PATH cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
 	cd $EXEC_PATH
-	make
+	$CMAKE cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
+	make -j$CPU_CORES
 	cd ..
 	
-	# copy libs
-	cp $EXEC_PATH/*.so $TMP_PATH
+	# copy executable
 	
-	EXEC_PATH="$EXEC_PATH/savagewheels"
-	if [ ! -e $EXEC_PATH ]; then
+	if [ ! -e "$EXEC_PATH/savagewheels" ]; then
 		echo "Executable was not found in $EXEC_PATH !"
 		exit
 	fi
 	
-	# copy executable
-	cp $EXEC_PATH $TMP_PATH
-
+	cp $EXEC_PATH/savagewheels $TMP_PATH
+	
+	# copy libs
+	#cp $EXEC_PATH/*.so $TMP_PATH	
+	cp $EXEC_PATH/libfmodex.so $TMP_PATH	
+	cp $EXEC_PATH/libSDL.so $TMP_PATH	
+	  
 	# copy resources
 	cp $BIN_PATH/* $TMP_PATH -R
 	
@@ -102,9 +105,10 @@ build() {
 
 if [ "$1" = "clean" ]; then
 	cleanup
-elif [ "$1" = "build" ]; then
+#elif [ "$1" = "build" ]; then
+else
 	cleanup
 	build
-else
-	usage
+#else
+#	usage
 fi

@@ -3,7 +3,7 @@
 SET CMD="%1"
 SET CUR_DIR=%CD%
 SET BIN_PATH=%CUR_DIR%\bin
-SET TMP_PATH=%CUR_DIR%\dist-build.tmp
+SET TMP_PATH=%CUR_DIR%\build.tmp
 
 echo Building distributable package folder ...
 

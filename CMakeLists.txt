@@ -41,6 +41,8 @@ add_executable (
 
 ### add required libarires
 
+# add SDL
+
 target_link_libraries( 
 	savagewheels
 	${SDL_LIBRARY}
@@ -53,13 +55,16 @@ find_library(
     PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY}
     )
 
-message( STATUS "SDL is ${SDL_LIBRARY_SO}" )
+add_definitions(`sdl-config --cflags`)
+add_definitions(`sdl-config --libs`)
+
+message( STATUS "libSDL.so is in ${SDL_LIBRARY_SO}" )
 
 # check if sound support is required
 if ( NOT NO_SOUND )
   set( FMOD_LIB_NAME "libfmodex.so" )
 
-  # try to find fmod lib
+  # add FMod Ex (if present)
   find_library( 
     FMOD_LIBRARY
     NAMES ${FMOD_LIB_NAME}
@@ -76,13 +81,11 @@ if ( NOT NO_SOUND )
   endif ( NOT FMOD_LIBRARY )
 
 else ( NOT NO_SOUND )
-  message( STATUS "Sound option set to disabled. Will compile without sound support." )
+  message( STATUS "NO_SOUND option found! Compiling without sound support ..." )
 endif ( NOT NO_SOUND )
 
 ### additional defines
 
-add_definitions(`sdl-config --cflags`)
-add_definitions(`sdl-config --libs`)
 add_definitions(-DLINUX_BUILD)
 
 message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
@@ -103,10 +106,15 @@ if (UNIX AND NOT WIN32)
   endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
 endif (UNIX AND NOT WIN32)
 
-### set runtime directory
-#set(savagewheels PROPERTIES RUNTIME_OUTPUT_DIRECTORY "bin/")
+### copy required libs
+   
+add_custom_command(TARGET savagewheels POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+    ${FMOD_LIBRARY} 
+    $<TARGET_FILE_DIR:savagewheels>)        
 
-#set_target_properties(strelko_srv PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./build")
-file(COPY ${FMOD_LIBRARY} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(COPY ${SDL_LIBRARY_SO} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_command(TARGET savagewheels POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+    ${SDL_LIBRARY_SO}
+    $<TARGET_FILE_DIR:savagewheels>)  
 
