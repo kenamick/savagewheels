@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Desc: Savage Wheels Linux Build Script
 
 CMD="$1"
