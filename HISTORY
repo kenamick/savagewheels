@@ -1,8 +1,12 @@
 Savage Wheels Release HISTORY
 -----------------------------
 
-V1.4 Release
+V1.5 Release
+  * changed - Game now uses FMod Ex sound library to play sound fx and music.
+  * fixed crashes and game assets loading issues under 64-bit platforms.
+  * fixed a minor bug that prevented browsing vehicles when starting 1 or 2-player games.
 
+V1.4 Release
   * fixed a large number of memory leaks
   * fixed problems in showing ingame shadows when in 32 bit color mode. Might sitll be buggy on x64 systems :(
   * fixed crash on exit the game
@@ -17,13 +21,11 @@ V1.4 Release
   * updated - Readme html document (English version only). Check the document for more Q&A info.
 
 V1.03 Patch
-
   * fixed sound-conflicts that caused the game to crash under win2k and XP systems
   * changed - game now uses Fmod(c) sound engine
   * added '-hw' command line for greater video cards
  
 V1.02 Patch
-
   * fixed a bug that caused campaigns to start from level 2  
   * fixed a bug that caused vehicles going back to do enormous damage
   * fixed time-left blitting
@@ -32,7 +34,6 @@ V1.02 Patch
   * changed - Landmines now do more damage 
 
 V1.0 Release
-
   * fixed impact physics
   * optimized collision detection
   * optimized shadow casting for better performance
@@ -45,7 +46,6 @@ V1.0 Release
   * added one more track to the soundtrack 
 
 V0.9 (beta)
-
   * fixed menu-game prelude
   * added shadow-casting
   * added additional bonuses
@@ -57,6 +57,5 @@ V0.9 (beta)
   * added menu & game_music
 
 V0.1 (demo)
-
   * added Bonuses and Animations
   * upgraded SDL library
