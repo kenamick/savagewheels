@@ -20,7 +20,7 @@ echo Created %TMP_PATH% ...
 mkdir %TMP_PATH%
 
 echo Copying files ...
-xcopy /Y /C /S /EXCLUDE:dist-build.bat.excl %BIN_PATH%\*.* %TMP_PATH%\ 
+xcopy /Y /C /S /EXCLUDE:excluded %BIN_PATH%\*.* %TMP_PATH%\ 
 
 :end
 
