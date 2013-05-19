@@ -9,7 +9,7 @@ bin/sound/
 # Build
 debug/*
 release/*
-dist-build.tmp/*
+build.tmp/*
 
 # Eclipse
 .classpath
