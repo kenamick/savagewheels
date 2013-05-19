@@ -3,6 +3,7 @@ Savage Wheels Release HISTORY
 
 V1.5 Release
   * changed - Game now uses FMod Ex sound library to play sound fx and music.
+  * added Linux startup script - 'run.sh'. 
   * fixed crashes and game assets loading issues under 64-bit platforms.
   * fixed a minor bug that prevented browsing vehicles when starting 1 or 2-player games.
 

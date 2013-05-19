@@ -1,10 +1,8 @@
 #!/bin/sh
-#
-# $Desc: Savage Wheels Linux Build Script
-# $Author: p.petrov
+# Desc: Savage Wheels Linux Build Script
 
 CMD="$1"
-CPU_CORES="4"
+CPU_CORES="2"
 TAR="$(which tar)"
 CUR_DIR="$(dirname $(readlink -f $0))"
 BIN_PATH="$CUR_DIR/bin"
@@ -87,8 +85,10 @@ build() {
 	
 	# copy misc files
 	cp $CUR_DIR/LICENSE $TMP_PATH
-	cp $CUR_DIR/HISTORY $TMP_PATH	
-
+	cp $CUR_DIR/HISTORY $TMP_PATH
+	cp $CUR_DIR/run.sh $TMP_PATH
+	chmod +x $TMP_PATH/run.sh
+	
 	# cleanup temp files
 	rm $TMP_PATH/debug*.html -f
 	rm $TMP_PATH/pref -f
