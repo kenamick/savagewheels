@@ -1,84 +1,90 @@
 _.o0 Savage Wheels installation instructions 0o._
 
 
-Last updated on 19 May 2013
+Last updated on 20 May 2013
 
 1) Supported Platforms
   * Linux x86/x64
   * Windows x86/x64
-  * Tested on Linux distros - Debian/Archlinux/Ubuntu
+  * Tested on Linux distros - Archlinux/Ubuntu/Debian
   * Tested on Windows XP/2003/Vista
 
-2) Get the sources
+2) Compile requirements
 
 Get the latest source code from GitHub:
 
-git clone git://github.com/petarov/savagewheels.git savagewheels
+    git clone git://github.com/petarov/savagewheels.git savagewheels
+
+Get the data files from https://code.google.com/p/savagewheels.
+You will need those since they contain all graphics, sound, and vehicles data. 
+Extract the downloaded archive into the bin/ folder. 
+(The important folders are - autos/, graphics/, sounds/)
 
 3) Installation on Linux platforms
+
 3.1) Requirements:
   * libSDL 1.2.x - You should install this using your package manager.
   * FMod Ex API - Install using your package manager or get the package from FMod's website.
-  * CMake 2.6 and above
-  * (Ubuntu specific) Install the package - build-essential
+  * CMake 2.8 and above
+  * (Ubuntu specific) Install 'build-essential' package.
 
 3.2) Instructions
 
-1. Download the sources from the repository.
+	a) Install the libSDL package using the package manager on your Linux distribution.
 
-2. Install the libSDL package using the package manager on your Linux distribution.
+	b) Install the FMod Ex package using the package manager on your Linux distribution or get 
+	the package from FMod's website.
 
-3. Install the FMod Ex package using the package manager on your Linux distribution or get the package from FMod's website.
-
-4. Download the Savage Wheels data files. You will need those, since they contain all graphics, sound, and vehicles data.
-   Extract the downloaded archive into the bin/ folder. The important folders are - autos/, graphics/, sounds/.
-
-5. Run the build script - build.sh
-   $ ./build.sh
+	c) Run the build script - build.sh
+   	$ ./build.sh
    
-   This will create a folder build.tmp/ the "Ready For Playing" game.
-   To start the game run:
-   $ ./savagewheels
+   	d) Go to the 'release/' subfolder. Extract the produced archive file, 
+   	e.g., savagewheels-1.5.0-Linux-x64.tar.gz to your desired Games folder.
+   	
+	e) Start the game run:
+	$ ./savagewheels  
+	or
+	$ ./run.sh
+	
+	The 'run.sh' script will attempt to set the LD_LIBRARY_PATH in case you are missing libSDL
+	or FModEx shared object libraries.
    
-If you experience problems follow the steps below:   
+	If you experience problems with the automated 'build.sh' script you can try to build manually.
    
-1. You can also run CMake manually. Go to the release/ sub folder and run.
-   $ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
+	a) You can also run CMake manually. Go to the release/ sub folder and run.
+	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
    
-   To build without sound & music run:
-   $ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DNO_SOUND=1
+	Or to build without sound & music run:
+	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DNO_SOUND=1
 
-2. Build with:
-   $ make
-
-3. Copy the produced binary file -> "savagewheels" to the bin/ folder.
-
-4. Ok, you're done :) Go to the bin/ folder and start the game using the "savagewheels" binary.
-
+	b) Build with:
+	$ make
+   
+	c) Create the installation package with:
+	$ cpack
+	
+	Debian/Ubuntu users may also run:
+	$ cpack -G DEB
+	This will create a .deb package that you can install with, e.g.,
+	$ dpkg -i savagewheels-1.5.0-Linux-x64.deb
 
 4) Installation on Windows
+
 4.1) Requirements
   * Microsoft Visual Studio 2005
+  * libSDL 1.2.x - Download the Development Libraries archive.
+  * FMod Ex API - Download and install the FMOD Ex API installer EXE.
 
 4.2) Instructions
 
-1. Download the sources from the repository.
+TODO: (CMake setup not completed!)
 
-2. Download the Savage Wheels data files. You will need those, since they contain all graphics, sound, and vehicles data.
-   Extract the downloaded archive into the relative bin\ folder. The important folders are - autos/, graphics/, sounds/.
-
-3. Open the solution (.sln) file in your VS2005. 
-
-4. Choose "Release" (or "Debug") from the Build settings and compile.
-
-5. All the required files should be available in the relative \bin folder. You should be able to start the EXE file from there.
+You can try to compile using the available VS solution file (.sln).
+You will need to generate the Config.h in src/ yourself. Use the template Config.h.in.
 
 5) Compiling a Debug version
 
-When issuing the command:
-$ cmake CMakeLists.txt
-You will create a makefile for a Release build of the game. If not let me know ;)
+To build a Debug version to catch a bug or something use the following:
 
-If you want to build a Debug version to catch a bug or something use the following:
-$ cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Debug
+	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Debug
 
