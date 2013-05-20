@@ -106,9 +106,11 @@ if (UNIX AND NOT WIN32)
   if (CMAKE_SIZEOF_VOID_P MATCHES "8")
     add_definitions(-DARCH_X64)
     set(APP_ARCH "x64")
+    set(DEB_ARCH "amd64")
   else()
     add_definitions(-DARCH_X86)
     set(APP_ARCH "x86")
+    set(DEB_ARCH "i386")
   endif()
 endif()
 
@@ -118,7 +120,6 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/src/Config.h")
   
 ### copy required libs
-   
 add_custom_command(TARGET savagewheels POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
     ${FMOD_LIBRARY} 
@@ -130,7 +131,8 @@ add_custom_command(TARGET savagewheels POST_BUILD
     $<TARGET_FILE_DIR:savagewheels>)  
 
 ### Install targets
-INSTALL(TARGETS savagewheels DESTINATION "./")
+INSTALL(TARGETS savagewheels 
+    RUNTIME DESTINATION "./")
 INSTALL(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_LIB_NAME}"
     "${CMAKE_CURRENT_BINARY_DIR}/${SDL_LIB_NAME}"
@@ -150,13 +152,14 @@ include (InstallRequiredSystemLibraries)
 
 set(CPACK_GENERATOR "TGZ")
 
+set(CPACK_PACKAGE_NAME "SavageWheels")
 set(CPACK_PACKAGE_VENDOR "Petar Petrov")
 set(CPACK_PACKAGE_CONTACT "petar.petrov.georgiev(at-)gmail[dot)com")
 set(CPACK_PACKAGE_VERSION_MAJOR "${APP_VER_MAJ}")
 set(CPACK_PACKAGE_VERSION_MINOR "${APP_VER_MIN}")
 set(CPACK_PACKAGE_VERSION_PATCH "${APP_VER_PATCH}")
-
 set(PCKVER "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
+set(CPACK_PACKAGE_VERSION ${PCKVER})
 
 set(CPACK_PACKAGE_FILE_NAME "savagewheels-${PCKVER}-${CMAKE_SYSTEM_NAME}-${APP_ARCH}")
 #set(CPACK_PACKAGE_INSTALL_DIRECTORY "savagewheels-${PCKVER}")
@@ -175,5 +178,10 @@ set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #"^${PROJECT_SOURCE_DIR}/bin/debug.html"
 #)
 set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
+set(CPACK_PACKAGE_EXECUTABLES "savagewheels" "Savage Wheels Game")
+
+# Debian DEB package stuff
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCH}) 
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl1.2debian (>= 1.2.11)")
 
 include (CPack)
