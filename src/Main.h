@@ -84,14 +84,7 @@
 #endif
 
 // --- version
-#define VER_MAJ 1
-#define VER_MIN 5
-#ifdef ARCH_X86
-#define VER_ARCH "X86"
-#endif
-#ifdef ARCH_X64
-#define VER_ARCH "X64"
-#endif
+#include "Config.h"
 
 // --- global game defines
 #define ART_FILE	"graphics/gfxdata.kdf"

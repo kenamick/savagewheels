@@ -15,3 +15,6 @@ build.tmp/*
 .classpath
 .settings/*
 .project
+
+# Src
+src/Config.h

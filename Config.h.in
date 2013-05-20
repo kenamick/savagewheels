@@ -1,0 +1,9 @@
+// the configured options and settings
+
+// version info
+#define VER_MAJ @APP_VER_MAJ@
+#define VER_MIN @APP_VER_MIN@
+#define VER_PATCH @APP_VER_PATCH@
+
+// cpu
+#define VER_ARCH "@APP_ARCH@"

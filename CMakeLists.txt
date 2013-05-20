@@ -13,8 +13,6 @@ find_package(SDL REQUIRED)
 ### src
 include_directories(src/)
 include_directories(tinyxml/)
-#include_directories(fmod/linux/api)
-#include_directories(fmod/linux/api/inc)
 
 set (
     SOURCES 
@@ -65,7 +63,7 @@ find_library(
 add_definitions(`sdl-config --cflags`)
 add_definitions(`sdl-config --libs`)
 
-message( STATUS "libSDL.so is in ${SDL_LIBRARY_SO}" )
+message(STATUS "libSDL.so is in ${SDL_LIBRARY_SO}")
 
 # check if sound support is required
 if (NOT NO_SOUND)
@@ -114,6 +112,11 @@ if (UNIX AND NOT WIN32)
   endif()
 endif()
 
+### configure a header file to pass some of the CMake settings to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/Config.h.in"
+  "${PROJECT_SOURCE_DIR}/src/Config.h")
+  
 ### copy required libs
    
 add_custom_command(TARGET savagewheels POST_BUILD
