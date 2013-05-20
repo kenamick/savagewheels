@@ -1,5 +1,11 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 project(savagewheels) 
+
+### App defaults
+set(APP_ARCH "")
+set(APP_VER_MAJ "1")
+set(APP_VER_MIN "5")
+set(APP_VER_PATCH "0")
 
 ### check for required libs
 find_package(SDL REQUIRED)
@@ -62,7 +68,7 @@ add_definitions(`sdl-config --libs`)
 message( STATUS "libSDL.so is in ${SDL_LIBRARY_SO}" )
 
 # check if sound support is required
-if ( NOT NO_SOUND )
+if (NOT NO_SOUND)
   set(FMOD_LIB_NAME "libfmodex.so")
 
   # add FMod Ex (if present)
@@ -72,18 +78,18 @@ if ( NOT NO_SOUND )
     PATHS "/usr/lib" "/usr/local/lib/" ${FMOD_SO_PATH}
   )
 
-  if ( NOT FMOD_LIBRARY )
+  if (NOT FMOD_LIBRARY)
       message( STATUS "FModEx lib(${FMOD_LIB_NAME}) not found! Will compile without sound support." )
-  else ( NOT FMOD_LIBRARY )
+  else()
       add_definitions(-DWITH_FMOD)
       add_definitions(-I/usr/include/fmodex)
       target_link_libraries(savagewheels ${FMOD_LIBRARY})
       message( STATUS "FModEx lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
-  endif ( NOT FMOD_LIBRARY )
+  endif()
 
-else ( NOT NO_SOUND )
+else()
   message( STATUS "NO_SOUND option found! Compiling without sound support ..." )
-endif ( NOT NO_SOUND )
+endif()
 
 ### additional defines
 add_definitions(-DLINUX_BUILD)
@@ -94,17 +100,19 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-g)
   add_definitions(-D_DEBUG)
   add_definitions(-DDEBUG)
-else (CMAKE_BUILD_TYPE STREQUAL "Debug")
+else()
   add_definitions(-O3 -DNDEBUG)
-endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif()
 
 if (UNIX AND NOT WIN32)
   if (CMAKE_SIZEOF_VOID_P MATCHES "8")
     add_definitions(-DARCH_X64)
-  else (CMAKE_SIZEOF_VOID_P MATCHES "8")
+    set(APP_ARCH "x64")
+  else()
     add_definitions(-DARCH_X86)
-  endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
-endif (UNIX AND NOT WIN32)
+    set(APP_ARCH "x86")
+  endif()
+endif()
 
 ### copy required libs
    
@@ -141,12 +149,13 @@ set(CPACK_GENERATOR "TGZ")
 
 set(CPACK_PACKAGE_VENDOR "Petar Petrov")
 set(CPACK_PACKAGE_CONTACT "petar.petrov.georgiev(at-)gmail[dot)com")
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "5")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION_MAJOR "${APP_VER_MAJ}")
+set(CPACK_PACKAGE_VERSION_MINOR "${APP_VER_MIN}")
+set(CPACK_PACKAGE_VERSION_PATCH "${APP_VER_PATCH}")
 
 set(PCKVER "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
 
+set(CPACK_PACKAGE_FILE_NAME "savagewheels-${PCKVER}-${CMAKE_SYSTEM_NAME}-${APP_ARCH}")
 #set(CPACK_PACKAGE_INSTALL_DIRECTORY "savagewheels-${PCKVER}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
