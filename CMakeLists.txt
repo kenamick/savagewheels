@@ -42,6 +42,7 @@ add_executable (
 ### add required libarires
 
 # add SDL
+set(SDL_LIB_NAME "libSDL.so")
 
 target_link_libraries( 
 	savagewheels
@@ -51,7 +52,7 @@ target_link_libraries(
 
 find_library(
     SDL_LIBRARY_SO
-    NAMES "libSDL.so"
+    NAMES ${SDL_LIB_NAME}
     PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY}
     )
 
@@ -62,7 +63,7 @@ message( STATUS "libSDL.so is in ${SDL_LIBRARY_SO}" )
 
 # check if sound support is required
 if ( NOT NO_SOUND )
-  set( FMOD_LIB_NAME "libfmodex.so" )
+  set(FMOD_LIB_NAME "libfmodex.so")
 
   # add FMod Ex (if present)
   find_library( 
@@ -85,7 +86,6 @@ else ( NOT NO_SOUND )
 endif ( NOT NO_SOUND )
 
 ### additional defines
-
 add_definitions(-DLINUX_BUILD)
 
 message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
@@ -118,3 +118,50 @@ add_custom_command(TARGET savagewheels POST_BUILD
     ${SDL_LIBRARY_SO}
     $<TARGET_FILE_DIR:savagewheels>)  
 
+### Install targets
+INSTALL(TARGETS savagewheels DESTINATION "./")
+INSTALL(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_LIB_NAME}"
+    "${CMAKE_CURRENT_BINARY_DIR}/${SDL_LIB_NAME}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/run.sh"
+    "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+    "${CMAKE_CURRENT_SOURCE_DIR}/HISTORY"
+    "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
+#    "${CMAKE_CURRENT_SOURCE_DIR}/sw1.ico"
+    DESTINATION "./")
+INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
+    DESTINATION "./"
+    PATTERN "debug.html" EXCLUDE
+    PATTERN "pref" EXCLUDE)
+    
+### build a CPack driven installer package
+include (InstallRequiredSystemLibraries)
+
+set(CPACK_GENERATOR "TGZ")
+
+set(CPACK_PACKAGE_VENDOR "Petar Petrov")
+set(CPACK_PACKAGE_CONTACT "petar.petrov.georgiev(at-)gmail[dot)com")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "5")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+
+set(PCKVER "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
+
+#set(CPACK_PACKAGE_INSTALL_DIRECTORY "savagewheels-${PCKVER}")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+
+# Advanced settings
+SET(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+
+set(CPACK_RESOURCE_FILE_LICENSE  "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+#set(CPACK_INSTALLED_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/bin;/.")
+#set(CPACK_IGNORE_FILES 
+#"~$"
+#"^.*/.git/"
+#"^${PROJECT_SOURCE_DIR}/bin/pref"
+#"^${PROJECT_SOURCE_DIR}/bin/debug.html"
+#)
+set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
+
+include (CPack)
