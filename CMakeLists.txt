@@ -57,33 +57,28 @@ endif(MINGW)
 
 if (UNIX AND NOT WIN32)
 	# Linux
-	
 	set(SDL_LIB_NAME "libSDL.so")
-	target_link_libraries( 
-		savagewheels
-		${SDL_LIBRARY}
-		SDLmain
-	)
 	
 	find_library(
 		SDL_LIBRARY_SO
 		NAMES ${SDL_LIB_NAME}
 		PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY} $ENV{SDLDIR} "${CMAKE_CURRENT_SOURCE_DIR}/libs"
-	)	
+	)
+	
+    add_definitions(`sdl-config --cflags`)
+    add_definitions(`sdl-config --libs`)	
 else()
 	# Windows
-	
 	set(SDL_LIB_NAME "SDL.dll")
-	target_link_libraries( 
-		savagewheels
-		${SDL_LIBRARY}
-	)
+	
 	add_definitions(-lpthread)
 	include_directories(${SDL_INCLUDE_DIR})
 	link_directories($ENV{SDLDIR}\\lib)
 	
 	set(SDL_LIBRARY_SO $ENV{SDLDIR}\\bin\\SDL.dll)
 endif()
+
+target_link_libraries(savagewheels ${SDL_LIBRARY})
 
 message(STATUS "libSDL.so/DLL is at ${SDL_LIBRARY_SO}")
 
