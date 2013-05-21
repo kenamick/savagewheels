@@ -46,9 +46,6 @@
 #ifdef LINUX_BUILD
 #	define BACKSLASH	"/"
 #else
-#	pragma comment( lib, "sdl.lib" )
-#	pragma comment( lib, "sdlmain.lib" )
-#	pragma comment( lib, "fmodvc.lib" ) // MSVC
 #	define BACKSLASH	"\\"
 #endif
 
