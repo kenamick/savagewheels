@@ -38,10 +38,18 @@ set(
 
 ### specify executable
 
-add_executable (	
-	savagewheels
-	${SOURCES}
-)
+set(RES_FILES "")
+if(MINGW)
+	set(RES_FILES "src/res.rc")
+	set(CMAKE_RC_COMPILER_INIT windres)
+	ENABLE_LANGUAGE(RC)
+	SET(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+	
+	add_executable(savagewheels ${SOURCES} ${RES_FILES})	
+else()
+	add_executable(savagewheels ${SOURCES})	
+endif(MINGW)
+
 
 ### add required libarires
 
@@ -61,7 +69,7 @@ if (UNIX AND NOT WIN32)
 		SDL_LIBRARY_SO
 		NAMES ${SDL_LIB_NAME}
 		PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY} $ENV{SDLDIR} "${CMAKE_CURRENT_SOURCE_DIR}/libs"
-		)	
+	)	
 else()
 	# Windows
 	

@@ -27,8 +27,8 @@ LANGUAGE LANG_BULGARIAN, SUBLANG_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,0,0
- PRODUCTVERSION 1,4,0,0
+ FILEVERSION 1,5,0,0
+ PRODUCTVERSION 1,5,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -44,13 +44,13 @@ BEGIN
         BLOCK "000904b0"
         BEGIN
             VALUE "CompanyName", "KenamicK Entertainment - www.kenamick.com"
-            VALUE "FileDescription", "sw"
-            VALUE "FileVersion", "sw.exe"
+            VALUE "FileDescription", "Savage Wheels 2D Game"
+            VALUE "FileVersion", "savagewheels.exe"
             VALUE "InternalName", "sw"
-            VALUE "LegalCopyright", "Copyright © 2003 - 2010"
-            VALUE "OriginalFilename", "sw.exe"
+            VALUE "LegalCopyright", "Copyright © 2003 - 2013"
+            VALUE "OriginalFilename", "savagewheels.exe"
             VALUE "ProductName", "Savage Wheels"
-            VALUE "ProductVersion", "1, 4, 0, 0"
+            VALUE "ProductVersion", "1, 5, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
