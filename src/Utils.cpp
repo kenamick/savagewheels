@@ -338,25 +338,23 @@ bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
 }
 
 ///////////////////////////////////////////////////////////////////////
+// Ime: fRangeGetXY()
+// Opisanie: Convert one range to another
+///////////////////////////////////////////////////////////////////////
+float	fRangeGetXY(int in, int inMin, int inMax, float min, float max)
+{
+	int inRange = (inMax - inMin);
+	float newRange = (max - min);
+	float result = (((in - inMin) * newRange) / inRange) + min;
+
+	return result;
+}
+
+///////////////////////////////////////////////////////////////////////
 // Ime: fRangeGet0255()
 // Opisanie:
 ///////////////////////////////////////////////////////////////////////
 float	fRangeGet0255(int in, float min, float max)
 {
-	float result;
-
-	in = in < 0 ? 0 : in;
-	in = in > 255 ? 255 : in;
-
-	if (in == 0) {
-		result = min;
-	} else if (in >= 255) {
-		result = max;
-	} else {
-		float perc = (in / 255.0f) * 100.0f;
-		// 1.0f / 100.0f
-		result = min + (max / 100.0f) * perc;
-	}
-
-	return result;
+	return fRangeGetXY(in, 0, 255, min, max);
 }

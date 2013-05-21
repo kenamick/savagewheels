@@ -1694,29 +1694,16 @@ void CSdl::PlaySound( int snd_index, int position )
 		return;
 
 	// calculate sound position pan
-	//	A left/right pan level, from -1.0 to 1.0 inclusive. -1.0 = Full left, 0.0 = center, 1.0 = full right. Default = 0.0.
+	//	A left/right pan level, from -1.0 to 1.0 inclusive.
+	// -1.0 = Full left, 0.0 = center, 1.0 = full right.
+	// Default = 0.0.
 
-	float pos = 0.0;
-	// TODO: fix position calculations
+	float pos = 0.0f;
 
 	if ( position != -1 )
 	{
-		if ( position > 320 )
-		{
-			position = (int)(128.0f + 0.1f * (float)position);
-			
-			if ( position > 205 )
-				position = 205;
-		}
-		else
-		{
-			position = (int)(0.1f * (float)position);
-			if ( position < 50 ) 
-				position = 50;
-		}
+		pos = fRangeGetXY(position, 0, 640, -1.0f, 1.0f);
  	}
-
-	pos = 0.0f; //fRangeGet0255(position, -0.1f, 1.0f);
 
 	FMOD_CHANNEL 	*channel;
 

@@ -61,6 +61,7 @@ void	CloseLog(void);
 String	ExtractFilename( const String strPath );
 bool	PathExists( const String strPath, struct stat* _pStats = NULL );
 
+float	fRangeGetXY(int in, int inMin, int inMax, float min, float max);
 float	fRangeGet0255(int in, float min, float max);
 
 #endif
