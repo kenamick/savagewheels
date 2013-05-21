@@ -10,14 +10,14 @@ set(APP_VER_PATCH "0")
 ### check for required libs
 find_package(SDL REQUIRED)
 
-### src
+### sources
 include_directories(src/)
 include_directories(tinyxml/)
 
-set (
-    SOURCES 
+set(
+	SOURCES 
 	src/CBufferedReader.cpp
-    src/Bindings.cpp 
+	src/Bindings.cpp 
 	src/CDeadToy.cpp 
 	src/CKdf.cpp 
 	src/Csdl.cpp 
@@ -45,96 +45,142 @@ add_executable (
 
 ### add required libarires
 
-# add SDL
-set(SDL_LIB_NAME "libSDL.so")
+## SDL
 
-target_link_libraries( 
-	savagewheels
-	${SDL_LIBRARY}
-	SDLmain
-)
+if (UNIX AND NOT WIN32)
+	# Linux
+	
+	set(SDL_LIB_NAME "libSDL.so")
+	target_link_libraries( 
+		savagewheels
+		${SDL_LIBRARY}
+		SDLmain
+	)
+	
+	find_library(
+		SDL_LIBRARY_SO
+		NAMES ${SDL_LIB_NAME}
+		PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY} $ENV{SDLDIR} "${CMAKE_CURRENT_SOURCE_DIR}/libs"
+		)	
+else()
+	# Windows
+	
+	set(SDL_LIB_NAME "SDL.dll")
+	target_link_libraries( 
+		savagewheels
+		${SDL_LIBRARY}
+	)
+	add_definitions(-lpthread)
+	include_directories(${SDL_INCLUDE_DIR})
+	link_directories($ENV{SDLDIR}\\lib)
+	
+	set(SDL_LIBRARY_SO $ENV{SDLDIR}\\bin\\SDL.dll)
+endif()
 
-find_library(
-    SDL_LIBRARY_SO
-    NAMES ${SDL_LIB_NAME}
-    PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY}
-    )
+message(STATUS "libSDL.so/DLL is at ${SDL_LIBRARY_SO}")
 
-add_definitions(`sdl-config --cflags`)
-add_definitions(`sdl-config --libs`)
+add_custom_command(TARGET savagewheels POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+	${SDL_LIBRARY_SO}
+	$<TARGET_FILE_DIR:savagewheels>)  
 
-message(STATUS "libSDL.so is in ${SDL_LIBRARY_SO}")
-
-# check if sound support is required
+# check if sound support is available
 if (NOT NO_SOUND)
-  set(FMOD_LIB_NAME "libfmodex.so")
 
-  # add FMod Ex (if present)
-  find_library( 
-    FMOD_LIBRARY
-    NAMES ${FMOD_LIB_NAME}
-    PATHS "/usr/lib" "/usr/local/lib/" ${FMOD_SO_PATH}
-  )
+	# check if path to FMod is defined
+	if(NOT DEFINED ${FMOD_PATH})
+		set(FMOD_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/fmod/api")
+	endif()
 
-  if (NOT FMOD_LIBRARY)
-      message( STATUS "FModEx lib(${FMOD_LIB_NAME}) not found! Will compile without sound support." )
-  else()
-      add_definitions(-DWITH_FMOD)
-      add_definitions(-I/usr/include/fmodex)
-      target_link_libraries(savagewheels ${FMOD_LIBRARY})
-      message( STATUS "FModEx lib(${FMOD_LIB_NAME}) at ${FMOD_LIBRARY}." )
-  endif()
+	if (UNIX AND NOT WIN32)
+		# Linux
+		
+		set(FMOD_LIB_NAME "libfmodex.so")
+		set(FMOD_SO_NAME "libfmodex.so")
+		
+		add_definitions(-I/usr/include/fmodex)
+	else()
+		# Windows
+		
+		set(FMOD_LIB_NAME "libfmodex.a")
+		if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+			set(FMOD_SO_NAME "fmodex64.dll")
+		else()
+			set(FMOD_SO_NAME "fmodex.dll")
+		endif()
+		
+		add_definitions(-I${FMOD_PATH}/inc)
+		link_directories(${FMOD_PATH}/lib)
+	endif()
+
+	# add FMod Ex (if present)
+	find_library( 
+		FMOD_LIBRARY
+		NAMES ${FMOD_LIB_NAME}
+		PATHS "/usr/lib" "/usr/local/lib/" "${FMOD_PATH}/lib"
+	)
+	
+	find_library(
+		FMOD_LIBRARY_SO_PATH
+		NAMES ${FMOD_SO_NAME}	
+		PATHS "/usr/lib" "/usr/local/lib/" "${FMOD_PATH}"
+	)
+
+	if (NOT FMOD_LIBRARY)
+		message( STATUS "FModEx lib - ${FMOD_LIB_NAME} not found! Will compile without sound support." )
+	else()
+		message( STATUS "Found FModEx lib at ${FMOD_LIBRARY}. Found FModEx DLL at ${FMOD_LIBRARY_SO_PATH}." )
+		
+		add_definitions(-DWITH_FMOD)
+		target_link_libraries(savagewheels ${FMOD_LIBRARY})
+		
+		add_custom_command(TARGET savagewheels POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			${FMOD_LIBRARY_SO_PATH} 
+			$<TARGET_FILE_DIR:savagewheels>)
+			
+		INSTALL(FILES
+		    "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}"
+			DESTINATION "./")
+	endif()
 
 else()
-  message( STATUS "NO_SOUND option found! Compiling without sound support ..." )
+	message( STATUS "NO_SOUND option found! Compiling without sound support ..." )
 endif()
 
 ### additional defines
-add_definitions(-DLINUX_BUILD)
+
+if (UNIX AND NOT WIN32)
+	add_definitions(-DLINUX_BUILD)
+endif()
 
 message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_definitions(-g)
-  add_definitions(-D_DEBUG)
-  add_definitions(-DDEBUG)
+	add_definitions(-g -D_DEBUG -DDEBUG)
 else()
-  add_definitions(-O3 -DNDEBUG)
+	add_definitions(-O3 -DNDEBUG)
 endif()
 
-if (UNIX AND NOT WIN32)
-  if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    add_definitions(-DARCH_X64)
-    set(APP_ARCH "x64")
-    set(DEB_ARCH "amd64")
-  else()
-    add_definitions(-DARCH_X86)
-    set(APP_ARCH "x86")
-    set(DEB_ARCH "i386")
-  endif()
+if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+	add_definitions(-DARCH_X64)
+	set(APP_ARCH "x64")
+	set(DEB_ARCH "amd64")
+else()
+	add_definitions(-DARCH_X86)
+	set(APP_ARCH "x86")
+	set(DEB_ARCH "i386")
 endif()
 
 ### configure a header file to pass some of the CMake settings to the source code
 configure_file (
   "${PROJECT_SOURCE_DIR}/Config.h.in"
   "${PROJECT_SOURCE_DIR}/src/Config.h")
-  
-### copy required libs
-add_custom_command(TARGET savagewheels POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-    ${FMOD_LIBRARY} 
-    $<TARGET_FILE_DIR:savagewheels>)        
-
-add_custom_command(TARGET savagewheels POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-    ${SDL_LIBRARY_SO}
-    $<TARGET_FILE_DIR:savagewheels>)  
 
 ### Install targets
 INSTALL(TARGETS savagewheels 
     RUNTIME DESTINATION "./")
 INSTALL(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_LIB_NAME}"
     "${CMAKE_CURRENT_BINARY_DIR}/${SDL_LIB_NAME}"
     "${CMAKE_CURRENT_SOURCE_DIR}/run.sh"
     "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
@@ -166,7 +212,13 @@ set(CPACK_PACKAGE_FILE_NAME "savagewheels-${PCKVER}-${CMAKE_SYSTEM_NAME}-${APP_A
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 # Advanced settings
-SET(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+if (UNIX AND NOT WIN32)
+	set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+	set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
+else()
+	set(CPACK_CMAKE_GENERATOR "MinGW Makefiles")
+	set(CPACK_PACKAGING_INSTALL_PREFIX "/savagewheels")
+endif()
 
 set(CPACK_RESOURCE_FILE_LICENSE  "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
@@ -177,7 +229,6 @@ set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #"^${PROJECT_SOURCE_DIR}/bin/pref"
 #"^${PROJECT_SOURCE_DIR}/bin/debug.html"
 #)
-set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
 set(CPACK_PACKAGE_EXECUTABLES "savagewheels" "Savage Wheels Game")
 
 # Debian DEB package stuff
