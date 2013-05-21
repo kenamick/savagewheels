@@ -938,7 +938,7 @@ inline void CSdl::_Sunlock( SDL_Surface *surface )
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFullscreen, bool bHardware )
 {
-	char temp[128] 	= { 0 };
+	char temp[256] 	= { 0 };
 
 	this->_game = game;
 	ASSERT( _game != NULL );
@@ -953,7 +953,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	}
 
 	// get video capabilities
-	SDL_VideoDriverName( temp, 128 );
+	SDL_VideoDriverName( temp, 256 );
 	LOG( "Video Driver: " << temp );
 	
 	SDL_VideoInfo *vid_info =(SDL_VideoInfo *) SDL_GetVideoInfo();
