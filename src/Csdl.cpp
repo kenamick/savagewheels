@@ -32,6 +32,10 @@
 ///////////////////////////////////////////////////////////////////////
 CSdl::CSdl()
 :	_game( NULL ),
+#ifdef WITH_FMO
+	fmod_system(NULL),
+	fmod_musicChannel(NULL),
+#endif
 	keys( NULL ),
 	num_surfaces( 0 ),
 	_joystick( NULL ),
@@ -42,9 +46,7 @@ CSdl::CSdl()
 	_yJoystick( ANALOG_THRESHOLD ),
 	JoystickHatState( SDL_HAT_CENTERED ),
 	mouse_lbutton( MOUSE_BUTTON_UNPRESSED ),
-	mouse_rbutton( MOUSE_BUTTON_UNPRESSED ),
-	fmod_system(NULL),
-	fmod_musicChannel(NULL)
+	mouse_rbutton( MOUSE_BUTTON_UNPRESSED )
 {
 
 	// reset na powyrhnostite za blitvane
