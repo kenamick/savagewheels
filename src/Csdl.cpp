@@ -35,6 +35,8 @@ CSdl::CSdl()
 #ifdef WITH_FMO
 	fmod_system(NULL),
 	fmod_musicChannel(NULL),
+	fmod_groupSounds(NULL),
+	fmod_groupMusic(NULL)
 #endif
 	keys( NULL ),
 	num_surfaces( 0 ),
@@ -78,21 +80,28 @@ CSdl::~CSdl()
 ///////////////////////////////////////////////////////////////////////
 void CSdl::Close()
 {
-	AppendToLog("Closing CSdl ...");
+	LOG("Closing CSdl ...");
 
 	// free all sounds
 #ifdef WITH_FMOD	
 	if ( bsound_initialized )
 	{
-		AppendToLog("FModEx: Closing...");
-		AppendToLog("FModEx: Releasing game sounds... ");
+		FMOD_RESULT result;
+
+		LOG("FModEx: Closing...");
+		LOG("FModEx: Releasing game sounds... ");
 		for ( Uint32 i = 0; i < MAX_SOUNDS; i++ )
 		{
 			if ( sounds[i].loaded )
 				sounds[i].Release();
 		}
 
-	    FMOD_RESULT result = FMOD_System_Close(fmod_system);
+		result = FMOD_SoundGroup_Release(fmod_groupSounds);
+		IsFModOK(result);
+		result = FMOD_SoundGroup_Release(fmod_groupMusic);
+		IsFModOK(result);
+
+	    result = FMOD_System_Close(fmod_system);
 	    IsFModOK(result);
 	    result = FMOD_System_Release(fmod_system);
 	    IsFModOK(result);
@@ -109,7 +118,7 @@ void CSdl::Close()
 
 	SDL_Quit();
 
-	AppendToLog( "CSdl closed successfully." );
+	LOG( "CSdl closed successfully." );
 }
 
 
@@ -1027,12 +1036,12 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	SDL_WM_SetCaption( _game->GetWindowTitle().c_str(), "None" );
 	SDL_ShowCursor( SDL_DISABLE );	
 
-	// 16bit-mode-check
+	// check for 16-bit color mode
 	bytes_per_color = screen->format->BytesPerPixel;
 	magenta16 = MAGENTA_565; // 24&32bit
 	shadow_mask16 = SHADOW_MASK565; //24&32bit
 
-// check for 16/15 bit mode
+	// check for 16/15 bit mode
 	if ( bytes_per_color == 2 )
 	{
 		bytes_per_color = screen->format->BytesPerPixel;
@@ -1048,7 +1057,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 		}
 	}
 
-	AppendToLog( "SDL initialized successfully." );
+	LOG("SDL initialized successfully.");
 
 #ifdef WITH_FMOD
 	// inicializirai Sound-a
@@ -1065,11 +1074,11 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 
     if (!bsound_initialized)
     {
-    	AppendToLog( "FModEx failed to initialize! Game will start without sound." );
+    	LOG("FModEx failed to initialize! Game will start without sound.");
     }
     else if ( version < FMOD_VERSION )
 	{
-		LOG( "FModEx Error: You are using an old FMOD version " << version << "! Required version is " << FMOD_VERSION );
+		LOG("FModEx Error: You are using an old FMOD version " << version << "! Required version is " << FMOD_VERSION);
 		bsound_initialized = false;
 	}
 	else
@@ -1116,7 +1125,14 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 			//	);
 			//memset( this->sounds, 0, sizeof(CSound) * MAX_SOUNDS );
 
-			AppendToLog( "FModEx initialized successfully." );
+			result = FMOD_System_CreateSoundGroup(fmod_system, FMOD_SNDGROUP_SOUNDS,
+					&fmod_groupSounds);
+			IsFModOK(result);
+			result = FMOD_System_CreateSoundGroup(fmod_system, FMOD_SNDGROUP_MUSIC,
+					&fmod_groupMusic);
+			IsFModOK(result);
+
+			LOG("FModEx initialized successfully.");
 
 			// set default volume
 			volume_sound = 255;
@@ -1541,15 +1557,17 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 		return -1;
 
 	static int		cur_channel	= 0;		// TODO: remove the 'static'
-	Uint32			i			= 0;
+	Uint32			index		= 0;
 	CSound			*ptr_snd	= sounds;
 	bool			bsnd_loaded	= false;
 	FMOD_RESULT		result;
 
-	while ( i < MAX_SOUNDS )
+	while ( index < MAX_SOUNDS )
 	{
 		if ( !ptr_snd->loaded )
 		{
+			FMOD_SOUNDGROUP *bindingGroup;
+
 			if (IsStream)
 			{
 				result = FMOD_System_CreateSound(fmod_system,
@@ -1557,6 +1575,8 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 						FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM | FMOD_LOOP_NORMAL,
 						0,
 						&ptr_snd->sound);
+
+				bindingGroup = fmod_groupMusic;
 			}
 			else
 			{
@@ -1565,6 +1585,8 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 						FMOD_DEFAULT,
 						0,
 						&ptr_snd->sound);
+
+				bindingGroup = fmod_groupSounds;
 			}
 
 			if (!IsFModOK(result))
@@ -1573,6 +1595,10 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 				return -1;
 			}
 			
+			// bind to desired sound group
+			result = FMOD_Sound_SetSoundGroup(ptr_snd->sound, bindingGroup);
+			IsFModOK(result);
+
 			// disable loop by default
 			FMOD_Sound_SetLoopCount(ptr_snd->sound, 0);
 
@@ -1587,13 +1613,14 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 				ptr_snd->buffered = true;
 			}
 			
+			ptr_snd->isMusic = IsStream;
 			ptr_snd->loaded = true;
+
 			bsnd_loaded = true;
-			
 			break;
 		}
 
-		i++;
+		index++;
 		ptr_snd++;
 	}
 
@@ -1603,7 +1630,7 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 		return -1;
 	}
 
-	return i;
+	return index;
 #else
 	return -1;
 #endif
@@ -1815,20 +1842,22 @@ bool CSdl::IsMusicPlaying()
 void CSdl::SetMusicVolume( int new_vol )
 {
 #ifdef WITH_FMOD  
-	if ( new_vol > 128 ) 
-		new_vol = 128;
+	if ( new_vol > 256 )
+		new_vol = 256;
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
-	volume_music = new_vol * 2; // 0 - 256 range
-	float fineVol = fRangeGet0255(volume_sound, 0.0f, 1.0f);
+	volume_music = new_vol; // 0 - 256 range
+	float fineVol = fRangeGet0255(volume_music, 0.0f, 1.0f);
 
 	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
 
-	if (fmod_musicChannel) {
-		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fineVol);
-		FM_OK(result);
-	}
+	FMOD_RESULT result = FMOD_SoundGroup_SetVolume(fmod_groupMusic, fineVol);
+	FM_OK(result);
+//	if (fmod_musicChannel) {
+//		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fineVol);
+//		FM_OK(result);
+//	}
 #endif
 }
 
@@ -1850,12 +1879,15 @@ void CSdl::SetMusicVolume( int new_vol )
 
 	DBG("Setting Sound volume to " << volume_sound << " / fine volume " << fineVol);
 
-	FMOD_CHANNELGROUP *channelGroup;
-	FMOD_RESULT result = FMOD_System_GetMasterChannelGroup(fmod_system, &channelGroup);
-	if (FM_OK(result)) {
-		result = FMOD_ChannelGroup_SetVolume(channelGroup, fineVol);
-		FM_OK(result);
-	}
+	FMOD_RESULT result = FMOD_SoundGroup_SetVolume(fmod_groupSounds, fineVol);
+	FM_OK(result);
+
+//	FMOD_CHANNELGROUP *channelGroup;
+//	FMOD_RESULT result = FMOD_System_GetMasterChannelGroup(fmod_system, &channelGroup);
+//	if (FM_OK(result)) {
+//		result = FMOD_ChannelGroup_SetVolume(channelGroup, fineVol);
+//		FM_OK(result);
+//	}
 #endif
 }
 
@@ -1914,6 +1946,8 @@ void CSound::Release()
 		DBG( "Freeing FMod sample data ..." );
 		FMOD_RESULT result = FMOD_Sound_Release(sound);
 		FM_OK(result);
+
+		loaded = false;
 	}
 #endif
 }

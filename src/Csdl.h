@@ -52,6 +52,7 @@ class CKdf_Packeger;
 #define JOY_AXIS_LEFT			3
 #define JOY_AXIS_RIGHT			4
 #define JOY_AXIS_NONE		    5
+#define ANALOG_THRESHOLD 		20000
 
 #define BLACK		   0x0
 #define WHITE		   0xFFFFFF
@@ -69,52 +70,38 @@ class CKdf_Packeger;
 //  #define RGB_16BIT(r,g,b) ( ((r) << 11) | ((g) << 5) | (b) ) 
 // #endif
 
-#define ANALOG_THRESHOLD 20000
+#define FMOD_SNDGROUP_SOUNDS	"SWSOUNDS"
+#define FMOD_SNDGROUP_MUSIC		"SWMUSIC"
 
-
-typedef struct _BITMAPFILEHEADER {	// bmfh 
-    Uint16  bfType; 
-    Uint32  bfSize; 
-    Uint16  bfReserved1; 
-    Uint16  bfReserved2; 
-    Uint32  bfOffBits; 
-} __BITMAPFILEHEADER; 
-
-// (SDL_Mixer) Sound Class
 class CSound
 {
-
 public:
 	CSound()
-		: buffered(false), play_channel(-1), loaded(false)
+		: buffered(false),
+		  play_channel(-1),
+		  loaded(false),
 #ifdef WITH_FMOD
-		,sound(NULL)
+		  sound(NULL),
 #endif
-	{
-	};
+		  isMusic(false) {};
 
-	~CSound()
-	{
-	};
+	~CSound() {};
 
 #ifdef WITH_FMOD	
 	FMOD_SOUND   *sound;
 #endif
-	bool	buffered;				// buffered sound?
-	int		play_channel;			// unbuffered sounds do not need separate channels
-	bool	loaded;
+	bool buffered;		// buffered sound?
+	int play_channel;	// unbuffered sounds do not need separate channels
+	bool loaded;
+	bool isMusic;
 	
 	void Release();
-
 };
-
 
 
 class CSdl 
 {
-
 protected:
-
 	// graphics
 	struct STRUCT_BLIT 
 	{
@@ -145,6 +132,8 @@ protected:
 #ifdef WITH_FMOD
    FMOD_SYSTEM      *fmod_system;
    FMOD_CHANNEL 	*fmod_musicChannel;
+   FMOD_SOUNDGROUP  *fmod_groupSounds;
+   FMOD_SOUNDGROUP  *fmod_groupMusic;
 #endif
 
    CSound		  sounds[MAX_SOUNDS];	
