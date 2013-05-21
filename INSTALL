@@ -23,9 +23,9 @@ Extract the downloaded archive into the bin/ folder.
 3) Installation on Linux platforms
 
 3.1) Requirements:
+  * CMake 2.8.x
   * libSDL 1.2.x - You should install this using your package manager.
-  * FMod Ex API - Install using your package manager or get the package from FMod's website.
-  * CMake 2.8 and above
+  * FMod Ex API 4.x - Install using your package manager or get the package from FMod's website.
   * (Ubuntu specific) Install 'build-essential' package.
 
 3.2) Instructions
@@ -71,20 +71,37 @@ Extract the downloaded archive into the bin/ folder.
 4) Installation on Windows
 
 4.1) Requirements
-  * Microsoft Visual Studio 2005
+  * MinGW (Minimalist GNU for Windows). I have only tested Mingw32!
+  * CMake 2.8.x
   * libSDL 1.2.x - Download the Development Libraries archive.
-  * FMod Ex API - Download and install the FMOD Ex API installer EXE.
+  * FMod Ex API 4.x - Download and install the FMOD Ex API installer EXE.
 
 4.2) Instructions
 
-TODO: (CMake setup not completed!)
+	a) Extract the contents of SDL 1.2.x package into the libs/ subfolder. Set the environment variable SDLDIR=<SDL-directory-in-libs>.
+	
+	b) Install the FMod Ex API and copy the api/ folder into the libs/ subfolder.
 
-You can try to compile using the available VS solution file (.sln).
-You will need to generate the Config.h in src/ yourself. Use the template Config.h.in.
+	c) Run CMake manually. Go to the release/ sub folder and run.
+	> cmake -G "MinGW Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
+   
+	Or to build without sound & music run:
+	> cmake -G "MinGW Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DNO_SOUND=1
+
+	c) Build with:
+	> mingw32-make
+   
+	d) Create the installation package with:
+	> cpack
+
+	c) Extract the produced archive file, e.g., savagewheels-1.5.0-Windows-x86.tar.gz to your desired Games folder.
+	
+	e) Start the game run:
+	> savagewheels  
 
 5) Compiling a Debug version
 
 To build a Debug version to catch a bug or something use the following:
 
-	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Debug
+	$ cmake -G "<?> Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Debug
 
