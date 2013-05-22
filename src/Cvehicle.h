@@ -251,8 +251,8 @@ public:
 	void UpdateStops();
 	void AddFrags( int fragnum ) { frags += fragnum; }; 
 
-	SDL_Surface*	GetCurrentFrame() { return sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
-	Uint32*			GetCurrentFrameMask() { return mask[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]; };
+	SDL_Surface*	GetCurrentFrame();
+	Uint32*			GetCurrentFrameMask();
 	SDL_Surface*	GetDriverNameSurface() { return driver_name; }; 
 	Uint32  GetX() { return center_x; };
 	Uint32  GetY() { return center_y; };

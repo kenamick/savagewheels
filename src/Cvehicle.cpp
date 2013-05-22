@@ -785,16 +785,12 @@ void CVehicle::DoMotion()
 				{
 					DBG( "[COLLIDE] Step #8" );
 
+					waypoint.do_precalculate = true;
+
 					if ( waypoint.goal_type == WAYPOINT_VEHICLE  )
 					{
-						waypoint.do_precalculate = true;
 						waypoint.do_reverse = true;
 						DBG( "[COLLIDE] Step #9" );
-					}
-					else
-					{
-						waypoint.do_precalculate = true;
-						DBG( "[COLLIDE] Step #10" );
 					}
 				}
 			}
@@ -1082,6 +1078,23 @@ void CVehicle::Repulse( int frame_angle, int speed )
 
 }
 
+///////////////////////////////////////////////////////////////////////
+// Ime: GetCurrentFrame()
+// Opisanie:
+///////////////////////////////////////////////////////////////////////
+SDL_Surface* CVehicle::GetCurrentFrame()
+{
+	return sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
+}
+
+///////////////////////////////////////////////////////////////////////
+// Ime: GetCurrentFrameMask()
+// Opisanie:
+///////////////////////////////////////////////////////////////////////
+Uint32* CVehicle::GetCurrentFrameMask()
+{
+	return mask[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Ime: GetFrameRect()
@@ -1089,10 +1102,12 @@ void CVehicle::Repulse( int frame_angle, int speed )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::GetFrameRect( SDL_Rect *rect )
 {
+	SDL_Surface *currentSurf = GetCurrentFrame();
+
 	rect->x = (Uint32)x;
 	rect->y = (Uint32)y;
-	rect->w = rect->x + sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]->w;
-	rect->h = rect->y + sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame]->h;
+	rect->w = rect->x + currentSurf->w;
+	rect->h = rect->y + currentSurf->h;
 }
 
 
@@ -1165,14 +1180,14 @@ void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
 void CVehicle::Update()
 {
  
- //static bool bputmine = false, bputminekey = false;
- char		 buf[64];
- float		 perc		= 0.0f;
- Uint32		 width		= 0U, 
-		 height		= 0U;
- SDL_Rect	 rect;
- SDL_Surface 	 *surf		= NULL;
- Uint32		 *cur_mask	= NULL;
+ char		buf[64];
+ float		perc		= 0.0f;
+ Uint32		width		= 0U,
+ Uint32		height		= 0U;
+ SDL_Rect	rect;
+
+ SDL_Surface	*surf		= NULL;
+ Uint32			*cur_mask	= NULL;
  
  cur_mask = GetCurrentFrameMask();
  surf = sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
@@ -1354,10 +1369,9 @@ void CVehicle::Update()
 		 landmines--;
 		 _game->Mines.Create( GetX(), GetY(), myIndex );
 	 }
-	 bputminekey = false;
-	 
- }
 
+	 bputminekey = false;
+ }
 
  // proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
  if ( vel == 0 && ! self_destruct )
@@ -1369,7 +1383,9 @@ void CVehicle::Update()
 	 }
  }
  else
+ {
 	 ai_stuck = false;
+ }
 
  if ( ai_stuck )
  {
@@ -1418,12 +1434,10 @@ void CVehicle::UpdateStops()
 	if ( set_stop )
 	{
 		SetVelocity( 0.0f );
-
-		set_stop = ! set_stop;
+		set_stop = false;
 	}
 }
  
-
 
 ///////////////////////////////////////////////////////////////////////
 // Ime: AI_Update()
