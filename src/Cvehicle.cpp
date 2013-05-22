@@ -559,9 +559,7 @@ void CVehicle::DoMotion()
 	tmp_vel		= (int)abs(vel);
 	tmp_maxvel	= max_vel;
 
-	//char buf[64];
-	
-	// AI-turnings...
+	// AI-steering ...
 	if ( control == VC_AI )
 	{
 		rot_m = 2.0f;  // double rotation speed for AIs
@@ -608,24 +606,30 @@ void CVehicle::DoMotion()
 	if ( vrot == VR_LEFT && vel != 0 )
     {
 	    display_frame += (rot_speed * rot_m * _game->getMpf());
-		if ( display_frame > MAX_ROTATION_FRAMES - 1 ) display_frame = 0;
+
+		if ( display_frame > MAX_ROTATION_FRAMES - 1 )
+			display_frame = 0;
 
 		if ( control == VC_AI ) // ai_case
-		  if ( display_frame > ai_final_frame ) display_frame = ai_final_frame;
+		  if ( display_frame > ai_final_frame )
+			  display_frame = ai_final_frame;
 
 	}
 	else if ( vrot == VR_RIGHT && vel != 0 )
 	{
 		display_frame -= (rot_speed * rot_m * _game->getMpf());
-		if ( display_frame < 0 ) display_frame = MAX_ROTATION_FRAMES - 1;
+
+		if ( display_frame < 0 )
+			display_frame = MAX_ROTATION_FRAMES - 1;
 
 		if ( control == VC_AI ) // ai_case
-		  if ( display_frame < ai_final_frame ) display_frame = ai_final_frame;
+		  if ( display_frame < ai_final_frame )
+			  display_frame = ai_final_frame;
 
 	}
+
 	vrot = VR_NONE;
 	motion_frame = display_frame;
-
 
 	// Accelerate... 
 	int maxvel_p = tmp_maxvel + speed_bonus;
@@ -634,16 +638,14 @@ void CVehicle::DoMotion()
 	if ( vmove == VM_FORWARD )
 	{
 		vel += (float)acc * _game->getMpf();
-		if ( vel > (float)maxvel_p ) vel = (float)maxvel_p;
-
-		/*sprintf( buf, "vel: %f %f", vel, _game->getMpf() );
-		AppendToLog( buf );*/
-		
+		if ( vel > (float)maxvel_p )
+			vel = (float)maxvel_p;
 	}
 	else if ( vmove == VM_BACKWARD )
 	{
 		vel -= acc * _game->getMpf();
-		if ( vel < (float)maxvel_n ) vel = (float)maxvel_n;
+		if ( vel < (float)maxvel_n )
+			vel = (float)maxvel_n;
 	}
 	else
 	{
@@ -651,16 +653,19 @@ void CVehicle::DoMotion()
 		if ( vel > 0 ) 
 		{
 			vel -= dec_acc * _game->getMpf();
-			if ( vel < 0 ) vel = 0;
+			if ( vel < 0 )
+				vel = 0;
 		}
+
 		if ( vel < 0 ) 
 		{
 			vel += dec_acc * _game->getMpf();
-			if ( vel > 0 ) vel = 0;
+			if ( vel > 0 )
+				vel = 0;
 		}
 	}
 
-	// zavyrti gumite ako se dvijim
+	// rotate vehicle tires (if moving)
 	if ( vel != 0 && tire_frames > 1 )
 	{
 		tire_frame += 10 * _game->getMpf();
@@ -669,29 +674,35 @@ void CVehicle::DoMotion()
 			tire_frame = 0;
 	}
 
-	// DoMotion...
+	float mpf_vel = _game->getMpf() * vel;
+	float mpf_hitvel = _game->getMpf() * hit_vel;
+
+	// translate position
 	if ( control == VC_AI )
 	{
-		x += ((float)cos(ai_cur_angle) * _game->getMpf() * vel + x_acc * _game->getMpf() * hit_vel ); 
-		y -= ((float)sin(ai_cur_angle) * _game->getMpf() * vel + y_acc * _game->getMpf() * hit_vel );
+		x += ((float)cos(ai_cur_angle) * mpf_vel + x_acc * mpf_hitvel );
+		y -= ((float)sin(ai_cur_angle) * mpf_vel + y_acc * mpf_hitvel );
 	}
 	else
 	{
-		x += (g_dirx[(int)motion_frame] * _game->getMpf() * vel + x_acc * _game->getMpf() * hit_vel ); 
-		y -= (g_diry[(int)motion_frame] * _game->getMpf() * vel + y_acc * _game->getMpf() * hit_vel );
+		x += (g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel );
+		y -= (g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel );
 		//x += (g_dirx[(int)motion_frame] * vel + x_acc * hit_vel ) * _game->getMpf(); 
 		//y -= (g_diry[(int)motion_frame] * vel + y_acc * hit_vel ) * _game->getMpf();
 	}
 
 
 	// HitTest...
+
 	ptr_veh = _game->Auto;
     GetFrameRect( &rMine );
 	
 	for ( Uint32 j = 0; j < _game->game_num_cars; j++ )
 	{
-		if ( j != myIndex /*&& (abs(this->vel) > 0.5f)*/ )
+		if ( j != myIndex )
 		{
+			DBG("me vel:" << this->vel);
+			DBG("him vel:" << ptr_veh->GetVelocity());
 			if ( abs(this->vel) < 0.5f && abs(ptr_veh->GetVelocity()) < 0.5f ) //remove this - 12.nov
 				continue;
 
@@ -701,8 +712,7 @@ void CVehicle::DoMotion()
 			//if ( _game->Sdl.Collide( NULL, &rMine, &rPrey ) )
 			if ( _game->Sdl.Collide( &rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask() ) )
 			{
-				DBG( "[COLLIDE] New Collision" );
-				DBG( "[COLLIDE] -----------------------" );
+				DBG( "[COLLIDE] ----- New Collision -----" );
 
 				bHit = true;  // imame udar
 
@@ -713,11 +723,9 @@ void CVehicle::DoMotion()
 
 				//DBG( String("MyInde: ") << this->myIndex );
 				
-				// spri tozi class
 				if ( hit_vel != 0 )
 				{
 					DBG( "[COLLIDE] Step #2" );
-
 					ptr_veh->Repulse( (int)rep_frame, hit_vel / ptr_veh->GetCompareVal() );
 				}
 				else
@@ -760,7 +768,8 @@ void CVehicle::DoMotion()
 					tmp_anger = (int)(((float)anger / 100.0f ) * perc);
 					
 					//fulldmg = damage + tmp_anger;
-					fulldmg = (Uint16)( (float)damage + 0.2f * (float)tmp_vel ) - ( 0.15f * (float)ptr_veh->GetHitPoints() ) + tmp_anger;
+					fulldmg = (Uint16)( (float)damage + 0.2f * (float)tmp_vel )
+							- ( 0.15f * (float)ptr_veh->GetHitPoints() ) + tmp_anger;
 					
 					anger -= tmp_anger;
 					if ( anger < 0 || anger > 130) 
@@ -776,9 +785,13 @@ void CVehicle::DoMotion()
 						
 				}
 
-				//if ( ! _game->game_hitmode ) // hit-physics !
-				//	SetVelocity( 0.0f );
+				/*
+				 * FIXME:
+				 * This is a problem right here! Both vehicles will collide thus none
+				 * will move. This is the main reason for the nasty physics bug.
+				 */
 				this->set_stop = true; //remove this 12.nov
+//				SetVelocity( 0.0f );
 				
 				// nastroiki za AI-to
 				if ( control == VC_AI ) 
@@ -803,12 +816,14 @@ void CVehicle::DoMotion()
 	if ( hit_vel > 0 ) 
 	{
 		hit_vel -= _game->getMpf() * dec_acc;
-		if ( hit_vel < 0 ) hit_vel = 0;
+		if ( hit_vel < 0 )
+			hit_vel = 0;
 	}
 	if ( hit_vel < 0 ) 
 	{
 		hit_vel += _game->getMpf() * dec_acc;
-		if ( hit_vel > 0 ) hit_vel = 0;
+		if ( hit_vel > 0 )
+			hit_vel = 0;
 	}
 
 	// should we leave trails
@@ -816,7 +831,8 @@ void CVehicle::DoMotion()
 	{
 		if ( tire_trails == VTT_BLOOD && vmove != VM_NONE )
 		{
-			if ( intGetRnd( 0, 1000 ) < 200 ) _game->Anims.Create( GetX(), GetY(), ANIM_TIRESPLAT );
+			if ( intGetRnd( 0, 1000 ) < 200 )
+				_game->Anims.Create( GetX(), GetY(), ANIM_TIRESPLAT );
 		}
 
 		/*if ( tire_trails == VTT_BLOOD && vmove != VM_NONE )
@@ -837,14 +853,15 @@ void CVehicle::DoMotion()
 
 	}
 	else
+	{
  		tire_trails = VTT_NONE;
+	}
 	
 	// reset move var
 	vmove = VM_NONE;
-
-   
 	
-	// Bound...
+	// Game arena bounding
+
     if ( rMine.x < 24 )
 	{
 		x = 25;
@@ -855,6 +872,7 @@ void CVehicle::DoMotion()
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
 		}
+
 		vel = 0;
 	}
     else if ( rMine.w > 614 ) 
@@ -867,6 +885,7 @@ void CVehicle::DoMotion()
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
 		}
+
 		vel = 0;
 	}
     
@@ -880,6 +899,7 @@ void CVehicle::DoMotion()
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
 		}
+
 		vel = 0;
 	}
     else if ( rMine.h > 400 ) 
@@ -892,6 +912,7 @@ void CVehicle::DoMotion()
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
 		}
+
 		vel = 0;
 	}
 
@@ -1047,7 +1068,6 @@ void CVehicle::DoMotion()
 			// {!}
 			if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) ) //_game->Sdl.Collide( &rMe, GetCurrentFrame(), &rToy, _game->Mines.GetMineCurrentFrame( i ) ) )
 			{
-
 				DoDamage( 35U, _game->Mines.GetMineIndex( i ) );
 				// ...do car damage
 				_game->Mines.KillMine( i );
@@ -1182,7 +1202,7 @@ void CVehicle::Update()
  
  char		buf[64];
  float		perc		= 0.0f;
- Uint32		width		= 0U,
+ Uint32		width		= 0U;
  Uint32		height		= 0U;
  SDL_Rect	rect;
 
