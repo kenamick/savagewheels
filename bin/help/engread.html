@@ -282,34 +282,23 @@ Gives +3 Landmines.
 
 <A NAME = "TRB"><SPAN class=titleone>Troubleshooting and Q&A</SPAN></A>
 <BR><BR><BR>
-<SPAN class=alight>1. Game sound does not work on Linux.</SPAN>
+<SPAN class=alight><s>1. Game sound does not work on Linux.</s></SPAN>
 <br>
-Due to a common problem on Linux systems by default the game tries to initialize it's sound via ALSA driver.
-Try to start the game with a command line parameter <SPAN class=alight>-snd_alsa</SPAN> instead.
-<br>
-<br>
-<SPAN class=alight>2. On Linux the game crashes on Linux when I start playing.</SPAN>
-<br>
-Try to start the game with command line parameter <SPAN class=alight>-snd_22khz</SPAN> 
+<s>Due to a common problem on Linux systems by default the game tries to initialize it's sound via ALSA driver.
+Try to start the game with a command line parameter <SPAN class=alight>-snd_alsa</SPAN> instead.</s>
 <br>
 <br>
-<SPAN class=alight>3. The game always starts in a window on Linux.</SPAN>
+<SPAN class=alight>2. The game always starts in a window.</SPAN>
 <br>
-Yes. Due to some bugs (probably in the display drivers of some video cards) the game always starts in a window on Linux installations. To force the game to start in fullscreen use <SPAN class=alight>sw.exe -force-fullscreen</SPAN> 
-<br>
-<br>
-<SPAN class=alight>4. How can I start the game in a window on a Windows machine ?</SPAN>
-<br>
-To start in a window use the command line parameter <SPAN class=alight>-wnd</SPAN> 
+To force the game to start in fullscreen use the <SPAN class=alight>-force-fullscreen</SPAN> command line parameter.
 <br>
 <br>
-<SPAN class=alight>5. On Linux I get an error message <i>./savagewheels: error while loading shared libraries: libfmod-3.75.so</i></SPAN>
+<SPAN class=alight>3. On Linux I get an error message <i>./savagewheels: error while loading shared libraries: XXX.so</i></SPAN>
 <br>
-The FMod shared object library responsible for sound and music was not found. Try to specify the LD_LIBRARY_PATH environment variable before starting the game, i.e., <SPAN class=alight>export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH</SPAN>.
-The shared object file libfmod-3.75.so should already be available within the game directory.
+Either the FMod Ex shared object library or the SDL graphics library were not found. Run the game with the <SPAN class=alight>run.sh</SPAN> bash script. If this does not help you will need to install the FMod Ex and SDL libraries.
 <br>
 <br>
-<SPAN class=alight>6. The game crashes every time I start it.</SPAN>
+<SPAN class=alight>4. The game crashes every time I start it.</SPAN>
 <br>
 Try to start the game with software video mode using <SPAN class=alight>sw.exe -sw</SPAN>. If that doesn't work ...well, that's bad karma ;) Anyway, check the <SPAN class=alight>debug.html</SPAN> log file in your game folder for some additional info. <A HREF="#CONTACT">Report</A> the problem with some details on the issues page.
 
