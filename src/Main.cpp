@@ -24,36 +24,43 @@
 
 */
 /*
-  "Savage Wheels" - we're goin' deadly...
-
-  Copyright (c) 2003-2013 KenamicK Entertainment
-  http://www.kenamick.com/
-
-  coded by Petar Petrov
-
-  // release history
-  Alpha Release: 29.06.2003
-  Dev.Release:   04.08.2003
-  Beta Release:  02.09.2003
-  Final Release: 10.02.2004
-  Patch 1.02:    ??.03.2004
-  Patch 1.03:    ??.05.2004
-  Release 1.4:   12.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 12.09.2010
-  Release 1.5:   ??.??.2013
-
-*/
+ * "Savage Wheels" - we're goin' deadly...
+ *
+ * Copyright (c) 2003-2013 KenamicK Entertainment
+ * http://www.kenamick.com/
+ *
+ * coded by Petar Petrov
+ *
+ * $Release history
+ *
+ * Release 1.5:   ??.05.2013
+ * Release 1.4:   12.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 12.09.2010
+ * Patch 1.03:    ??.05.2004
+ * Patch 1.02:    ??.03.2004
+ * Final Release: 10.02.2004
+ * Beta Release:  02.09.2003
+ * Dev.Release:   04.08.2003
+ * Alpha Release: 29.06.2003
+ */
 
 #include "Main.h"
 
 int main( int argc, char *argv[] )
 {
-	bool fullscreen = true;
 	bool hardware_support = true;
+	/*
+	 * Start the game in a Window by default.
+	 * The 640x480 resolution is quite small and it really doesn't feel good when
+	 * playing on a large monitor. Users may however force a fullscreen by specifying command
+	 * line parameter.
+	 *
+	 * Linux Note: With certain video drivers running the game in fullscreen seems to crash
+	 * the gfx manager.
+	 */
+	bool fullscreen = false;
 
 #ifdef LINUX_BUILD
-	// SDL environment vars
 	setenv("SDL_VIDEO_CENTERED", "1", 1);
-	fullscreen = false;	// on some video drivers fullscreen seems to crash the gfx manager
 #else
 	_putenv("SDL_VIDEO_CENTERED=1");
 #endif
@@ -62,24 +69,41 @@ int main( int argc, char *argv[] )
 		for (int i = 1; i < argc; i++) {
 			if (!strcmp(argv[i], "-wnd")) {
 				fullscreen = false;
+				continue;
 			} else if (!strcmp(argv[i], "-sw")) {
 				hardware_support = false;
-			} else if (!strcmp(argv[i], "-force-fullscreen")) {
-				fullscreen = true;
-#ifdef LINUX_BUILD
-			} else if (!strcmp(argv[i], "-snd_alsa")) {
-				setenv("SW_SND_ALSA", "1", 0); // on the majority Linux distros this seems to be required !
-			} else if (!strcmp(argv[i], "-snd_22khz")) {
-				setenv("SW_SND_22KHZ", "1", 0); // 44KHz somehow seems to be a problem for FMod on Linux
-#endif
-			} else {
-				perror("Unknown command line parameter passed!");
-				exit(0);
+				continue;
 			}
+
+			if (!strcmp(argv[i], "-force-fullscreen")
+					|| !strcmp(argv[i], "-fullscreen")) {
+				fullscreen = true;
+				continue;
+			}
+
+#ifdef LINUX_BUILD
+			if (!strcmp(argv[i], "-snd_alsa")) {
+				/*
+				 * On the majority Linux distros this seems to be required !
+				 */
+				setenv("SW_SND_ALSA", "1", 0);
+				continue;
+			} else if (!strcmp(argv[i], "-snd_22khz")) {
+				/*
+				 * 44KHz somehow seems to be a problem for FMod on Linux
+				 */
+				setenv("SW_SND_22KHZ", "1", 0);
+				continue;
+			}
+#endif
+			perror("Unknown command line parameter passed!");
+			exit(0);
 		}
 	}
 	
-	// Start Game
+	/*
+	 * Load & Start Game
+	 */
 	  
 	OpenLog("debug.html");
 	
