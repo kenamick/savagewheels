@@ -1930,7 +1930,7 @@ void CSound::Release()
 #ifdef WITH_FMOD
 	if ( sound )
 	{
-		DBG( "Freeing FMod sample data ..." );
+		DBG( "Releasing FMod sample data ..." );
 		FMOD_RESULT result = FMOD_Sound_Release(sound);
 		FM_OK(result);
 
