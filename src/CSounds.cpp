@@ -58,9 +58,6 @@ bool CSounds::Initialize( CSdl *pSdl )
 	this->_sdl = pSdl;
 	ASSERT( _sdl != NULL );
 
-	if ( ! _sdl )
-		return false;
-
 #define LOAD_SOUND( container, name, buffered ) if ( (sounds[container] = _sdl->LoadSound( name, buffered )) == -1 ) { \
 	LOG( "Failed to load " << name << " ! "); \
 	return false; }
@@ -77,7 +74,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOAD_SOUND( SND_TIRES1, "sound/tires1.wav", true );
 	LOAD_SOUND( SND_TIRES2, "sound/tires2.wav", true );
 	LOAD_SOUND( SND_WARNING, "sound/warn.wav", true );
-	LOAD_SOUND( SND_MENU_NEXTCAR, "sound/snapshot.wav", false );
+	LOAD_SOUND( SND_MENU_NEXTCAR, "sound/snapshot.wav", true );
 	LOAD_SOUND( SND_MENU_HONK1, "sound/honk1.wav", true );
 	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
 	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", false );
@@ -90,6 +87,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 	music_stopped = false;
 
 #undef LOAD_SOUND
+#undef LOAD_MUSIC
 #endif
 	return true;
 }

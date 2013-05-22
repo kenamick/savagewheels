@@ -1338,7 +1338,7 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 	SDL_FreeSurface( sdl_surf );
 	sdl_surf = NULL;
 	
-	DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );
+//	DBG( "Loaded surface from " << filename << " Pos: " << file_offset << " W: " << new_surf->w << " H: " << new_surf->h );
 	
 	return new_surf;
 }
@@ -1604,6 +1604,11 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 
 			if ( !buffered_sound )
 			{
+				/*
+				 * FIXME:
+				 * This does not seem to work as intended since FMod Ex !
+				 * Find another way to reserve a channel instead of using pure int indexes.
+				 */
 				ptr_snd->buffered = false;
 				ptr_snd->play_channel = cur_channel;
 				cur_channel++;
@@ -1710,20 +1715,20 @@ void CSdl::PlaySound( int snd_index, int position )
 	if ( sounds[snd_index].buffered )
 	{
 		// find a free channel to play the sound
-		for ( Uint8 i = 0; i < 255; i++ )
-		{
+//		for ( Uint8 i = 0; i < 255; i++ )
+//		{
 			FMOD_BOOL is_playing = 0;
-			FMOD_System_GetChannel(fmod_system, i, &channel);
-			FMOD_Channel_IsPlaying(channel, &is_playing);
-			if ( !is_playing )
-			{
+//			FMOD_System_GetChannel(fmod_system, i, &channel);
+//			FMOD_Channel_IsPlaying(channel, &is_playing);
+//			if ( !is_playing )
+//			{
 				FMOD_System_PlaySound(fmod_system, FMOD_CHANNEL_FREE, sounds[snd_index].sound, 0, &channel);
 				FMOD_Channel_SetPan(channel, pos);
 //				chn = FSOUND_PlaySound( i, sounds[snd_index].sound );
 //				FSOUND_SetPan( chn , position );
-				break;
-			}
-		}
+//				break;
+//			}
+//		}
 	}
 	else
 	{
