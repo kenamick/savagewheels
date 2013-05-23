@@ -701,10 +701,10 @@ void CVehicle::DoMotion()
 	{
 		if ( j != myIndex )
 		{
-			DBG("me vel:" << this->vel);
-			DBG("him vel:" << ptr_veh->GetVelocity());
-			if ( abs(this->vel) < 0.5f && abs(ptr_veh->GetVelocity()) < 0.5f ) //remove this - 12.nov
-				continue;
+//			DBG("me vel:" << this->vel);
+//			DBG("him vel:" << ptr_veh->GetVelocity());
+//			if ( abs(this->vel) < 1.5f && abs(ptr_veh->GetVelocity()) < 1.5f ) //remove this - 12.nov
+//				continue;
 
 			// setup rectangles
 			ptr_veh->GetFrameRect( &rPrey );
@@ -712,27 +712,24 @@ void CVehicle::DoMotion()
 			//if ( _game->Sdl.Collide( NULL, &rMine, &rPrey ) )
 			if ( _game->Sdl.Collide( &rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask() ) )
 			{
-				DBG( "[COLLIDE] ----- New Collision -----" );
+				DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
 
-				bHit = true;  // imame udar
-
+				bHit = true;  // we have impact
 				x = tmp_x;
 				y = tmp_y;
 				motion_frame = tmp_mf;
 				display_frame = tmp_mf;
-
-				//DBG( String("MyInde: ") << this->myIndex );
 				
 				if ( hit_vel != 0 )
 				{
-					DBG( "[COLLIDE] Step #2" );
+					DBG( "[COLLIDE] Step #2| hit_vel = " << hit_vel );
 					ptr_veh->Repulse( (int)rep_frame, hit_vel / ptr_veh->GetCompareVal() );
 				}
 				else
 				{
 					DBG( "[COLLIDE] Step #3" );
 
-					if (  vel != 0 )
+					if ( fabsf(vel) - 0.0f <= 0.001f )
 					{
 						DBG( "[COLLIDE] Step #4" );
 						ptr_veh->Repulse( (int)motion_frame, vel / (float)ptr_veh->GetCompareVal() );
@@ -790,8 +787,8 @@ void CVehicle::DoMotion()
 				 * This is a problem right here! Both vehicles will collide thus none
 				 * will move. This is the main reason for the nasty physics bug.
 				 */
-				this->set_stop = true; //remove this 12.nov
-//				SetVelocity( 0.0f );
+//				this->set_stop = true; //remove this 12.nov
+				vel = vel * -0.8f;
 				
 				// nastroiki za AI-to
 				if ( control == VC_AI ) 
@@ -819,7 +816,7 @@ void CVehicle::DoMotion()
 		if ( hit_vel < 0 )
 			hit_vel = 0;
 	}
-	if ( hit_vel < 0 ) 
+	else if ( hit_vel < 0 )
 	{
 		hit_vel += _game->getMpf() * dec_acc;
 		if ( hit_vel > 0 )
@@ -1455,6 +1452,8 @@ void CVehicle::UpdateStops()
 	{
 		SetVelocity( 0.0f );
 		set_stop = false;
+		// XXX
+		hit_vel = 0;
 	}
 }
  
