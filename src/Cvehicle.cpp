@@ -729,7 +729,8 @@ void CVehicle::DoMotion()
 				{
 					DBG( "[COLLIDE] Step #3" );
 
-					if ( fabsf(vel) - 0.0f <= 0.001f )
+					// is velocity 0 ?
+					if ( fabsf(vel) - 0.0f < 0.001f )
 					{
 						DBG( "[COLLIDE] Step #4" );
 						ptr_veh->Repulse( (int)motion_frame, vel / (float)ptr_veh->GetCompareVal() );
@@ -751,7 +752,7 @@ void CVehicle::DoMotion()
 				}
 
 
-				//ptr_veh->Repulse( (int)motion_frame, (vel / ptr_veh->GetCompareVal()) + hit_vel / ptr_veh->GetCompareVal() );
+				// TODO: fix this because it disbalances the game!
 				if ( tmp_vel <= MIN_DAMAGE_VELOCITY ) 
 				{
 					no_damage = true;
@@ -765,12 +766,12 @@ void CVehicle::DoMotion()
 					tmp_anger = (int)(((float)anger / 100.0f ) * perc);
 					
 					//fulldmg = damage + tmp_anger;
-					fulldmg = (Uint16)( (float)damage + 0.2f * (float)tmp_vel )
-							- ( 0.15f * (float)ptr_veh->GetHitPoints() ) + tmp_anger;
+					fulldmg = (Uint16)( (float)damage + 0.10f * (float)tmp_vel )
+							- ( 0.20f * (float)ptr_veh->GetHitPoints() ) + tmp_anger;
 					
 					anger -= tmp_anger;
-					if ( anger < 0 || anger > 130) 
-						anger = 0;
+					anger = anger < 0 ? 0 : anger;
+					anger = anger > 110 ? 110 : anger;
 
 					ptr_veh->DoDamage( fulldmg, myIndex );
 					
@@ -788,7 +789,7 @@ void CVehicle::DoMotion()
 				 * will move. This is the main reason for the nasty physics bug.
 				 */
 //				this->set_stop = true; //remove this 12.nov
-				vel = vel * -0.8f;
+				vel = vel * -0.6f;
 				
 				// nastroiki za AI-to
 				if ( control == VC_AI ) 
