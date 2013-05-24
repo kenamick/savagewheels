@@ -546,11 +546,8 @@ void CVehicle::DoMotion()
 	int			tmp_maxvel;
 	float		rot_m = 1;
 	SDL_Rect	rPrey, rMine; //, rdest;
-	Uint16		fulldmg			= 0U;
 	bool		bHit			= false, 
 				no_damage		= false;
-	float		perc			= 0.0f;
-	int			tmp_anger		= 0;
 	CVehicle    *ptr_veh		= NULL;
 
 	tmp_x		= x;
@@ -675,7 +672,9 @@ void CVehicle::DoMotion()
 	}
 
 	float mpf_vel = _game->getMpf() * vel;
-	float mpf_hitvel = _game->getMpf() * hit_vel;
+	float mpf_hitvel = _game->getMpf() * (float)hit_vel;
+
+	DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel);
 
 	// translate position
 	if ( control == VC_AI )
@@ -730,7 +729,7 @@ void CVehicle::DoMotion()
 					DBG( "[COLLIDE] Step #3" );
 
 					// is velocity 0 ?
-					if ( fabsf(vel) - 0.0f < 0.001f )
+					if ( fabsf(vel) - 0.0f > 0.001f )
 					{
 						DBG( "[COLLIDE] Step #4" );
 						ptr_veh->Repulse( (int)motion_frame, vel / (float)ptr_veh->GetCompareVal() );
@@ -762,19 +761,23 @@ void CVehicle::DoMotion()
 				// udari tolkova % ot anger-a kolkoto % e momentnata skorost
 				if ( !no_damage )
 				{
-					perc = ( (float)tmp_vel / (float)max_vel ) * 100.0f;
-					tmp_anger = (int)(((float)anger / 100.0f ) * perc);
-					
-					//fulldmg = damage + tmp_anger;
-					fulldmg = (Uint16)( (float)damage + 0.10f * (float)tmp_vel )
-							- ( 0.20f * (float)ptr_veh->GetHitPoints() ) + tmp_anger;
-					
+					float perc = ( (float)tmp_vel / (float)max_vel ) * 100.0f;
+					Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
+
 					anger -= tmp_anger;
 					anger = anger < 0 ? 0 : anger;
 					anger = anger > 110 ? 110 : anger;
+					
+					float speed_damage = (float)damage + 0.10f * (float)tmp_vel;
+					float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
+					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
+					int fulldmg = speed_damage - armour_absorb + tmp_anger;
+					fulldmg = fulldmg < 0 ? 0 : fulldmg;
+					
+					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " tmp_vel=" << tmp_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
 
 					ptr_veh->DoDamage( fulldmg, myIndex );
-					
+				
 					// PLAY CRASH SOUND
 					if ( intGetRnd( 0, 50 ) < 25 )
 						_game->Snd.Play( SND_CRASHLIGHT1, (int)x ); 
@@ -790,6 +793,7 @@ void CVehicle::DoMotion()
 				 */
 //				this->set_stop = true; //remove this 12.nov
 				vel = vel * -0.6f;
+				DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
 				
 				// nastroiki za AI-to
 				if ( control == VC_AI ) 
@@ -1089,6 +1093,7 @@ void CVehicle::Repulse( int frame_angle, int speed )
 	hit_vel = speed;
 	x_acc = g_dirx[frame_angle];
 	y_acc = g_diry[frame_angle];
+	//vel = vel + (float)hit_vel;
 
 	if ( control == VC_AI ) 
 		waypoint.do_precalculate = true;
