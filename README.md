@@ -10,6 +10,11 @@ All drivers have background stories which are revealed when playing the campaign
 
 ![alt text](http://i.imgur.com/09h8j1M.jpg "Gameplay screenshot")
 
+
+  * Please check [HISTORY](HISTORY) for latest changes.
+  * Please check [INSTALL](INSTALL) for how to compile the game.
+  * Please check [LICENSE](LICENSE) for licensing topics. 
+
 # Running the game
 
   * On **Windows** - Start the game by simply running the **savagewheels.exe** file.
@@ -21,13 +26,7 @@ All drivers have background stories which are revealed when playing the campaign
 
 Please check the [Readme.html](bin/Readme.html) for complete info.
 
-# Misc
-
-  * Please check [HISTORY](HISTORY) for latest changes.
-  * Please check [INSTALL](INSTALL) for how to compile the game.
-  * Please check [LICENSE](LICENSE) for licensing topics. 
-
-Have fun ! ;)
-
-  * Somehow "official" game page - http://kenamick.com/savagewheels/
-  * More recent Google Code page - http://code.google.com/p/savagewheels/
+# Used Libraries 
+  * [libSDL](http://www.libsdl.org/) - Simple DirectMedia Layer is a cross-platform multimedia library.
+  * [FMod Ex](http://www.fmod.org/fmod-sales.html) - Audio engine : FMOD Sound System by Firelight Technologies
+  * [TinyXML](http://www.grinninglizard.com/tinyxml/) - TinyXML is a simple, small, C++ XML parser that can be easily integrating into other programs.
