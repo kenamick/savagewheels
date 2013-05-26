@@ -76,7 +76,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOAD_SOUND( SND_WARNING, "sound/warn.wav", true );
 	LOAD_SOUND( SND_MENU_NEXTCAR, "sound/snapshot.wav", true );
 	LOAD_SOUND( SND_MENU_HONK1, "sound/honk1.wav", true );
-	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
+//	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
 	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", false );
 
 	LOAD_MUSIC( MUS_MENU, "sound/seek.it" );
