@@ -132,7 +132,8 @@ float g_diry[] = {
 ///////////////////////////////////////////////////////////////////////
 CVehicle::CVehicle()
 : _game( NULL ),
-   released(true)
+   released(true),
+   honk_status(0)
 {
 
 	driver_name = (SDL_Surface *)NULL;
@@ -1303,7 +1304,12 @@ void CVehicle::Update()
 		Move( VM_BACKWARD );
 
 	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_HONK ) ] )
-		_game->Snd.Play( SND_MENU_HONK1, (int)x );
+	{
+		honk_status = 1;
+	}
+	else {
+		honk_status = honk_status == 1 ? 2 : 0;
+	}
 
 	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BLOWUP ) ] )
 	{
@@ -1344,13 +1350,18 @@ void CVehicle::Update()
 	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BREAK ) ] ) 
 		Move( VM_BACKWARD );
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_HONK ) ] )
-		_game->Snd.Play( SND_MENU_HONK1, (int)x );
-
 	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BLOWUP ) ] )
 	{
 		self_destruct	= true;
 		i_self_destruct = true;
+	}
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_HONK ) ] )
+	{
+		honk_status = 1;
+	}
+	else {
+		honk_status = honk_status == 1 ? 2 : 0;
 	}
 
 	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
@@ -1454,6 +1465,12 @@ void CVehicle::Update()
 		 DoDamage( 1000U, myIndex );  
 		 self_destruction = false;  // clear local var
 	 }
+ }
+
+ if (honk_status == 2)
+ {
+	 _game->Snd.Play( SND_MENU_HONK1, (int)x );
+	 honk_status = 0;
  }
 
 } 

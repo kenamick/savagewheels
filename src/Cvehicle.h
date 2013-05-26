@@ -190,6 +190,7 @@ private:
 	bool		 self_destruction;
 	Uint32		 destruct_time;
 	Uint32		 warning_time;
+	Uint32		 honk_status;		// 0 - none, 1 - down, 2 - up
 
 	SDL_Surface  **sprite;			// current image-pointer
 	SDL_Surface  **sprite_norm; 
