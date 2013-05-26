@@ -42,8 +42,8 @@ static std::ofstream	   debug_file;
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetFormattedTime()
-// Opisanie:
+// Name: GetFormattedTime()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 inline String GetFormattedTime()
 {
@@ -70,8 +70,8 @@ inline String GetFormattedTime()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: FixAngle()
-// Opisanie: angle E{ 0, PI*2 ) (RAD)
+// Name: FixAngle()
+// Desc: angle E{ 0, PI*2 ) (RAD)
 ///////////////////////////////////////////////////////////////////////
 void FixAngle ( float *angle )
 {
@@ -97,8 +97,8 @@ void FixAngle ( float *angle )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: intGetRnd()
-// Opisanie: vryshta prozivolno cqlo chislo
+// Name: intGetRnd()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 int intGetRnd ( int min_val, int max_val )
 {
@@ -109,8 +109,8 @@ int intGetRnd ( int min_val, int max_val )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: fGetRnd()
-// Opisanie:
+// Name: fGetRnd()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 float fGetRnd ( float min_val, float max_val )
 {
@@ -119,8 +119,8 @@ float fGetRnd ( float min_val, float max_val )
 
 
 /////////////////////////////////////////////////////////////////////////
-//// Ime: GetDistance()
-//// Opisanie: Vryshta razstoqnieto m/u 2 tochki
+//// Name: GetDistance()
+//// Desc: Vryshta razstoqnieto m/u 2 tochki
 /////////////////////////////////////////////////////////////////////////
 //Uint16  GetDistance( int x1, int y1, int x2, int y2 )
 //{
@@ -133,8 +133,8 @@ float fGetRnd ( float min_val, float max_val )
 
 
 /////////////////////////////////////////////////////////////////////////
-//// Ime: fGetDistance()
-//// Opisanie: Vryshta razstoqnieto m/u 2 tochki (FLOAT)
+//// Name: fGetDistance()
+//// Desc: Vryshta razstoqnieto m/u 2 tochki (FLOAT)
 /////////////////////////////////////////////////////////////////////////
 //float  fGetDistance( float x1, float y1, float x2, float y2 )
 //{
@@ -146,8 +146,8 @@ float fGetRnd ( float min_val, float max_val )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetDistanceNSR()
-// Opisanie: (INT)
+// Name: GetDistanceNSR()
+// Desc: (INT)
 ///////////////////////////////////////////////////////////////////////
 Uint32  GetDistanceNSR ( int x1, int y1, int x2, int y2 )
 {
@@ -159,8 +159,8 @@ Uint32  GetDistanceNSR ( int x1, int y1, int x2, int y2 )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetDistanceNSR()
-// Opisanie: (FLOAT)
+// Name: GetDistanceNSR()
+// Desc: (FLOAT)
 ///////////////////////////////////////////////////////////////////////
 float  fGetDistanceNSR ( float x1, float y1, float x2, float y2 )
 {
@@ -172,18 +172,18 @@ float  fGetDistanceNSR ( float x1, float y1, float x2, float y2 )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: InRange()
-// Opisanie: proverqwa dali dadeno chislo e m/u 2 drugi
+// Name: InRange()
+// Desc: check if value is between given range
 ///////////////////////////////////////////////////////////////////////
-bool InRange ( float val, float bound1, float bound2 )
+bool InRange ( float val, float rangeMin, float rangeMax )
 {
-    if ( bound1 > bound2 )
+    if ( rangeMin > rangeMax )
     {
-        if ( val <= bound1 && val >= bound2 ) return true;
+        if ( val <= rangeMin && val >= rangeMax ) return true;
     }
-    else if ( bound1 < bound2 )
+    else if ( rangeMin < rangeMax )
     {
-        if ( val <= bound2 && val >= bound1 ) return true;
+        if ( val <= rangeMax && val >= rangeMin ) return true;
     }
 
     return false;
@@ -191,17 +191,17 @@ bool InRange ( float val, float bound1, float bound2 )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: OpenLog()
-// Opisanie: otvarq Log file-a
+// Name: OpenLog()
+// Desc: open global log file
 ///////////////////////////////////////////////////////////////////////
-int OpenLog ( const char* filename )
+bool OpenLog ( const char* filename )
 {
     String time( GetFormattedTime() );
 
     // open debug file
     debug_file.open ( "debug.html", std::ios::out ); //ios::ate );
     if ( ! debug_file.good() )
-      return 0;
+      return false;
 
     debug_file << "<html><head><title>Savage Wheels Log File</title></head><body><h1>Savage Wheels V" << VER_MAJ << "." << VER_MIN << " - Log File</h1>";
     debug_file << "<hr/><pre>";
@@ -211,25 +211,28 @@ int OpenLog ( const char* filename )
     debug_file <<  time << "Opened at: " << __TIME__ << "<br />";
     debug_file <<  time << LOG_DASH << "<br />";
 
-    return 1;
+    return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AppendToLog()
-// Opisanie: dobavq red kym Log-a
+// Name: AppendToLog()
+// Desc: add a line to global log file
 ///////////////////////////////////////////////////////////////////////
 void AppendToLog ( const char *dbgstring )
 {
     String time( GetFormattedTime() );
     debug_file << time << dbgstring << "\n";
+
+    // XXX: Flushing every time is brutaly slow but helps against losing log info if game
+    // crashes suddenly!
     debug_file.flush();
 }
 
 
 /////////////////////////////////////////////////////////////////////////
-//// Ime: AppendToMultilog()
-//// Opisanie: dobavq nqkolko niz-a kym Log-a
+//// Name: AppendToMultilog()
+//// Desc: dobavq nqkolko niz-a kym Log-a
 /////////////////////////////////////////////////////////////////////////
 //void AppendToMultilog( char *dbgstring, ... )
 //{
@@ -268,8 +271,8 @@ void AppendToLog ( const char *dbgstring )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CloseLog()
-// Opisanie: zatvarq Log file
+// Name: CloseLog()
+// Desc: close global log file
 ///////////////////////////////////////////////////////////////////////
 void CloseLog ( void )
 {
@@ -280,15 +283,12 @@ void CloseLog ( void )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ExtractFilename()
-// Opisanie:
+// Name: ExtractFilename()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 String ExtractFilename ( const String strPath )
 {
     String strResult ( strPath );
-
-#define ANY_BACKSLASH         "/\\"
-
     String::size_type idx = strResult.find_last_of ( ANY_BACKSLASH );
     if ( idx != String::npos )
     {
@@ -300,8 +300,8 @@ String ExtractFilename ( const String strPath )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: PathExists()
-// Opisanie:
+// Name: PathExists()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
 {
@@ -338,8 +338,8 @@ bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: fRangeGetXY()
-// Opisanie: Convert one range to another
+// Name: fRangeGetXY()
+// Desc: Convert one range to another
 ///////////////////////////////////////////////////////////////////////
 float	fRangeGetXY(int in, int inMin, int inMax, float min, float max)
 {
@@ -351,10 +351,21 @@ float	fRangeGetXY(int in, int inMin, int inMax, float min, float max)
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: fRangeGet0255()
-// Opisanie:
+// Name: fRangeGet0255()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 float	fRangeGet0255(int in, float min, float max)
 {
 	return fRangeGetXY(in, 0, 255, min, max);
 }
+
+///////////////////////////////////////////////////////////////////////
+// Name: fRangeGet0255()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+bool	fIsZero(float value)
+{
+	return fabsf(0.0f - value) < 0.00000001f; // 0.001f
+}
+
+
