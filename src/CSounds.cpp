@@ -77,7 +77,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 	LOAD_SOUND( SND_MENU_NEXTCAR, "sound/snapshot.wav", true );
 	LOAD_SOUND( SND_MENU_HONK1, "sound/honk1.wav", true );
 //	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
-	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", false );
+	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", true );
 
 	LOAD_MUSIC( MUS_MENU, "sound/seek.it" );
 	LOAD_MUSIC( MUS_INGAME1, "sound/inertia.it" );
