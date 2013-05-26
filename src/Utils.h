@@ -27,14 +27,15 @@
 #ifndef __UTILS
 #define __UTILS
 
-#define PI		   3.1415926f
-#define PI2		   6.2831853f
-#define PI_2	   1.5707963f
+#define PI			3.1415926f
+#define PI2			6.2831853f
+#define PI_2		1.5707963f
+#define MIN_FLOAT	0.00000001f
 #define LOG_DASH   "------------------------------------------------"
 #define ANY_BACKSLASH         "/\\"
 
 #ifdef _DEBUG
-#	define DBG(x)	LOG( "DBG: " << x )
+#	define DBG(x)	LOG("DBG: " << x)
 #else
 #	define DBG(x)	
 #endif

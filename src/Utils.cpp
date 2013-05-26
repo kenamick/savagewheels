@@ -365,7 +365,7 @@ float	fRangeGet0255(int in, float min, float max)
 ///////////////////////////////////////////////////////////////////////
 bool	fIsZero(float value)
 {
-	return fabsf(0.0f - value) < 0.00000001f; // 0.001f
+	return fabsf(value) < MIN_FLOAT;
 }
 
 
