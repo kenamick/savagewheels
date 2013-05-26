@@ -30,7 +30,7 @@
 	 Timer Class
 
   - Author
-	 written by Peter Petrov
+	 written by Petar Petrov
   
   - History	
      30.11.2003 (WD)
@@ -40,21 +40,22 @@
 #ifndef __CTIMER_INCLUDED
 #define __CTIMER_INCLUDED
 
-
 class CTimer
 {
-
 private:
 	
 	int m_starttime;
 	int m_pausetime;
 	int m_pausestart;
-	
+	bool m_paused;
 
 public:
-	CTimer() { m_starttime = m_pausestart = 0; m_paused = false; };
-
-	bool m_paused;
+	CTimer() :
+		m_starttime(0),
+		m_pausetime(0),
+		m_pausestart(0),
+		m_paused(false)
+	{};
 
 	void Start();
 	int Time();
