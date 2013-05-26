@@ -116,32 +116,33 @@ enum CONST_AI_VEHICLE_TYPE
 class CWaypoint 
 {
 public:
-
 	CWaypoint()
-		: x(0), y(0), index(0U), goal_type(0U), static_pos(false), reached(false), do_precalculate(false), do_reverse(false)
-	{
-	};
+		: x(0), y(0),
+		  index(0U), goal_type(0U),
+		  static_pos(false),
+		  reached(false),
+		  do_precalculate(false),
+		  do_reverse(false),
+		  do_reverseTime(0)
+	{};
 
-	~CWaypoint()
-	{
-	};
+	~CWaypoint() {};
 
-	float			x,y;
-	Uint32			index;
-	Uint16			goal_type;
-	bool			static_pos;				// dvijeshta se cel ?
-	bool			reached;				// flag -> za dostiganata cel
-	bool			do_precalculate;		// ako avtomobila e otklonen, da se preizchisli posokata mu na dvijenie
-	bool			do_reverse;				// ako imame za cel da udarim drug avtomobil i sme go udarili, to da se dade na zaden za nov udar
+	float	x,y;
+	Uint32	index;
+	Uint16	goal_type;
+	bool	static_pos;		// is target moving?
+	bool	reached;		// flag -> target reached?
+	bool	do_precalculate;// if vehicle is off target calculate target coordinates again
+	bool	do_reverse;		// reverse movement (for given time) if vehicle has hit another vehicle
+	int		do_reverseTime;
 	//CONST_DEADTOYS  toy_kind;
-
 };
 
 
-class CVehicle {
- 
+class CVehicle
+{
 private:
-
 	CGame		 *_game;
 
 	Uint32		 myIndex;		// class index
@@ -152,7 +153,7 @@ private:
 	int          max_vel;	// skorost, maksimalna
 	float		 vel;
 	int          acc, dec_acc;  // uskorenie i dec_uskorenie na spirane
-	int			 hit_vel;
+	float		 hit_vel;
 
 	int			 speed_bonus;   // bonus-kym skorostta
 	Uint32		 speed_time;	// vreme na bonus-skorost
@@ -215,7 +216,6 @@ private:
 	int						ai_maxvel;
 	float					ai_final_frame;
 	bool					ai_putmine;
-	
 	Uint32					ai_stucktime;			// car-stuck timer
 	bool					ai_stuck;
 
@@ -224,7 +224,6 @@ private:
 	bool					set_stop;
 
 private:
-	//void Repulse( int, int );
 	void DoMotion();
 	void Move( CONST_VEHICLE_MOVEMENT mvt );
     void Rotate( CONST_VEHICLE_ROTATION rot );
@@ -233,14 +232,13 @@ private:
 	void   AI_GenerateWaypoint();
 	void   AI_ProcessWaypoint();
 	Uint16 AI_doFSM( Uint16 *proActions, Uint16 max_actions );
-
 	//void AI_AddWaypoint();
 
 public:
 	CVehicle();  
     ~CVehicle();
 	
-	void Repulse( int, int );
+	void Repulse( int, float );
 	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
 	int	 Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex );
 	void Release();

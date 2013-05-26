@@ -418,9 +418,9 @@ void CVehicle::Create()
 
 	//if ( do_not_warp ) return;
 
-	x_acc = 0;
-	y_acc = 0;
-	hit_vel = 0;
+	x_acc = 0.0f;
+	y_acc = 0.0f;
+	hit_vel = 0.0f;
 	landmines = 0;
 	vmove = VM_NONE;
 	vrot = VR_NONE;
@@ -454,7 +454,7 @@ void CVehicle::Create()
 	ASSERT(sprite_norm[(int)motion_frame]->h < 500);
 
 	tire_frame = 0;
-	vel = 0;
+	vel = 0.0f;
 	tire_trails = VTT_NONE;
 	trails_time = 0;
 
@@ -553,7 +553,7 @@ void CVehicle::DoMotion()
 	tmp_x		= x;
 	tmp_y		= y;
 	tmp_mf		= motion_frame;
-	tmp_vel		= (int)abs(vel);
+	tmp_vel		= (int)fabsf(vel);
 	tmp_maxvel	= max_vel;
 
 	// AI-steering ...
@@ -662,8 +662,22 @@ void CVehicle::DoMotion()
 		}
 	}
 
+	// impact speed friction
+	if ( hit_vel > 0.0f )
+	{
+		hit_vel -= _game->getMpf() * (float)dec_acc;
+		if ( hit_vel < 0.0f )
+			hit_vel = 0.0f;
+	}
+	else if ( hit_vel < 0.0f )
+	{
+		hit_vel += _game->getMpf() * (float)dec_acc;
+		if ( hit_vel > 0.0f )
+			hit_vel = 0.0f;
+	}
+
 	// rotate vehicle tires (if moving)
-	if ( vel != 0 && tire_frames > 1 )
+	if (tire_frames > 1 && fabsf(vel) > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
 		
@@ -672,9 +686,7 @@ void CVehicle::DoMotion()
 	}
 
 	float mpf_vel = _game->getMpf() * vel;
-	float mpf_hitvel = _game->getMpf() * (float)hit_vel;
-
-	DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel);
+	float mpf_hitvel = _game->getMpf() * hit_vel;
 
 	// translate position
 	if ( control == VC_AI )
@@ -709,29 +721,30 @@ void CVehicle::DoMotion()
 			ptr_veh->GetFrameRect( &rPrey );
 	
 			//if ( _game->Sdl.Collide( NULL, &rMine, &rPrey ) )
-			if ( _game->Sdl.Collide( &rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask() ) )
+			if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
 			{
 				DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
+				DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel << " vmove=" << vmove);
 
 				bHit = true;  // we have impact
 				x = tmp_x;
 				y = tmp_y;
 				motion_frame = tmp_mf;
 				display_frame = tmp_mf;
-				
-				if ( hit_vel != 0 )
+
+				if ( !fIsZero(hit_vel) )
 				{
 					DBG( "[COLLIDE] Step #2| hit_vel = " << hit_vel );
-					ptr_veh->Repulse( (int)rep_frame, hit_vel / ptr_veh->GetCompareVal() );
+					ptr_veh->Repulse( (int)rep_frame, hit_vel / (float)ptr_veh->GetCompareVal() );
 				}
 				else
 				{
 					DBG( "[COLLIDE] Step #3" );
 
 					// is velocity 0 ?
-					if ( fabsf(vel) - 0.0f > 0.001f )
+					if ( !fIsZero(vel) )
 					{
-						DBG( "[COLLIDE] Step #4" );
+						DBG( "[COLLIDE] Step #4| vel = " << vel );
 						ptr_veh->Repulse( (int)motion_frame, vel / (float)ptr_veh->GetCompareVal() );
 					}
 					else
@@ -758,7 +771,7 @@ void CVehicle::DoMotion()
 					DBG( "[COLLIDE] Step #6" );
 				}
 
-				// udari tolkova % ot anger-a kolkoto % e momentnata skorost
+				// enemy vehicle damage calculations
 				if ( !no_damage )
 				{
 					float perc = ( (float)tmp_vel / (float)max_vel ) * 100.0f;
@@ -792,40 +805,34 @@ void CVehicle::DoMotion()
 				 * will move. This is the main reason for the nasty physics bug.
 				 */
 //				this->set_stop = true; //remove this 12.nov
-				vel = vel * -0.6f;
-				DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
-				
-				// nastroiki za AI-to
-				if ( control == VC_AI ) 
+//				vel = vel * -0.6f;
+
+				if ( control == VC_AI )
 				{
 					DBG( "[COLLIDE] Step #8" );
+					waypoint.do_reverse = true;
+					waypoint.do_reverseTime = _game->Timer.Time() + 500;
 
-					waypoint.do_precalculate = true;
+					vel = vel * 0.5f;
 
-					if ( waypoint.goal_type == WAYPOINT_VEHICLE  )
-					{
-						waypoint.do_reverse = true;
-						DBG( "[COLLIDE] Step #9" );
-					}
+//					waypoint.do_precalculate = true;
+//
+//					if ( waypoint.goal_type == WAYPOINT_VEHICLE  )
+//					{
+//						waypoint.do_reverse = true;
+//						DBG( "[COLLIDE] Step #9" );
+//					}
 				}
+				else
+				{
+					vel = vel * -0.6f;
+				}
+
+				DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
 			}
 		} 
 
 		ptr_veh++;
-	}
-
-	// impact speed friction
-	if ( hit_vel > 0 ) 
-	{
-		hit_vel -= _game->getMpf() * dec_acc;
-		if ( hit_vel < 0 )
-			hit_vel = 0;
-	}
-	else if ( hit_vel < 0 )
-	{
-		hit_vel += _game->getMpf() * dec_acc;
-		if ( hit_vel > 0 )
-			hit_vel = 0;
 	}
 
 	// should we leave trails
@@ -1049,7 +1056,7 @@ void CVehicle::DoMotion()
 			 }
 			 else
 			 {
-				// nqma dostatychno vel za da killnem toya
+				// speed is not high enough to smash this bonus
 				vel = 0;
 				x = tmp_x;
 				y = tmp_y;
@@ -1085,7 +1092,7 @@ void CVehicle::DoMotion()
 // Ime: Repulse()
 // Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CVehicle::Repulse( int frame_angle, int speed )
+void CVehicle::Repulse( int frame_angle, float speed )
 {
 
 //	motion_frame = (float)frame_angle;
@@ -1459,7 +1466,7 @@ void CVehicle::UpdateStops()
 		SetVelocity( 0.0f );
 		set_stop = false;
 		// XXX
-		hit_vel = 0;
+		hit_vel = 0.0f;
 	}
 }
  
@@ -1472,7 +1479,6 @@ void CVehicle::AI_Update()
 {
 
 	float		    distance;
-	static Uint16   rc = 0;
 /*	static float    tmp_x, tmp_y;
 
 	
@@ -1502,23 +1508,22 @@ void CVehicle::AI_Update()
 	// ako e udaril avtomobil to vyrni go nazad za 'n' kadyra 
 	if ( waypoint.do_reverse )
 	{
-		rc++;
 		Move( VM_BACKWARD );
 
 		// 25% chance da pusni mina pri zaden hod
 		if ( intGetRnd( 0, 100 ) < 25 )
 			ai_putmine = false;
 		
-		if ( rc > 12 ) // -> 'n'
+		if (waypoint.do_reverseTime < _game->Timer.Time())
 		{
-			rc = 0;
 			waypoint.do_reverse = false;
 			waypoint.reached = true;
 		}
 		else
+		{
 			return;
+		}
 	}
-
 
 	// proveri dali nqkoi veche ne vzel bonus-a ili dali ne e izcheznal
 	if ( waypoint.goal_type == WAYPOINT_BONUS )
