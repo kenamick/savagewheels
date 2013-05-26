@@ -175,9 +175,10 @@ void CSounds::CheckMusic()
 #ifdef WITH_FMOD  
 	if ( !music_stopped )
 	{
-		if (!_sdl->IsMusicPlaying()) {
+		if (!_sdl->IsMusicPlaying())
+		{
 //			StopMusic();
-			DBG("CheckMusic playing ...");
+//			DBG("CheckMusic playing ...");
 
 			current_track++;
 			if ( current_track >= NUM_MUSIX )
