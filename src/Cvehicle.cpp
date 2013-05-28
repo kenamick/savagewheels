@@ -501,7 +501,7 @@ void CVehicle::DoMotion()
 	// AI-steering ...
 	if ( control == VC_AI )
 	{
-		rot_m = 2.0f;  // double rotation speed for AIs
+		rot_m = 2.0f;  // double rotation speed for AI controlled vehicles
 
 		tmp_maxvel = max_vel; //ai_maxvel;
 
@@ -511,9 +511,6 @@ void CVehicle::DoMotion()
 			vrot = VR_RIGHT;
 		else
 			vrot = VR_NONE;
-
-		/*sprintf( buf, "df: %d  ff: %d", (int)display_frame, (int)ai_final_frame );
-		AppendToLog( buf );*/
 
 		
 		if ( ai_turning == VR_LEFT )
@@ -570,7 +567,10 @@ void CVehicle::DoMotion()
 	vrot = VR_NONE;
 	motion_frame = display_frame;
 
-	// Accelerate... 
+	/*
+	 * Acceleration
+	 */
+
 	int maxvel_p = tmp_maxvel + speed_bonus;
 	int maxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
 
@@ -647,7 +647,9 @@ void CVehicle::DoMotion()
 	}
 
 
-	// HitTest...
+	/*
+	 * Collisions Check
+	 */
 
 	SDL_Rect rPrey;
 	SDL_Rect rMine;
@@ -818,64 +820,49 @@ void CVehicle::DoMotion()
 	// reset move var
 	vmove = VM_NONE;
 	
-	// Game arena bounding
+	/*
+	 *  Game arena bounds check
+	 */
+	bool high_speed = fabsf(vel) > 50;
+	bool play_sound = false;
 
     if ( rMine.x < 24 )
 	{
 		x = 25;
-		if ( abs(vel) > 50 ) 
-		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
-				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
-			else
-				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
-		}
-
 		vel = 0;
+		play_sound = true;
 	}
     else if ( rMine.w > 614 ) 
 	{
 		x = 613 - (rMine.w - x);
-		if ( abs(vel) > 50 ) 
-		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
-				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
-			else
-				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
-		}
-
 		vel = 0;
+		play_sound = true;
 	}
     
 	if ( y < 19) 
 	{
 		y = 20;
-		if ( abs(vel) > 50 ) 
-		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
-				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
-			else
-				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
-		}
-
 		vel = 0;
+		play_sound = true;
 	}
     else if ( rMine.h > 400 ) 
 	{
 		y = 399 - (rMine.h - y);
-		if ( abs(vel) > 50 ) 
-		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
-				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
-			else
-				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
-		}
-
 		vel = 0;
+		play_sound = true;
 	}
 
-	
-	// HitTestToys...
+	if (play_sound && high_speed) {
+		// PLAY SOUND
+		if (high_speed)
+			_game->Sdl.PlaySound( intGetRnd( 0, 50 ) > 25 ? SND_TIRES1 : SND_TIRES2,
+					rMine.x );
+	}
+
+	/*
+	 * Test for bonuses & items hits (Deadtoys)
+	 */
+
 	SDL_Rect rMe;
 	SDL_Rect rToy;
 	Uint32   dx = 0U, 
