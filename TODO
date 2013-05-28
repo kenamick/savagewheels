@@ -1,10 +1,12 @@
 TODO-List:
 -------------
 
-* implement gamepad (+feedback) support
-* check collision iteractions ( for (i) v->update() );
 * fix physics (or AI) problem with blocking vehicles
-[WONT FIX] * revise game sounds
+* remove pstdint.h dependency (Windows platforms)
+* add SDL_mixer support instead of FMod 
+* implement gamepad (+feedback) support
+
+[done] * revise game sounds
 [done] * clean-up code (remove externs)
 [done] * clean-up code (replace old-logging)
 [done] * use STL instead of char* for string operations wherever possible
