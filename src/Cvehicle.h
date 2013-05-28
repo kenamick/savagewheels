@@ -153,7 +153,7 @@ private:
 	int          max_vel;	// skorost, maksimalna
 	float		 vel;
 	int          acc, dec_acc;  // uskorenie i dec_uskorenie na spirane
-	float		 hit_vel;
+//	float		 hit_vel;
 
 	int			 speed_bonus;   // bonus-kym skorostta
 	Uint32		 speed_time;	// vreme na bonus-skorost
@@ -222,8 +222,6 @@ private:
 
 	Uint16					team;					// vehicle Team
 
-	bool					set_stop;
-
 private:
 	void DoMotion();
 	void Move( CONST_VEHICLE_MOVEMENT mvt );
@@ -241,13 +239,12 @@ public:
 	
 	void Repulse( int, float );
 	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
-	int	 Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex );
+	bool Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex );
 	void Release();
 	void Create();
 	void GetFrameRect( SDL_Rect *rect );
 	void DoDamage( Uint16 car_damage, Uint32 car_attacker );
 	void Update();
-	void UpdateStops();
 	void AddFrags( int fragnum ) { frags += fragnum; }; 
 
 	SDL_Surface*	GetCurrentFrame();
