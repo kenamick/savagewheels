@@ -1224,7 +1224,7 @@ void CVehicle::Update()
  // blit shadow and vehicle
  //_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
  _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
- _game->Sdl.Addtoblit( x, y, surf );
+ _game->Sdl.AddToBlit( x, y, surf );
  
 // DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
  

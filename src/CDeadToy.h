@@ -63,15 +63,18 @@ class CDeadtoy
 {
 
 public:
-
 	CDeadtoy()
-		: x(0), y(0), value(0U), life(0U), alive(false), frame(0.0f), max_frames(0U)
-	{
-	};
+		: x(0),
+		  y(0),
+		  value(0U),
+		  life(0U),
+		  alive(false),
+		  frame(0.0f),
+		  max_frames(0U)
+	{};
 
 	~CDeadtoy()
-	{
-	};
+	{};
 
 	float			x,y;
 	Uint16			value;
@@ -79,9 +82,8 @@ public:
 	bool			alive;
 	CONST_DEADTOYS  type;
 
-	float 			frame;			 // anim vars
+	float 			frame;
 	Uint16			max_frames;
-
 };
 
 
@@ -126,21 +128,23 @@ public:
 
 // landmine_child_class
 
-class CLandMine {
-
+class CLandMine
+{
 public:
-
 	CLandMine()
-		: x(0), y(0), Index(-1), lifetime(0), frame(0.0f), alive(false)
-	{
-	};
+		: x(0),
+		  y(0),
+		  Index(-1),
+		  lifetime(0),
+		  frame(0.0f),
+		  alive(false)
+	{};
 
 	~CLandMine()
-	{
-	};
+	{};
 
 	Uint16 x, y;
-	Uint32 Index;    // index of the auto that left the mine
+	Uint32 Index;    // index of the vehicle that placed the mine
 	Uint32 lifetime;
 	float  frame;
 	bool   alive;
@@ -148,9 +152,9 @@ public:
 };
 
 
-// landmine_mother_class
-class CLandMines {
-
+// landmines parent class
+class CLandMines
+{
 private:
 
 	CGame		 *_game;
@@ -174,7 +178,6 @@ public:
 	SDL_Surface*  GetMineCurrentFrame( Uint32 lm_index ) { return sprite[(int)child[lm_index].frame]; };
 
 };
-
 
 
 #endif

@@ -70,9 +70,6 @@ class CMainMenu;
 #define STRINGS_SURFACE_OPTIONS	1
 #define STRINGS_SURFACE_ONOFF	2
 
-
-
-
 // rejimi na menu-to
 enum CONST_MENUSTATE
 {
@@ -116,7 +113,6 @@ enum CONST_BUTTONTEXT
 // Button class
 class CButton
 {
-
 private:
 	CONST_BUTTONSTATE	state;
 	CONST_BUTTONTYPE	type;
@@ -127,10 +123,8 @@ private:
 	Uint32				text_pic_index;
 	Uint32				text_index;
 	bool				over_sound;
-	
 
 public:
-
 	void Initialize( POINT *pos, Uint32 picture_index );					// button - navigaciq
 	void Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Uint32 txtpicture_index );	// button - text
 	void Update( CGame *game );
@@ -139,11 +133,9 @@ public:
 };
 
 
-
 // Main menu class
 class CMainMenu
 {
-
 private:
 
 	CGame			  *_game;	
@@ -178,7 +170,6 @@ private:
 	//CButton			  buttons_play[NUM_BUTTONS_PLAY];
 	//CButton			  buttons_exit;
 
-
 private:
 	void SaveSettings();
 	//void LoadSettings();
@@ -193,7 +184,6 @@ private:
 	void ReleasePlayerLevel() { RELEASE_SURF( camp_preview ); camp_preview = NULL; };
 	
 public:
-
 	CMainMenu();
 	~CMainMenu();
 
@@ -207,7 +197,6 @@ public:
 
 	void SetMenuState(CONST_MENUSTATE state) { Menustate = state; };
 };
-
 
 
 #endif

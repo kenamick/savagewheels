@@ -37,12 +37,10 @@ class CKdf_Packeger;
 
 //#define FONT_TTF						// use TTF_FONTS
 
-#define MAX_SPRITES  60 				// maximum kartinki na ekarana
-#define SDL_FAIL     0	      			// flagove za greshki
-#define SDL_OK       -1
+#define MAX_SPRITES  60 				// maximum sprites to blit on one flip
 #define NO_COLORKEY  -1
 #define NO_ALPHA	 255
-#define MAX_SOUNDS	 30					// maximum slotove za sounda
+#define MAX_SOUNDS	 30					// maximum sounds to load
 
 #define MOUSE_BUTTON_UNPRESSED	0
 #define MOUSE_BUTTON_UP			1
@@ -54,6 +52,10 @@ class CKdf_Packeger;
 #define JOY_AXIS_NONE		    5
 #define ANALOG_THRESHOLD 		20000
 
+/*
+ * Video and color definitions
+ * Note that we handle 15bit, 16bit and 24bit video adapters
+ */
 #define BLACK		   0x0
 #define WHITE		   0xFFFFFF
 #define MAGENTA_888	   0xFF00FF
@@ -73,6 +75,9 @@ class CKdf_Packeger;
 #define FMOD_SNDGROUP_SOUNDS	"SWSOUNDS"
 #define FMOD_SNDGROUP_MUSIC		"SWMUSIC"
 
+/*
+ * Class that represents single sound or music entity
+ */
 class CSound
 {
 public:
@@ -93,27 +98,31 @@ public:
 	bool buffered;		// buffered sound?
 	int play_channel;	// unbuffered sounds do not need separate channels
 	bool loaded;
-	bool isMusic;
+	bool isMusic;		// is this a music type of sound?
 	
 	void Release();
 };
 
 
+/*
+ * All-purpose engine kind of class that handles gfx & sound initialization and operations.
+ */
 class CSdl 
 {
 protected:
-	// graphics
+
+	/*
+	 * Graphics
+	 */
 	struct STRUCT_BLIT 
 	{
 		Sint32 x,y,z;
 		SDL_Surface *surf;
 	};
 
-	typedef std::vector<int>	udtButtonsBuffer;
-   
-	SDL_Surface *screen;			    // glavna powyrhnost(buffer) na Sdl-to
-	STRUCT_BLIT surface[MAX_SPRITES];
-	Uint32		num_surfaces;			// broi kartinki koito da bydat rendirani pri sledwashitq kadyr  
+	SDL_Surface *screen;			    // main SDL screen buffer
+	STRUCT_BLIT surface[MAX_SPRITES];	// buffer that holds sprites to render on next SDL flip
+	Uint32		num_surfaces;			// number of sprites to render on next SDL flip
 	int			mouse_x, mouse_y;
 	int			mouse_lbutton, mouse_rbutton;
 
@@ -129,6 +138,9 @@ protected:
    Uint16			font_size;
 #endif
 
+   /*
+    * Sound
+    */
 #ifdef WITH_FMOD
    FMOD_SYSTEM      *fmod_system;
    FMOD_CHANNEL 	*fmod_musicChannel;
@@ -137,23 +149,30 @@ protected:
 #endif
 
    CSound		  sounds[MAX_SOUNDS];	
-   bool			  bsound_initialized;	 // flag-rezultat inicializaciqta na zvuka
+   bool			  bsound_initialized;	 // flag that says if sound initialization was OK
    int			  volume_sound;
    int			  volume_music;
 
+   /*
+    * Input
+    */
    SDL_Joystick		*_joystick;
    bool			_bJoystickSupport;
    int 			_nJoystickDevices;
    int			_nJoystickIdxDeviceToUse;
    Sint16		_xJoystick;
    Sint16		_yJoystick;
+
+   typedef std::vector<int>	udtButtonsBuffer;
    udtButtonsBuffer	_JoystickButtons;
  
 public:
-	Uint8			*keys;				// masiv s aktivnite klavishi (natisnati)
-	int				JoystickAxisX;
-	int				JoystickAxisY;
-	Uint8			JoystickHatState;
+   //TODO: wrap
+
+	Uint8 *keys;				// array of pressed (held down) keys
+	int JoystickAxisX;
+	int JoystickAxisY;
+	Uint8 JoystickHatState;
 
 protected:
 	void	_Blitall();
@@ -167,17 +186,16 @@ public:
 	CSdl();
 	~CSdl();
 
-	// sdl_gfx
 	bool Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFullscreen, bool bHardware = false );
-	bool InitializeJoystick();
-	bool AcquireJoystick();
-	void UnAcquireJoystick();
-	void ReleaseJoystick();
+
+	/*
+	 * SDL graphics & general methods
+	 */
 	void Close();
 	void Flip();
 	void FlipTo( SDL_Surface *dest_surf );
 	void ToggleFullscreen();
-	int  Addtoblit( Sint32 x, Sint32 y, SDL_Surface *surf );
+	bool AddToBlit( Sint32 x, Sint32 y, SDL_Surface *surf );
 	void BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf );
 	void BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf );
 	void BlitShadow( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
@@ -191,8 +209,12 @@ public:
 	SDL_Surface* LoadBitmap( const char *filename, int32_t file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
 	SDL_Surface* CreateEmptySurface( int width, int height );
 	void	SetRect( SDL_Rect *rect, int x, int y, int width, int height );
+	SDL_Color CreateColor( int r, int g, int b, int a );
+	SDL_Color CreateColor( int r, int g, int b );
 
-	// sdl_font
+	/*
+	 * SDL_font methods
+	 */
 #ifdef FONT_TTF
 	void InitializeFont( int fontsize = 12 );
 	void DrawText( int x, int y, char *text, SDL_Color forecolor );
@@ -202,10 +224,13 @@ public:
 	void DrawNum( int x, int y, char *text );
 #endif
 
-	SDL_Color CreateColor( int r, int g, int b, int a );
-	SDL_Color CreateColor( int r, int g, int b );
-
-	// Input methods
+	/*
+	 * Input methods
+	 */
+	bool InitializeJoystick();
+	bool AcquireJoystick();
+	void UnAcquireJoystick();
+	void ReleaseJoystick();
 	void GetInput();
 	bool GetJoystickButtonPressed( int idx );
 	int  GetMouseX() { return mouse_x; };
@@ -213,7 +238,9 @@ public:
 	int  GetMouseLButton() { return mouse_lbutton; };
 	int  GetMouseRButton() { return mouse_rbutton; };
 
-	// Sound functions
+	/*
+	 * Sound methods
+	 */
 #ifdef WITH_FMOD
 	static bool IsFModOK(FMOD_RESULT result);
 #endif
@@ -231,8 +258,7 @@ public:
 	void ChangeSoundVolume( int );
 	void ChangeMusicVolume( int );
 	
-  private:
-
+private:
 	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf );

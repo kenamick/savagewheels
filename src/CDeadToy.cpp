@@ -36,8 +36,8 @@ Uint32 dt_timestay[DT_MAX_DEADTOYS]		= { 6000, 4000, 8000, 3000, 5000 };
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CDeadtoys()
-// Opisanie: konstructor
+// Name: CDeadtoys()
+// Desc: konstructor
 ///////////////////////////////////////////////////////////////////////
 CDeadtoys::CDeadtoys()
 : _game( NULL ), goal_index( 0 ), goal_state( DTG_ONTHEROAD )
@@ -49,8 +49,8 @@ CDeadtoys::CDeadtoys()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ~CDeadtoys()
-// Opisanie: destructor
+// Name: ~CDeadtoys()
+// Desc: destructor
 ///////////////////////////////////////////////////////////////////////
 CDeadtoys::~CDeadtoys()
 {
@@ -60,8 +60,8 @@ CDeadtoys::~CDeadtoys()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Release()
-// Opisanie:  
+// Name: Release()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Release()
 {
@@ -76,8 +76,8 @@ void CDeadtoys::Release()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Reset()
-// Opisanie: 
+// Name: Reset()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Reset()
 {
@@ -87,8 +87,8 @@ void CDeadtoys::Reset()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: inicializira/zarejda dead_toya 
+// Name: Initialize()
+// Desc: inicializira/zarejda dead_toya
 ///////////////////////////////////////////////////////////////////////
 int CDeadtoys::Initialize( CGame *game )
 {
@@ -117,8 +117,8 @@ int CDeadtoys::Initialize( CGame *game )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Create()
-// Opisanie: syzdava dead_toya na ekrana
+// Name: Create()
+// Desc: syzdava dead_toya na ekrana
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Create( Uint16 pos_x, Uint16 pos_y, CONST_DEADTOYS toy_type )
 {
@@ -167,8 +167,8 @@ void CDeadtoys::Create( Uint16 pos_x, Uint16 pos_y, CONST_DEADTOYS toy_type )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Update()
-// Opisanie: 
+// Name: Update()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Update()
 {
@@ -228,7 +228,7 @@ void CDeadtoys::Update()
 			if ( (int)ptr_cdt->frame > ptr_cdt->max_frames ) ptr_cdt->frame = 0;
 
 			_game->Sdl.BlitShadow( ptr_cdt->x + 2, ptr_cdt->y + 3, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
-			_game->Sdl.Addtoblit( ptr_cdt->x, ptr_cdt->y, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
+			_game->Sdl.AddToBlit( ptr_cdt->x, ptr_cdt->y, sprite[ptr_cdt->type][(int)ptr_cdt->frame] );
 			
 			// see if its time to unwarp the toy
 			if ( cur_ticks > ptr_cdt->life ) //&& ptr_cdt->type != DT_BEARGOAL )
@@ -245,8 +245,8 @@ void CDeadtoys::Update()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetToyRect()
-// Opisanie: kvadrat za stylknovenie
+// Name: GetToyRect()
+// Desc: kvadrat za stylknovenie
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::GetToyRect( Uint32 toy_index, SDL_Rect *rect )
 {
@@ -262,8 +262,8 @@ void CDeadtoys::GetToyRect( Uint32 toy_index, SDL_Rect *rect )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetSafePosition()
-// Opisanie: vzemi bezopasna poziciq
+// Name: GetSafePosition()
+// Desc: vzemi bezopasna poziciq
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range )
 {
@@ -299,8 +299,8 @@ void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CLandMines()
-// Opisanie: constructor
+// Name: CLandMines()
+// Desc: constructor
 ///////////////////////////////////////////////////////////////////////
 CLandMines::CLandMines()
 : _game(NULL)
@@ -310,8 +310,8 @@ CLandMines::CLandMines()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ~CLandMines()
-// Opisanie: destructor
+// Name: ~CLandMines()
+// Desc: destructor
 ///////////////////////////////////////////////////////////////////////
 CLandMines::~CLandMines()
 {
@@ -320,8 +320,8 @@ CLandMines::~CLandMines()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Release()
-// Opisanie: 
+// Name: Release()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Release()
 {
@@ -338,8 +338,8 @@ void CLandMines::Release()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Reset()
-// Opisanie: 
+// Name: Reset()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Reset()
 {
@@ -349,8 +349,8 @@ void CLandMines::Reset()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: 
+// Name: Initialize()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 int CLandMines::Initialize( CGame *game )
 {
@@ -371,8 +371,8 @@ int CLandMines::Initialize( CGame *game )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Create()
-// Opisanie: create a landmine at position
+// Name: Create()
+// Desc: create a landmine at position
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Create( Uint16 x, Uint16 y, Uint32 carIndex )
 {
@@ -403,8 +403,8 @@ void CLandMines::Create( Uint16 x, Uint16 y, Uint32 carIndex )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Update()
-// Opisanie: update animations and lifetime check
+// Name: Update()
+// Desc: update animations and lifetime check
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Update()
 {
@@ -443,8 +443,8 @@ void CLandMines::Update()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetMineRect()
-// Opisanie: 
+// Name: GetMineRect()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::GetMineRect( Uint32 lm_index, SDL_Rect *rect )
 {
@@ -457,8 +457,8 @@ void CLandMines::GetMineRect( Uint32 lm_index, SDL_Rect *rect )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: KillMine()
-// Opisanie: 
+// Name: KillMine()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::KillMine( Uint32 lm_index )
 {

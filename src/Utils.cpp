@@ -37,7 +37,7 @@ struct timeb   time_struct;
 struct _timeb  time_struct;
 #endif
 
-static std::ofstream	   debug_file;
+static std::ofstream debug_file;
 
 
 
@@ -224,8 +224,8 @@ void AppendToLog ( const char *dbgstring )
     String time( GetFormattedTime() );
     debug_file << time << dbgstring << "\n";
 
-    // XXX: Flushing every time is brutaly slow but helps against losing log info if game
-    // crashes suddenly!
+    // XXX: Flushing every time is brutally slow but helps
+    //      against losing log info if game suddenly crashes !
     debug_file.flush();
 }
 

@@ -27,8 +27,8 @@
 #include "Main.h"
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CSdl()
-// Opisanie: Constructor
+// Name: CSdl()
+// Desc: Constructor
 ///////////////////////////////////////////////////////////////////////
 CSdl::CSdl()
 :	_game( NULL ),
@@ -64,8 +64,8 @@ CSdl::CSdl()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ~CSdl()
-// Opisanie: 
+// Name: ~CSdl()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 CSdl::~CSdl()
 {
@@ -75,8 +75,8 @@ CSdl::~CSdl()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Close()
-// Opisanie: close SDL maintenance
+// Name: Close()
+// Desc: close SDL maintenance
 ///////////////////////////////////////////////////////////////////////
 void CSdl::Close()
 {
@@ -123,8 +123,8 @@ void CSdl::Close()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: BlitNow()
-// Opisanie: 
+// Name: BlitNow()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf)
 {
@@ -138,8 +138,8 @@ void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf)
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: BlitNow()
-// Opisanie: 
+// Name: BlitNow()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf )
 {
@@ -152,8 +152,8 @@ void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: _BlitAll()
-// Opisanie: izprashta wsichki kyrtinki za rendirane
+// Name: _BlitAll()
+// Desc: izprashta wsichki kyrtinki za rendirane
 ///////////////////////////////////////////////////////////////////////
 void CSdl::_Blitall()
 {
@@ -190,8 +190,8 @@ void CSdl::_Blitall()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ToggleFullscreen()
-// Opisanie: 
+// Name: ToggleFullscreen()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::ToggleFullscreen()
 {
@@ -204,31 +204,28 @@ void CSdl::ToggleFullscreen()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Addtoblit()
-// Opisanie: dobawq kartinka kym masiva za pokazwane na ekrana
+// Name: Addtoblit()
+// Desc: dobawq kartinka kym masiva za pokazwane na ekrana
 ///////////////////////////////////////////////////////////////////////
-int CSdl::Addtoblit( Sint32 x, Sint32 y, SDL_Surface *surf )
+bool CSdl::AddToBlit( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
-
-	// proweri dali ima mqsto w masiva
 	if (num_surfaces >= MAX_SPRITES) {
-		return SDL_FAIL;
+		return false;
 	}
 
-	// dobawi powyrhnostta kym masiva za rendirane
 	surface[num_surfaces].x = x;
 	surface[num_surfaces].y = y;
 	surface[num_surfaces].z = y + (surf->w / 2);
 	surface[num_surfaces].surf = surf;
 	num_surfaces++;
 
-	return SDL_OK;
+	return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Flip() 
-// Opisanie: flipva, razmenq backbuffer-a i primbufera...abe pokazwa
+// Name: Flip()
+// Desc: flipva, razmenq backbuffer-a i primbufera...abe pokazwa
 // wsichko na ekrana ;]
 ///////////////////////////////////////////////////////////////////////
 void CSdl::Flip()
@@ -249,8 +246,8 @@ void CSdl::Flip()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: FlipTo() 
-// Opisanie: blit-va backbuffera v/u dadena powyrhnost
+// Name: FlipTo()
+// Desc: blit-va backbuffera v/u dadena powyrhnost
 ///////////////////////////////////////////////////////////////////////
 void CSdl::FlipTo( SDL_Surface *dest_surf )
 {
@@ -266,8 +263,8 @@ void CSdl::FlipTo( SDL_Surface *dest_surf )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetInput()
-// Opisanie: wzema klawishite
+// Name: GetInput()
+// Desc: wzema klawishite
 ///////////////////////////////////////////////////////////////////////
 void CSdl::GetInput()
 {
@@ -374,8 +371,8 @@ void CSdl::GetInput()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetJoystickButtonPressed()
-// Opisanie: 
+// Name: GetJoystickButtonPressed()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::GetJoystickButtonPressed( int idx )
 {
@@ -397,8 +394,8 @@ bool CSdl::GetJoystickButtonPressed( int idx )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Collide()
-// Opisanie: proverqwa dali 2 kvadrata se zastpywat
+// Name: Collide()
+// Desc: proverqwa dali 2 kvadrata se zastpywat
 ///////////////////////////////////////////////////////////////////////
 int CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 {
@@ -442,8 +439,8 @@ int CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: BlitShadow() 
-// Opisanie: shadow from surface 50/50 trans using MASK 
+// Name: BlitShadow()
+// Desc: shadow from surface 50/50 trans using MASK
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 {
@@ -455,8 +452,8 @@ void CSdl::BlitShadow( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: BlitShadow16() 
-// Opisanie: 16bit shadow from surface 50/50 trans using MASK 
+// Name: BlitShadow16()
+// Desc: 16bit shadow from surface 50/50 trans using MASK
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 {
@@ -492,8 +489,8 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: BlitShadow32() 
-// Opisanie: 32 bit shadow from surface 50/50 trans using MASK 
+// Name: BlitShadow32()
+// Desc: 32 bit shadow from surface 50/50 trans using MASK
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 {
@@ -532,8 +529,8 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: BlitShadow() 
-// Opisanie: shadow from surface 50/50 trans
+// Name: BlitShadow()
+// Desc: shadow from surface 50/50 trans
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitShadow( Sint32 x, Sint32 y, SDL_Surface *surf )
 {
@@ -674,8 +671,8 @@ int CSdl::_ClipRect( int *x , int *y, SDL_Rect *rSurf )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetRect() 
-// Opisanie: set rect dims
+// Name: SetRect()
+// Desc: set rect dims
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetRect( SDL_Rect *rect, int x, int y, int width, int height )
 {
@@ -686,8 +683,8 @@ void CSdl::SetRect( SDL_Rect *rect, int x, int y, int width, int height )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: MakeBoolMask() 
-// Opisanie: make sprte boolean mask
+// Name: MakeBoolMask()
+// Desc: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 {
@@ -698,8 +695,8 @@ void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: MakeBoolMask16() 
-// Opisanie: make sprte boolean mask
+// Name: MakeBoolMask16()
+// Desc: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 {
@@ -730,8 +727,8 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: MakeBoolMask32() 
-// Opisanie: make sprte boolean mask
+// Name: MakeBoolMask32()
+// Desc: make sprte boolean mask
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 {
@@ -763,8 +760,8 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Collide() 
-// Opisanie: proverqwa dali pixelite na 2 povyrhnosti se zastypwat 
+// Name: Collide()
+// Desc: proverqwa dali pixelite na 2 povyrhnosti se zastypwat
 // PIXELPERFECT - collision detection using int Masks
 ///////////////////////////////////////////////////////////////////////
 //int CSdl::Collide( SDL_Rect *r1, SDL_Surface *surf1, SDL_Rect *r2, SDL_Surface *surf2 )
@@ -880,8 +877,8 @@ int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: _GetPixel() -> SDL_DOCUMENTATION
-// Opisanie: 
+// Name: _GetPixel() -> SDL_DOCUMENTATION
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 Uint32 CSdl::_GetPixel(SDL_Surface *surface, int x, int y)
 {
@@ -913,8 +910,8 @@ Uint32 CSdl::_GetPixel(SDL_Surface *surface, int x, int y)
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: _Slock()
-// Opisanie: 
+// Name: _Slock()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 inline int CSdl::_Slock( SDL_Surface *surface )
 {
@@ -929,8 +926,8 @@ inline int CSdl::_Slock( SDL_Surface *surface )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: _Sunlock()
-// Opisanie:
+// Name: _Sunlock()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 inline void CSdl::_Sunlock( SDL_Surface *surface )
 {
@@ -942,8 +939,8 @@ inline void CSdl::_Sunlock( SDL_Surface *surface )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: Inicializira Sdl i prewkliuchwa video rejima
+// Name: Initialize()
+// Desc: Inicializira Sdl i prewkliuchwa video rejima
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFullscreen, bool bHardware )
 {
@@ -1154,8 +1151,8 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: InitializeJoystick()
-// Opisanie: try to setup joystick support
+// Name: InitializeJoystick()
+// Desc: try to setup joystick support
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::InitializeJoystick()
 {
@@ -1184,8 +1181,8 @@ bool CSdl::InitializeJoystick()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AcquireJoystick() 
-// Opisanie: get access to joystick device
+// Name: AcquireJoystick()
+// Desc: get access to joystick device
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::AcquireJoystick()
 {
@@ -1211,8 +1208,8 @@ bool CSdl::AcquireJoystick()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: UnAcquireJoystick() 
-// Opisanie: release access to joystick device
+// Name: UnAcquireJoystick()
+// Desc: release access to joystick device
 ///////////////////////////////////////////////////////////////////////
 void CSdl::UnAcquireJoystick()
 {
@@ -1225,8 +1222,8 @@ void CSdl::UnAcquireJoystick()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ReleaseJoystick() 
-// Opisanie: 
+// Name: ReleaseJoystick()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::ReleaseJoystick()
 {
@@ -1236,8 +1233,8 @@ void CSdl::ReleaseJoystick()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: LoadBitmap() {1}
-// Opisanie: zarejda SDL surface ot bitmap
+// Name: LoadBitmap() {1}
+// Desc: zarejda SDL surface ot bitmap
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CSdl::LoadBitmap( const char *filename, Uint32 color_key, Uint8 alpha_value )
 {
@@ -1295,8 +1292,8 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, Uint32 color_key, Uint8 alp
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: _LoadBitmap() {2}
-// Opisanie: zarejda SDL surface ot bitmap v BINRreource file
+// Name: _LoadBitmap() {2}
+// Desc: zarejda SDL surface ot bitmap v BINRreource file
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32 file_size, Uint32 color_key, Uint16 alpha_value )
 {
@@ -1346,8 +1343,8 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CreateEmptySurface()
-// Opisanie: syzdava prazna powyrhnost
+// Name: CreateEmptySurface()
+// Desc: syzdava prazna powyrhnost
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CSdl::CreateEmptySurface( int width, int height )
 {
@@ -1362,8 +1359,8 @@ SDL_Surface* CSdl::CreateEmptySurface( int width, int height )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CreateColor()
-// Opisanie: color+alpha
+// Name: CreateColor()
+// Desc: color+alpha
 ///////////////////////////////////////////////////////////////////////
 SDL_Color CreateColor( int r, int g, int b, int a )
 {
@@ -1373,8 +1370,8 @@ SDL_Color CreateColor( int r, int g, int b, int a )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CreateColor()
-// Opisanie: color
+// Name: CreateColor()
+// Desc: color
 ///////////////////////////////////////////////////////////////////////
 SDL_Color CreateColor( int r, int g, int b )
 {
@@ -1395,8 +1392,8 @@ SDL_Color CreateColor( int r, int g, int b )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: InitializeFont()
-// Opisanie: Inicializira TTF font
+// Name: InitializeFont()
+// Desc: Inicializira TTF font
 ///////////////////////////////////////////////////////////////////////
 void CSdl::InitializeFont( int fontsize )
 {
@@ -1411,8 +1408,8 @@ void CSdl::InitializeFont( int fontsize )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: DrawText()
-// Opisanie: will draw text on position with background color
+// Name: DrawText()
+// Desc: will draw text on position with background color
 ///////////////////////////////////////////////////////////////////////
 void CSdl::DrawText( int x, int y, char *text, SDL_Color forecolor, SDL_Color backcolor )
 {
@@ -1426,8 +1423,8 @@ void CSdl::DrawText( int x, int y, char *text, SDL_Color forecolor, SDL_Color ba
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: DrawText()
-// Opisanie: will draw text on position
+// Name: DrawText()
+// Desc: will draw text on position
 ///////////////////////////////////////////////////////////////////////
 void CSdl::DrawText( int x, int y, char *text, SDL_Color forecolor )
 {
@@ -1443,8 +1440,8 @@ void CSdl::DrawText( int x, int y, char *text, SDL_Color forecolor )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: InitializeFont()
-// Opisanie: Inicializira Bitmap font
+// Name: InitializeFont()
+// Desc: Inicializira Bitmap font
 ///////////////////////////////////////////////////////////////////////
 void CSdl::InitializeFont()
 {
@@ -1470,8 +1467,8 @@ void CSdl::InitializeFont()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: DrawText()
-// Opisanie: will draw text on position
+// Name: DrawText()
+// Desc: will draw text on position
 ///////////////////////////////////////////////////////////////////////
 void CSdl::DrawNum( int x, int y, char *text )
 {
@@ -1547,8 +1544,8 @@ inline bool CSdl::IsFModOK(FMOD_RESULT result) {
 #endif
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: LoadSound()
-// Opisanie: 
+// Name: LoadSound()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 {
@@ -1644,8 +1641,8 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 
 /*
 ///////////////////////////////////////////////////////////////////////
-// Ime: LoadWav()
-// Opisanie:  zaredi wav file ot resfile
+// Name: LoadWav()
+// Desc: load wav from file
 ///////////////////////////////////////////////////////////////////////
 Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 {
@@ -1658,7 +1655,7 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 
 	if ( ( fp = fopen( filename, "rb")) == NULL ) 
 	{
-		AppendToMultilog("...failed to load wav from : ", filename, NULL );
+		LOG("...failed to load wav from : ", filename, NULL );
 		return NULL;
 	}
 
@@ -1668,7 +1665,7 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 	fread( psnd, file_size, 1, fp );
 	fclose( fp );
 
-	// syzdai read_write_operaciq
+	// create read/write op
 	if ( ( sdl_rw = SDL_RWFromMem( psnd, file_size )) == NULL ) 
 	{
 		AppendToMultilog("...failed to create RWops with : ", filename, NULL );
@@ -1677,7 +1674,7 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 
 	if ( ( chunk = Mix_LoadWAV_RW( sdl_rw, 1 )) == NULL ) 
 	{
-		AppendToMultilog("...failed to load wav into memory from : ", filename, NULL );
+		LOG("...failed to load wav into memory from : ", filename, NULL );
 		return NULL;
 	}
 
@@ -1689,8 +1686,8 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 */
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: PlaySound()
-// Opisanie: play sound at position ( for 640x480 res )
+// Name: PlaySound()
+// Desc: play sound at position ( for 640x480 res )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::PlaySound( int snd_index, int position )
 {
@@ -1743,8 +1740,8 @@ void CSdl::PlaySound( int snd_index, int position )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: PlayMusic()
-// Opisanie: Plays a specified sound in the music channel
+// Name: PlayMusic()
+// Desc: Plays a specified sound in the music channel
 ///////////////////////////////////////////////////////////////////////
 void CSdl::PlayMusic(int snd_index, bool looped)
 {
@@ -1779,8 +1776,8 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: StopMusic()
-// Opisanie: Stop sound playing in the music channel.
+// Name: StopMusic()
+// Desc: Stop sound playing in the music channel.
 ///////////////////////////////////////////////////////////////////////
 void CSdl::StopMusic()
 {
@@ -1799,8 +1796,8 @@ void CSdl::StopMusic()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: IsMusicPlaying()
-// Opisanie: Checks if there is a sound currently being played in the
+// Name: IsMusicPlaying()
+// Desc: Checks if there is a sound currently being played in the
 // music channel.
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::IsMusicPlaying()
@@ -1828,8 +1825,8 @@ bool CSdl::IsMusicPlaying()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetMusicVolume()
-// Opisanie: 
+// Name: SetMusicVolume()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetMusicVolume( int new_vol )
 {
@@ -1855,8 +1852,8 @@ void CSdl::SetMusicVolume( int new_vol )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetSoundVolume()
-// Opisanie: 
+// Name: SetSoundVolume()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
  void CSdl::SetSoundVolume( int new_vol )
 {
@@ -1884,8 +1881,8 @@ void CSdl::SetMusicVolume( int new_vol )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ChangeSoundVolume()
-// Opisanie: 
+// Name: ChangeSoundVolume()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::ChangeSoundVolume( int s_vol ) 
 { 
@@ -1895,8 +1892,8 @@ void CSdl::ChangeSoundVolume( int s_vol )
 };
 
  ///////////////////////////////////////////////////////////////////////
-// Ime: ChangeMusicVolume()
-// Opisanie: 
+// Name: ChangeMusicVolume()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::ChangeMusicVolume( int m_vol ) 
 { 
@@ -1907,8 +1904,8 @@ void CSdl::ChangeMusicVolume( int m_vol )
 
 
 /*///////////////////////////////////////////////////////////////////////
-// Ime: PlaySound()
-// Opisanie: 
+// Name: PlaySound()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CSdl::PlaySound( int snd_index )
 {
@@ -1927,8 +1924,8 @@ void CSdl::PlaySound( int snd_index )
 */
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Release()
-// Opisanie: osvobojdava pametta
+// Name: Release()
+// Desc: Release memory
 ///////////////////////////////////////////////////////////////////////
 void CSound::Release()
 {

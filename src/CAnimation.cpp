@@ -26,8 +26,8 @@
 #include "Main.h"
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CAnimations()
-// Opisanie: destructor/free animations
+// Name: CAnimations()
+// Desc: destructor/free animations
 ///////////////////////////////////////////////////////////////////////
 CAnimations::CAnimations()
 : _game(NULL)
@@ -39,8 +39,8 @@ CAnimations::CAnimations()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ~CAnimations()
-// Opisanie: destructor/free animations
+// Name: ~CAnimations()
+// Desc: destructor/free animations
 ///////////////////////////////////////////////////////////////////////
 CAnimations::~CAnimations()
 {
@@ -49,8 +49,8 @@ CAnimations::~CAnimations()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Release()
-// Opisanie: osvobodi animaciite
+// Name: Release()
+// Desc: osvobodi animaciite
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Release()
 {
@@ -71,8 +71,8 @@ void CAnimations::Release()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: inicializira/zarejda animacii
+// Name: Initialize()
+// Desc: inicializira/zarejda animacii
 ///////////////////////////////////////////////////////////////////////
 int CAnimations::Initialize( CGame *game )
 {
@@ -118,8 +118,8 @@ int CAnimations::Initialize( CGame *game )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Create()
-// Opisanie: syzdava dead_toya na ekrana
+// Name: Create()
+// Desc: syzdava dead_toya na ekrana
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Create( Uint16 pos_x, Uint16 pos_y, CONST_ANIMATIONS anim_type )
 {
@@ -176,8 +176,8 @@ void CAnimations::Create( Uint16 pos_x, Uint16 pos_y, CONST_ANIMATIONS anim_type
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Create()
-// Opisanie: 
+// Name: Create()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Create( enum CONST_ANIMATIONS anim_type, CONST_PLAYERSIDE player_side )
 {
@@ -221,8 +221,8 @@ void CAnimations::Create( enum CONST_ANIMATIONS anim_type, CONST_PLAYERSIDE play
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Update()
-// Opisanie: 
+// Name: Update()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Update()
 {
@@ -241,7 +241,7 @@ void CAnimations::Update()
 				  if ( ptr_anm->frame >= MAX_BLOOD_FRAMES ) 
 					ptr_anm->alive = false;
 				  else
-	   				_game->Sdl.Addtoblit( (int)ptr_anm->x-32, (int)ptr_anm->y-32, sprite_blood[(int)ptr_anm->frame] );
+	   				_game->Sdl.AddToBlit( (int)ptr_anm->x-32, (int)ptr_anm->y-32, sprite_blood[(int)ptr_anm->frame] );
 				  ptr_anm->frame += ANIM_RATE*_game->getMpf();			// increment anim frame
 			    break;
 
@@ -253,7 +253,7 @@ void CAnimations::Update()
 					//_game->Sdl.Addtoblit( (int)ptr_anm->x-40, (int)ptr_anm->y-30, sprite_explosion[(int)ptr_anm->frame] );
 				    //_game->Sdl.Addtoblit( (int)ptr_anm->x-40, (int)ptr_anm->y-30, sprite_explosion[(int)ptr_anm->frame] );
 					//_game->Sdl.BlitShadow( (int)ptr_anm->x-40+8, (int)ptr_anm->y-30+24, sprite_explosion[(int)ptr_anm->frame] );
-					_game->Sdl.Addtoblit( (int)ptr_anm->x-50, (int)ptr_anm->y-50, sprite_explosion[(int)ptr_anm->frame] );
+					_game->Sdl.AddToBlit( (int)ptr_anm->x-50, (int)ptr_anm->y-50, sprite_explosion[(int)ptr_anm->frame] );
 				  }
 				  
 				 ptr_anm->frame += ANIM_RATE*_game->getMpf();
@@ -311,8 +311,8 @@ void CAnimations::Update()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Reset()
-// Opisanie: reset vars
+// Name: Reset()
+// Desc: reset vars
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Reset()
 {

@@ -66,7 +66,7 @@ enum CONST_GAMESTATE
 };
 
 
-// game-modes
+// match play modes
 enum CONST_GAMEMODE 
 {
 	GM_1BOT_MELEE = 1,
@@ -78,7 +78,7 @@ enum CONST_GAMEMODE
 };
 
 
-// game-type
+// match types
 enum CONST_GAMETYPE
 {
 	GT_FRAGS = 0,
@@ -86,7 +86,7 @@ enum CONST_GAMETYPE
 };
 
 
-// game_mode
+// game play modes
 enum CONST_GAMEPLAYERS
 {
 	GP_1PLAYER = 0,
@@ -97,7 +97,7 @@ enum CONST_GAMEPLAYERS
 
 
 // CAMPAIGN Vehicles
-enum CONST_CAMPAIGN_VEHICLES //_CONST_CAMPAIGN_VEHICLES
+enum CONST_CAMPAIGN_VEHICLES
 {
 	CV_BMW = 0,
 	CV_MERCEDES,
@@ -112,12 +112,10 @@ enum CONST_CAMPAIGN_VEHICLES //_CONST_CAMPAIGN_VEHICLES
 
 class CGame 
 {
- 
 private:
-
 	bool			bRunning;
 	bool			quit_dialog;
-	float			mpf;			// motion per frame (hires-timing var)
+	float			mpf;			// motion per frame (high res timing var)
 
 	SDL_Surface		*but_quit[5];
 	SDL_Surface		*but_pause;
@@ -126,12 +124,9 @@ private:
 	SDL_Surface		*splash;
 	SDL_Surface		*splash_logo[30];
 	SDL_Surface	    *getready;
-
-	//SDL_Surface     *sprite_tire[MAX_TIRETRAILS]; 
-	SDL_Surface		*back[NUM_BACKGROUNDS]; // ...
+	SDL_Surface		*back[NUM_BACKGROUNDS]; // Arena background maps
 
 public:
-
 	CMainMenu       Menu;
 	CSdl			Sdl;
 	CSounds			Snd;
@@ -153,7 +148,7 @@ public:
 	CONST_GAMEMODE	  Gamemode;
 	CONST_GAMETYPE	  Gametype;
 
-	bool			  game_hitmode;			// stop phsysics enabled !?
+	bool			  game_hitmode;			// stop physics enabled !?
 	bool			  game_shadows;
 	bool			  game_bots;
 	int				  game_frags;			// frags to win
@@ -172,14 +167,12 @@ public:
 	SDL_Surface		 *self_dest;				// self_destruct pic
 
 private:
-
 	void UpdateSplash();
 	void UpdateCredits();
 	void SetupVehicles();
 	bool LoadGame();
 
 public:
-
 	CGame();
 	~CGame();
 

@@ -57,13 +57,15 @@ enum CONST_SOUNDS
 	SND_MENU_CLICK
 };
 
-
-
+/*
+ * Sound/Music controller class
+ *
+ * This class 'knows' exactly which sound or music entity we want to play.
+ */
 class CSounds 
 {
 
 private:
-
 	CSdl	*_sdl;
 #ifdef WITH_FMOD
 	int sounds[NUM_SOUNDS];
@@ -74,7 +76,6 @@ private:
 	bool	music_stopped;
 
 public:
-
 	CSounds();
 	~CSounds();
 
