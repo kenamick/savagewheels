@@ -672,13 +672,6 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 				}
 			} // end for
 
-			//----- update vehicles ($p.petrov - physics check)
-			ptr_veh = Auto;
-			for ( i = 0; i < game_num_cars; i++, ptr_veh++ )
-			{
-				ptr_veh->UpdateStops();
-			} //-----
-
 			// check for round-time
 			if ( Gametype == GT_TIME )
 			{
