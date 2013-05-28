@@ -237,13 +237,13 @@ public:
 	CVehicle();  
     ~CVehicle();
 	
-	void Repulse( int, float );
+//	void Repulse( int, float );
 	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
 	bool Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex );
 	void Release();
 	void Create();
 	void GetFrameRect( SDL_Rect *rect );
-	void DoDamage( Uint16 car_damage, Uint32 car_attacker );
+	void DoDamage( int damageAmount, Uint32 attackerIndex );
 	void Update();
 	void AddFrags( int fragnum ) { frags += fragnum; }; 
 

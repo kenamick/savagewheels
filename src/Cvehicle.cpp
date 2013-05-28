@@ -32,103 +32,42 @@
  anger 	     x:5 y:460    x:165 y:460   x:325 y:460   x:485 y:460 
 */
 
-POINT  pos_frag[4]	= { 105, 428, 265, 428, 425, 428, 585, 428 };
-POINT  pos_hp[4]	= { 5, 445, 165, 445, 325, 445, 485, 445 };
-POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
-POINT  pos_warp[4]	= { 30, 30, 30, 360, 535, 30, 535, 360 };
+static POINT  pos_frag[4]	= { 105, 428, 265, 428, 425, 428, 585, 428 };
+static POINT  pos_hp[4]	= { 5, 445, 165, 445, 325, 445, 485, 445 };
+static POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
+static POINT  pos_warp[4]	= { 30, 30, 30, 360, 535, 30, 535, 360 };
 
-// vehicle components
-int	   attribACC[3]		= { 160, 220, 320 };
-int	   attribSPEED[5]	= { 180, 220, 260, 310, 340 };
-int    attribROT[3]		= { 15, 20, 25 }; 
-int    attribDAMAGE[4]	= { 40, 60, 70, 100 };
-int    attribARMOUR[4]	= { 210, 260, 300, 400 };
+/*
+ * Vehicle components (Extern)
+ */
+int attribACC[3]		= { 160, 220, 320 };
+int	attribSPEED[5]	= { 180, 220, 260, 310, 340 };
+int attribROT[3]		= { 15, 20, 25 };
+int attribDAMAGE[4]	= { 40, 60, 70, 100 };
+int attribARMOUR[4]	= { 210, 260, 300, 400 };
 
-float g_dirx[] = {
-	1.0000f, 
-	0.9848f, 
-	0.9397f,
-    0.8660f,
-    0.7660f,
-    0.6428f,
-    0.5000f,
-    0.3420f,
-    0.1736f,
-    0.0000f,
-   -0.1736f,
-   -0.3420f,
-   -0.5000f,
-   -0.6428f,
-   -0.7660f,
-   -0.8660f,
-   -0.9397f,
-   -0.9848f,
-   -1.0000f,
-   -0.9848f,
-   -0.9397f,
-   -0.8660f,
-   -0.7660f,
-   -0.6428f,
-   -0.5000f,
-   -0.3420f,
-   -0.1736f,
-    0.0000f,
-    0.1736f,
-    0.3420f,
-    0.5000f,
-    0.6428f,
-    0.7660f,
-    0.8660f,
-    0.9397f,
-    0.9848f
-};
+/*
+ * 36 precalculated sin/cos values for each vehicle animation frame
+ *
+ * done by LordCIH using Matlab ;]
+ */
+static float g_dirx[] = { 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f, 0.6428f,
+		0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f, -0.5000f,
+		-0.6428f, -0.7660f, -0.8660f, -0.9397f, -0.9848f, -1.0000f, -0.9848f,
+		-0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f, -0.1736f,
+		0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f, 0.8660f, 0.9397f,
+		0.9848f };
 
-float g_diry[] = {
-    0.0000f,
-    0.1736f,
-    0.3420f,
-    0.5000f,
-    0.6428f,
-    0.7660f,
-    0.8660f,
-    0.9397f,
-    0.9848f,
-    1.0000f,
-    0.9848f,
-    0.9397f,
-    0.8660f,
-    0.7660f,
-    0.6428f,
-    0.5000f,
-    0.3420f,
-    0.1736f,
-    0.0000f,
-   -0.1736f,
-   -0.3420f,
-   -0.5000f,
-   -0.6428f,
-   -0.7660f,
-   -0.8660f,
-   -0.9397f,
-   -0.9848f,
-   -1.0000f,
-   -0.9848f,
-   -0.9397f,
-   -0.8660f,
-   -0.7660f,
-   -0.6428f,
-   -0.5000f,
-   -0.3420f,
-   -0.1736f
-};
-
-					
-// Gosho s MatLab-a go izchisli t'va po-gore ;]
-
+static float g_diry[] = { 0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f,
+		0.8660f, 0.9397f, 0.9848f, 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f,
+		0.6428f, 0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f,
+		-0.5000f, -0.6428f, -0.7660f, -0.8660f, -0.9397f, -0.9848f, -1.0000f,
+		-0.9848f, -0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f,
+		-0.1736f };
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CVehicle()
-// Opisanie: konstructor
+// Name: CVehicle()
+// Desc: konstructor
 ///////////////////////////////////////////////////////////////////////
 CVehicle::CVehicle()
 : _game( NULL ),
@@ -145,17 +84,17 @@ CVehicle::CVehicle()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ~CVehicle()
-// Opisanie: destructor
+// Name: ~CVehicle()
+// Desc: destructor
 ///////////////////////////////////////////////////////////////////////
 CVehicle::~CVehicle()
 {
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Release()
-// Opisanie: osvobodi sprite-ovete
+// Name: Release()
+// Desc: osvobodi sprite-ovete
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Release()
 {
@@ -196,8 +135,8 @@ void CVehicle::Release()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: create vehicle from module
+// Name: Initialize()
+// Desc: create vehicle from module
 ///////////////////////////////////////////////////////////////////////
 bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
@@ -282,8 +221,8 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetAttirbs()
-// Opisanie: car-attribs based on game difficulty
+// Name: SetAttirbs()
+// Desc: car-attribs based on game difficulty
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 {
@@ -316,8 +255,8 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 
 
 /*///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: inicializira avtomobil
+// Name: Initialize()
+// Desc: inicializira avtomobil
 ///////////////////////////////////////////////////////////////////////
 int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 {
@@ -380,28 +319,36 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 */
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: inicializira avtomobil
+// Name: Initialize()
+// Desc: inicializira avtomobil
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Create()
 {
-	Uint32 		dist;
-	CVehicle 	*ptr_veh;
+	Uint32 		dist = 0UL;
+	CVehicle 	*ptr_veh = NULL;
 	bool 		do_not_warp = true;
-	int 		i = 0, j = 0;
+	int 		i = 0, warpPos = 0;
 
-	// proveri dali ima avotmobil do izhodqshtata tochka za warp-vane
-	while (do_not_warp) {
-		j = (int) (rand() % 4);
+	// get a safe vehicle spawn point
+	// j - one of 4 possible warp points
+
+	while (do_not_warp)
+	{
+		warpPos = (int) (rand() % 4);
 		do_not_warp = false;
 
 		ptr_veh = _game->Auto;
 
-		for (i = 0; i < _game->game_num_cars; i++) {
-			if (i != myIndex) {
-				if (ptr_veh->GetVisible()) {
-					dist = GetDistanceNSR(ptr_veh->GetX(), ptr_veh->GetY(),
-							pos_warp[j].x, pos_warp[j].y);
+		for (i = 0; i < _game->game_num_cars; i++)
+		{
+			if (i != myIndex)
+			{
+				if (ptr_veh->GetVisible())
+				{
+					dist = GetDistanceNSR(ptr_veh->GetX(),
+							ptr_veh->GetY(),
+							pos_warp[warpPos].x,
+							pos_warp[warpPos].y);
 
 					if (dist < SAFE_WARP_DISTANCE) {
 						do_not_warp = true;
@@ -425,17 +372,17 @@ void CVehicle::Create()
 	vmove = VM_NONE;
 	vrot = VR_NONE;
 
-	// sprite_pointer sochi kym normal pix
+	// point the current animations to the array of non-crashed vehicle animations
 	sprite = sprite_norm;
 	mask = mask_norm;
 	bcrashlook = false;
 
 	// reset vars
-	x = pos_warp[j].x;
-	y = pos_warp[j].y;
+	x = pos_warp[warpPos].x;
+	y = pos_warp[warpPos].y;
 	speed_bonus = 0;
  
-	if ( j == 2 || j == 3 )
+	if ( warpPos == 2 || warpPos == 3 )
 	{
 		motion_frame = 18;
 		display_frame = motion_frame;
@@ -483,12 +430,11 @@ void CVehicle::Create()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetControl()
-// Opisanie: set identifikaciq na upravlenie na avtomobila
+// Name: SetControl()
+// Desc: Set Vehicle control operator
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 {
-
 	control = vcontrol;
 	
 	// AI_setup
@@ -510,10 +456,9 @@ void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////
-// Ime: Move()
-// Opisanie: Mradni napred/nazad
+// Name: Move()
+// Desc: Mradni napred/nazad
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 {
@@ -523,8 +468,8 @@ void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Rotate()
-// Opisanie: Varti kolata 
+// Name: Rotate()
+// Desc: Varti kolata
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 {
@@ -535,21 +480,18 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
  
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: DoMotion()
-// Opisanie: do vehicle motion
+// Name: DoMotion()
+// Desc: do vehicle motion
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::DoMotion()
 {
-	
 	float		tmp_x, tmp_y, tmp_mf;
 	int			tmp_vel;
 	int			tmp_maxvel;
-	float		rot_m = 1;
-	SDL_Rect	rPrey, rMine; //, rdest;
-	bool		bHit			= false, 
-				no_damage		= false;
-	CVehicle    *ptr_veh		= NULL;
+	float		rot_m 		= 1.0f;
+	CVehicle    *ptr_veh	= NULL;
 
+	// Init defaults
 	tmp_x		= x;
 	tmp_y		= y;
 	tmp_mf		= motion_frame;
@@ -707,9 +649,12 @@ void CVehicle::DoMotion()
 
 	// HitTest...
 
-	ptr_veh = _game->Auto;
+	SDL_Rect rPrey;
+	SDL_Rect rMine;
     GetFrameRect( &rMine );
 	
+    ptr_veh = _game->Auto;
+
 	for ( Uint32 j = 0; j < _game->game_num_cars; j++ )
 	{
 		if ( j != myIndex )
@@ -728,7 +673,8 @@ void CVehicle::DoMotion()
 				DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
 //				DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel << " vmove=" << vmove);
 
-				bHit = true;  // we have impact
+				bool bHit = true;  // we have impact
+				bool no_damage = false;
 				x = tmp_x;
 				y = tmp_y;
 				motion_frame = tmp_mf;
@@ -1091,29 +1037,29 @@ void CVehicle::DoMotion()
 }
 
 
+/////////////////////////////////////////////////////////////////////////
+//// Name: Repulse()
+//// Desc:
+/////////////////////////////////////////////////////////////////////////
+//void CVehicle::Repulse( int frame_angle, float speed )
+//{
+//
+////	motion_frame = (float)frame_angle;
+//	rep_frame = (float)frame_angle;
+////	hit_vel = speed;
+//	x_acc = g_dirx[frame_angle];
+//	y_acc = g_diry[frame_angle];
+//	//vel = vel + (float)hit_vel;
+//
+//	if ( control == VC_AI )
+//		waypoint.do_precalculate = true;
+//
+//
+//}
+
 ///////////////////////////////////////////////////////////////////////
-// Ime: Repulse()
-// Opisanie: 
-///////////////////////////////////////////////////////////////////////
-void CVehicle::Repulse( int frame_angle, float speed )
-{
-
-//	motion_frame = (float)frame_angle;
-	rep_frame = (float)frame_angle;
-//	hit_vel = speed;
-	x_acc = g_dirx[frame_angle];
-	y_acc = g_diry[frame_angle];
-	//vel = vel + (float)hit_vel;
-
-	if ( control == VC_AI ) 
-		waypoint.do_precalculate = true;
-
-
-}
-
-///////////////////////////////////////////////////////////////////////
-// Ime: GetCurrentFrame()
-// Opisanie:
+// Name: GetCurrentFrame()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CVehicle::GetCurrentFrame()
 {
@@ -1121,8 +1067,8 @@ SDL_Surface* CVehicle::GetCurrentFrame()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetCurrentFrameMask()
-// Opisanie:
+// Name: GetCurrentFrameMask()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 Uint32* CVehicle::GetCurrentFrameMask()
 {
@@ -1130,8 +1076,8 @@ Uint32* CVehicle::GetCurrentFrameMask()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetFrameRect()
-// Opisanie: kvadrat za stylknovenie
+// Name: GetFrameRect()
+// Desc: kvadrat za stylknovenie
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::GetFrameRect( SDL_Rect *rect )
 {
@@ -1145,70 +1091,75 @@ void CVehicle::GetFrameRect( SDL_Rect *rect )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetMotionFrameMirror()
-// Opisanie: wryshta obratniq ygyl na dvijenie kato index v masiva
+// Name: GetMotionFrameMirror()
+// Desc: Get an opposite (to the current) movement angle.
 ///////////////////////////////////////////////////////////////////////
 float CVehicle::GetMotionFrameMirror()
 {
-	float tmp_frame;
-
-	tmp_frame = motion_frame;
+	float tmp_frame = motion_frame;
 
 	tmp_frame += HALF_ROTATION_FRAMES;
-	if ( tmp_frame > MAX_ROTATION_FRAMES ) tmp_frame -= MAX_ROTATION_FRAMES;
-    //tmp_frame--;
+	if ( tmp_frame > MAX_ROTATION_FRAMES )
+		tmp_frame -= MAX_ROTATION_FRAMES;
+
+	//tmp_frame--;
 	
 	return tmp_frame;
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////
-// Ime: DoDamage()
-// Opisanie: 
+// Name: DoDamage()
+// Desc: Substract given damage from vehicle HP. Destroy vehicle if
+//       HP is too low.
 ///////////////////////////////////////////////////////////////////////
-void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
+void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex )
 {
-	hit_points -= car_damage;
-	if ( hit_points <= 0 )
+	hit_points -= damageAmount;
+	if (hit_points <= 0)
 	{
-		_game->Anims.Create( GetX(), GetY(), ANIM_EXPLOSION );
-		_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 		visible = false;
-		// give/lose a frag...
-		if ( car_attacker == myIndex )
-		{
-			if ( i_self_destruct )
-			{
+
+		_game->Anims.Create(GetX(), GetY(), ANIM_EXPLOSION);
+		// PLAYSOUND
+		_game->Snd.Play(SND_EXPLOSION1, (int) x);
+
+		// give or take a frag...
+		if (attackerIndex == myIndex) {
+			if (i_self_destruct) {
 				i_self_destruct = false;
+
 				frags--;
-				if ( frags < 0 ) frags = 0;
+				if (frags < 0)
+					frags = 0;
 			}
 		}
-		else if ( car_attacker != NO_ATTACKER && _game->Auto[car_attacker].GetTeam() != team )
-			_game->Auto[car_attacker].AddFrags( 1 );
+		else if (attackerIndex != NO_ATTACKER && _game->Auto[attackerIndex].GetTeam() != team) {
+			_game->Auto[attackerIndex].AddFrags(1);
+		}
 
-		// v sluchai che sme darjali goal-a
-		if ( has_the_goal )
-		{
-			_game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
+		// in case this vehicle held 'the goal'
+		if (has_the_goal) {
+			_game->Dtoys.SetToyGoalState(DTG_ONTHEROAD);
 			has_the_goal = false;
 		}
-	}
-	else if ( hit_points <= hit_points_crash && !bcrashlook )
+
+	} else if (hit_points <= hit_points_crash && !bcrashlook)
 	{
-		// pokaji smachkanite kartinki i PLAY SOUND {!!!!!!}
-		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
+		// show smashed vehicle sprites
 		sprite = sprite_crash;
 		mask = mask_crash;
 		bcrashlook = true;
+
+		// PLAYSOUND
+		_game->Snd.Play(SND_CRASHBRAKE, (int) x);
 	}
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Update()
-// Opisanie: obnovqva classa i parametrite na unit-a
+// Name: Update()
+// Desc: obnovqva classa i parametrite na unit-a
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
@@ -1225,8 +1176,8 @@ void CVehicle::Update()
  cur_mask = GetCurrentFrameMask();
  surf = sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
 
- // ne obnovqvai ako ne sme vidimi
- if ( ! visible ) 
+ // respawn vehicle (if not visible, e.g., destroyed)
+ if ( !visible )
  {
 	 Create();  
 	//return;
@@ -1478,19 +1429,17 @@ void CVehicle::Update()
 } 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_Update()
-// Opisanie: obnovi informaciqta za waypointa i cqloto AI
+// Name: AI_Update()
+// Desc: Update AI state
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_Update()
 {
 
 	float		    distance;
 /*	static float    tmp_x, tmp_y;
-
 	
 	tmp_x = x;
 	tmp_y = y;*/
-
 
 /*	// proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
 	if ( vel == 0 )
@@ -1576,11 +1525,9 @@ void CVehicle::AI_Update()
 }
 
 
-
-
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_GenerateWaypoint()
-// Opisanie: generirai tip na deistvieto na AI-to
+// Name: AI_GenerateWaypoint()
+// Desc: Generate new AI action.
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_GenerateWaypoint()
 {
@@ -1599,14 +1546,6 @@ void CVehicle::AI_GenerateWaypoint()
 	Uint16	  bonus_list_explorer[DT_MAX_DEADTOYS]	= { 45, 15, 25, 12, 8 };
 	CVehicle  *ptr_veh = _game->Auto;
 	
-
-/*	DT_BEARGOAL = 0,
-	DT_BEARANGER,
-	DT_BEARHP,
-	DT_BEARSPEED,
-	DT_BEARLANDMINE
-*/
-	// nulirai masiva
 	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint16) );
 
 	if ( avt == AVT_WARRIOR )				 // TYPE _WARRIOR
@@ -1741,16 +1680,14 @@ void CVehicle::AI_GenerateWaypoint()
 	
 	}
 
-	// vzemi koordinatite kym tochkata
 	AI_ProcessWaypoint();
-
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_ProcessWaypoint()
-// Opisanie: vzemi ygyla kym waypoint-a i sloji pravilniq motion_frame
+// Name: AI_ProcessWaypoint()
+// Desc: adjust sprite direction based on the direction of movement
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
@@ -1778,7 +1715,7 @@ void CVehicle::AI_ProcessWaypoint()
 		ai_dest_angle = (float)(atan( x_dist /y_dist ) - PI_2);
 	}
 
-	// proveri dali uma nujda ot preizchislqvane 
+	// check if display frame must be recalculated
 	if ( ai_dest_angle == ai_cur_angle ) 
 	{
 		ai_turning = VR_NONE;
@@ -1828,12 +1765,9 @@ void CVehicle::AI_ProcessWaypoint()
 }
 
 
-
-
-
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_doFSM()
-// Opisanie: izberi dadeno deistvie sys (F)inite-(S)tate-(M)achines AI
+// Name: AI_doFSM()
+// Desc: choose (F)inite-(S)tate-(M)achines based action
 ///////////////////////////////////////////////////////////////////////
 Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 {
@@ -1845,12 +1779,12 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 		   tmp_val  = 0;
 	bool   proa_ok  = false;
 
-	// izberi random chislo
+	// get a rnd num
 	while ( val == 0 || val < 10 || !proa_ok )
 	{
 		val = rand()%100;
 		
-		// pone edna stoinost v masiva koqto e > rnd
+		// at least one value that is higher than rnd
 		for ( i = 0; i < max_actions; i++ )
 		{
 			if ( val > proActions[i] && proActions[i] != 0 )
@@ -1862,12 +1796,7 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 
 	}
 
-	//char buf[64];
-	//sprintf( buf, "rnd: %d / array: %u %u %u %u %u", val, proActions[0], proActions[1], 
-	//	proActions[2], proActions[3], proActions[4] );
-	//DBG( buf );
-
-	// nameri action-a s positivna razlika 
+	// find action with positive subs difference
 	for ( j = 0; j < max_actions; j++ )
 	{
 		if ( ( val - proActions[j] ) >= 0 && proActions[j] != 0 )
@@ -1877,8 +1806,7 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 		}
 	}
 
-
-	// izberi nai-blizkiq do rnd-chisloto action
+	// find closest action
 	for ( i = j; i < max_actions; i++ )
 	{
 		tmp_val = val - proActions[i];
