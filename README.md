@@ -13,7 +13,8 @@ All drivers have background stories which are revealed when playing the campaign
 
   * Please check [HISTORY](HISTORY) for latest changes.
   * Please check [INSTALL](INSTALL) for how to compile the game.
-  * Please check [LICENSE](LICENSE) for licensing topics. 
+  * Please check [LICENSE](LICENSE) for licensing (without sound fx).
+  * Please check LICENSE file in bin/sound folder for sound fx license.
 
 # Running the game
 
