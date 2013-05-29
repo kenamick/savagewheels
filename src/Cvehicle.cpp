@@ -485,20 +485,20 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::DoMotion()
 {
-	float		tmp_x, tmp_y, tmp_mf;
-	int			tmp_vel;
-	int			tmp_maxvel;
-	float		rot_m 		= 1.0f;
-	CVehicle    *ptr_veh	= NULL;
-
 	// Init defaults
-	tmp_x		= x;
-	tmp_y		= y;
-	tmp_mf		= motion_frame;
-	tmp_vel		= (int)fabsf(vel);
-	tmp_maxvel	= max_vel;
+	float tmp_mf		= motion_frame;
+	float tmp_x			= x;
+	float tmp_y			= y;
+	float tmp_maxvel	= (float)max_vel;
+	float tmp_vel 		= vel;
+	float abs_vel		= fabsf(vel);
 
-	// AI-steering ...
+	float rot_m 		= 1.0f;
+
+	/*
+	 * AI-steering
+	 */
+
 	if ( control == VC_AI )
 	{
 		rot_m = 2.0f;  // double rotation speed for AI controlled vehicles
@@ -512,7 +512,6 @@ void CVehicle::DoMotion()
 		else
 			vrot = VR_NONE;
 
-		
 		if ( ai_turning == VR_LEFT )
 		{
 			ai_cur_angle += ((rot_speed/2) * _game->getMpf());
@@ -520,7 +519,6 @@ void CVehicle::DoMotion()
 			{
 				ai_cur_angle = ai_dest_angle;
 				ai_turning = VR_NONE;
-				tmp_maxvel = max_vel;
 			}
 
 			//vrot = VR_LEFT;
@@ -532,7 +530,6 @@ void CVehicle::DoMotion()
 			{
 				ai_cur_angle = ai_dest_angle;
 				ai_turning = VR_NONE;
-				tmp_maxvel = max_vel;
 			}
 		}
 
@@ -574,34 +571,35 @@ void CVehicle::DoMotion()
 	 * Acceleration
 	 */
 
-	int maxvel_p = tmp_maxvel + speed_bonus;
-	int maxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
+	float facc = (float)acc;
+	float fmaxvel_p = tmp_maxvel + speed_bonus;
+	float fmaxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
 
 	if ( vmove == VM_FORWARD )
 	{
 		vel += (float)acc * _game->getMpf();
-		if ( vel > (float)maxvel_p )
-			vel = (float)maxvel_p;
+		if ( vel > fmaxvel_p )
+			vel = fmaxvel_p;
 	}
 	else if ( vmove == VM_BACKWARD )
 	{
-		vel -= acc * _game->getMpf();
-		if ( vel < (float)maxvel_n )
-			vel = (float)maxvel_n;
+		vel -= (float)acc * _game->getMpf();
+		if ( vel < fmaxvel_n )
+			vel = fmaxvel_n;
 	}
 	else
 	{
 		// winagi skorostta da kloni kym 0 (toest kolata kym spirane)
 		if ( vel > 0.0f ) 
 		{
-			vel -= dec_acc * _game->getMpf();
+			vel -= (float)dec_acc * _game->getMpf();
 			if ( vel < 0.0f )
 				vel = 0.0f;
 		}
 
 		if ( vel < 0.0f ) 
 		{
-			vel += dec_acc * _game->getMpf();
+			vel += (float)dec_acc * _game->getMpf();
 			if ( vel > 0.0f )
 				vel = 0.0f;
 		}
@@ -622,10 +620,9 @@ void CVehicle::DoMotion()
 //	}
 
 	// rotate vehicle tires (if moving)
-	if (tire_frames > 1 && fabsf(vel) > 0.0f)
+	if (tire_frames > 1 && abs_vel > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
-		
 		if ( tire_frame >= tire_frames ) 
 			tire_frame = 0;
 	}
@@ -658,9 +655,9 @@ void CVehicle::DoMotion()
 	SDL_Rect rMine;
     GetFrameRect( &rMine );
 	
-    ptr_veh = _game->Auto;
+    CVehicle *ptr_veh = _game->Auto;
 
-	for ( Uint32 j = 0; j < _game->game_num_cars; j++ )
+	for ( int j = 0; j < _game->game_num_cars; j++ )
 	{
 		if ( j != myIndex )
 		{
@@ -718,7 +715,7 @@ void CVehicle::DoMotion()
 
 
 				// TODO: fix this because it disbalances the game!
-				if ( tmp_vel <= MIN_DAMAGE_VELOCITY ) 
+				if ( abs_vel <= MIN_DAMAGE_VELOCITY ) 
 				{
 					no_damage = true;
 					DBG( "[COLLIDE] Step #6" );
@@ -727,20 +724,20 @@ void CVehicle::DoMotion()
 				// enemy vehicle damage calculations
 				if ( !no_damage )
 				{
-					float perc = ( (float)tmp_vel / (float)max_vel ) * 100.0f;
+					float perc = ( (float)abs_vel / (float)max_vel ) * 100.0f;
 					Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
 
 					anger -= tmp_anger;
 					anger = anger < 0 ? 0 : anger;
 					anger = anger > 110 ? 110 : anger;
 					
-					float speed_damage = (float)damage + 0.10f * (float)tmp_vel;
+					float speed_damage = (float)damage + 0.10f * (float)abs_vel;
 					float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
 					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
 					int fulldmg = speed_damage - armour_absorb + tmp_anger;
 					fulldmg = fulldmg < 0 ? 0 : fulldmg;
 					
-					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " tmp_vel=" << tmp_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
+					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " abs_vel=" << abs_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
 
 					ptr_veh->DoDamage( fulldmg, myIndex );
 				

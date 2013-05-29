@@ -131,12 +131,12 @@ public:
 
 	float	x,y;
 	Uint32	index;
-	Uint16	goal_type;
+	Uint32	goal_type;
 	bool	static_pos;		// is target moving?
 	bool	reached;		// flag -> target reached?
 	bool	do_precalculate;// if vehicle is off target calculate target coordinates again
 	bool	do_reverse;		// reverse movement (for given time) if vehicle has hit another vehicle
-	int		do_reverseTime;
+	Sint32	do_reverseTime;
 	//CONST_DEADTOYS  toy_kind;
 };
 
