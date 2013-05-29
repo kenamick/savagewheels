@@ -42,6 +42,7 @@ class CVehicle;
 #define GOALEXPIRE_TIME			5000
 #define NO_ATTACKER				10
 
+#define LANDMINE_DAMAGE			35U
 #define MIN_DAMAGE_VELOCITY		45
 #define SAFE_WARP_DISTANCE		6400 // 80 pixels
 #define WAYPOINT_RADIUS			900  //30pixels

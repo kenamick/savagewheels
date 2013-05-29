@@ -538,7 +538,10 @@ void CVehicle::DoMotion()
 
 	}
 
-	// .........rotate
+	/*
+	 * Rotation
+	 */
+	
 	if ( vrot == VR_LEFT && vel != 0 )
     {
 	    display_frame += (rot_speed * rot_m * _game->getMpf());
@@ -589,18 +592,18 @@ void CVehicle::DoMotion()
 	else
 	{
 		// winagi skorostta da kloni kym 0 (toest kolata kym spirane)
-		if ( vel > 0 ) 
+		if ( vel > 0.0f ) 
 		{
 			vel -= dec_acc * _game->getMpf();
-			if ( vel < 0 )
-				vel = 0;
+			if ( vel < 0.0f )
+				vel = 0.0f;
 		}
 
-		if ( vel < 0 ) 
+		if ( vel < 0.0f ) 
 		{
 			vel += dec_acc * _game->getMpf();
-			if ( vel > 0 )
-				vel = 0;
+			if ( vel > 0.0f )
+				vel = 0.0f;
 		}
 	}
 
@@ -870,9 +873,7 @@ void CVehicle::DoMotion()
 
 	GetFrameRect( &rMe );
 
-	Uint32 i = 0;
-
-	for( i = 0; i < DT_MAX_CHILDS; i++ )
+	for( int i = 0; i < DT_MAX_CHILDS; i++ )
 	{
 		if ( _game->Dtoys.GetToyVisible( i ) )
 		{
@@ -881,9 +882,8 @@ void CVehicle::DoMotion()
 
 		 if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) )
 		 {
-			 if ( 1 ) // abs(vel) >= max_vel / 2 ) // do not hit if speed less than half the max
-			 {
-		 
+//			if ( abs(vel) >= max_vel / 2 ) // do not hit if speed less than half the max
+//			{
 				// PLAY SOUND
 				_game->Sdl.PlaySound( SND_SPLAT1, rMe.x );
 				
@@ -989,32 +989,30 @@ void CVehicle::DoMotion()
 
 				// kill toy index
 				_game->Dtoys.KillToy( i );
-			 }
-			 else
-			 {
-				// speed is not high enough to smash this bonus
-				vel = 0;
-				x = tmp_x;
-				y = tmp_y;
-			 }
-			 
-		 }
+			 //}
+			 // else
+			 // {
+				// // speed is not high enough to smash this bonus
+				// vel = 0;
+				// x = tmp_x;
+				// y = tmp_y;
+			 // }
+		 	}
 		} // vis_check...
 	} 
 
 
 	// Hit_Test landmines...
-	for ( i = 0; i < LANDMINE_CHILDS; i++ )
+	for ( int i = 0; i < LANDMINE_CHILDS; i++ )
 	{
 		if ( _game->Mines.GetMineVisible( i ) && _game->Mines.GetMineIndex( i ) != myIndex)
 		{
 			_game->Mines.GetMineRect( i, &rToy );
 			
-			// {!}
 			if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) ) //_game->Sdl.Collide( &rMe, GetCurrentFrame(), &rToy, _game->Mines.GetMineCurrentFrame( i ) ) )
 			{
-				DoDamage( 35U, _game->Mines.GetMineIndex( i ) );
-				// ...do car damage
+				// do vehicle damage
+				DoDamage( LANDMINE_DAMAGE, _game->Mines.GetMineIndex( i ) );
 				_game->Mines.KillMine( i );
 				_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 			}
