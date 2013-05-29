@@ -31,11 +31,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
-
-#ifndef LINUX_BUILD
-#	include "pstdint.h"
-#endif
-
 #endif
 
 
