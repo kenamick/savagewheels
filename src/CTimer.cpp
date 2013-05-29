@@ -68,13 +68,15 @@ void CTimer::Unpause()
 //// Name: Time()
 //// Desc: get current ticks
 /////////////////////////////////////////////////////////////////////////////////////////////
-int CTimer::Time()
+Sint32 CTimer::Time()
 {
-	int cur_time = TICKS;
-	int result = cur_time - m_pausetime;
+	Uint32 cur_time = TICKS;
+	Sint32 result = cur_time - m_pausetime;
 
-	if ( m_paused )
-		result -= cur_time - m_pausestart;
+	if ( m_paused ) 
+	{
+		result = result - (cur_time - m_pausestart);
+	}
 
 	return result - m_starttime;
 }
@@ -84,15 +86,17 @@ int CTimer::Time()
 //// Name: Elapsed()
 //// Desc: check if time has elapsed
 /////////////////////////////////////////////////////////////////////////////////////////////
-bool CTimer::Elapsed( int &time_start, int interval )
+bool CTimer::Elapsed( Uint32 time_start, Uint32 interval )
 {
-	int cur_time = Time();
+	Sint32 cur_time = Time();
 
-	if ( cur_time > time_start + interval )
-	{
-		time_start = cur_time;
-		return true;
-	}
+	return cur_time > time_start + interval;
 	
-	return false;
+	// if ( cur_time > time_start + interval )
+	// {
+	// 	time_start = (Uint32)cur_time;
+	// 	return true;
+	// }
+	
+	// return false;
 }

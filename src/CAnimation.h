@@ -46,11 +46,11 @@ class CAnimations;
 #define MAX_BGETS			  10 //DT_MAX_DEADTOYS >> 1)
 
 enum CONST_ANIMATIONS {
-	ANIM_ANGER,					/* bonus notifiers */
+	ANIM_ANGER,	
 	ANIM_FRAGMASTER,
 	ANIM_LANDMINE,
 	ANIM_REPAIR,
-	ANIM_SPEED,					/*  ...		   	   */
+	ANIM_SPEED,
 	ANIM_BLOOD,
 	ANIM_EXPLOSION,
 	ANIM_SPLAT,
@@ -67,30 +67,26 @@ enum CONST_PLAYERSIDE {
 // child class
 class CAnimation 
 {
-
 public:
-
 	CAnimation()
-		: x(0.0f), y(0.0f), alive(false), frame(0.0f), life(0U)
-	{
-	};
+		: x(0.0f), y(0.0f), alive(false), frame(0.0f), time_created(0U), life(0U)
+	{};
 
 	~CAnimation()
-	{
-	};
+	{};
 
-	float			  x, y;
-	bool			  alive;
-	float 			  frame;
-	Uint32			  life;
-	CONST_ANIMATIONS  type;
+	float  x, y;
+	float  frame;
+	bool   alive;
+	Uint32 time_created;
+	Uint32 life;
+	CONST_ANIMATIONS type;
 };
 
 
-// mother class
+// parent class
 class CAnimations 
 {
-
 private:
 	CGame *_game;
 	SDL_Surface  *sprite_blood[MAX_BLOOD_FRAMES];
@@ -109,7 +105,6 @@ public:
 	void Create( CONST_ANIMATIONS anim_type, CONST_PLAYERSIDE player_side );
 	void Update();
 	void Reset();
-
 };
 
 

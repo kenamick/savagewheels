@@ -54,9 +54,9 @@ CAnimations::~CAnimations()
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Release()
 {
-	AppendToLog("Closing CAnimations() class...");
+	LOG("Closing CAnimations() class...");
 
-	Uint32 i = 0;
+	int i = 0;
 
 	for ( i = 0; i < MAX_EXPLOSION_FRAMES; i++ )
 		RELEASE_SURF( sprite_explosion[i] );
@@ -149,12 +149,14 @@ void CAnimations::Create( Uint16 pos_x, Uint16 pos_y, CONST_ANIMATIONS anim_type
 			
 			case ANIM_SPLAT:
 				ptr_anm->frame = (float)intGetRnd( 0, MAX_SPLATS - MAX_TIRESPLATS ); //(rand() % MAX_SPLATS);
-				ptr_anm->life = _game->Timer.Time() + 5000;
+				ptr_anm->time_created = _game->Timer.Time();
+				ptr_anm->life = 5000;
 			break;
 
 			case ANIM_TIRESPLAT:
 				ptr_anm->frame = (float)intGetRnd( MAX_SPLATS - MAX_TIRESPLATS, MAX_SPLATS );
-				ptr_anm->life = _game->Timer.Time() + intGetRnd( MIN_SPLATSTAY_TIME, MAX_SPLATSTAY_TIME );
+				ptr_anm->time_created = _game->Timer.Time();
+				ptr_anm->life = intGetRnd( MIN_SPLATSTAY_TIME, MAX_SPLATSTAY_TIME );
 			break;
 
 			/*else if ( anim_type == ANIM_TIRETRAILS )
@@ -193,11 +195,12 @@ void CAnimations::Create( enum CONST_ANIMATIONS anim_type, CONST_PLAYERSIDE play
 			if ( player_side == PS_LEFT )
 			{
 				ptr_anm->x = -160.0;
-				ptr_anm->y = 5.0;//425.0;
+				ptr_anm->y = 5.0; //425.0;
 				ptr_anm->type = anim_type;
 				ptr_anm->frame = (float)((int)anim_type);
 				ptr_anm->alive = true;
-				ptr_anm->life = _game->Timer.Time() + 1600;
+				ptr_anm->time_created = _game->Timer.Time();
+				ptr_anm->life = 1600;
 			}
 			else
 			{
@@ -206,7 +209,8 @@ void CAnimations::Create( enum CONST_ANIMATIONS anim_type, CONST_PLAYERSIDE play
 				ptr_anm->type = anim_type;
 				ptr_anm->frame = (float)((int)anim_type + 5);
 				ptr_anm->alive = true;
-				ptr_anm->life = _game->Timer.Time() + 1600;
+				ptr_anm->time_created = _game->Timer.Time();
+				ptr_anm->life = 1600;
 			}
 
 			break;
@@ -226,46 +230,59 @@ void CAnimations::Create( enum CONST_ANIMATIONS anim_type, CONST_PLAYERSIDE play
 ///////////////////////////////////////////////////////////////////////
 void CAnimations::Update()
 {
-	Uint32		i			= 0;
-	Uint32		cur_ticks	= _game->Timer.Time();
+	Sint32		cur_ticks	= _game->Timer.Time();
 	CAnimation	*ptr_anm	= this->CAnim;
-	//SDL_Rect	rdest;
 	
-	for( i = 0; i < ANIM_MAX_CHILDS; i++ )
+	for( int i = 0; i < ANIM_MAX_CHILDS; i++ )
 	{
 		if ( ptr_anm->alive )
 		{
 			switch( ptr_anm->type )
 			{
 				case ANIM_BLOOD:
-				  if ( ptr_anm->frame >= MAX_BLOOD_FRAMES ) 
-					ptr_anm->alive = false;
-				  else
-	   				_game->Sdl.AddToBlit( (int)ptr_anm->x-32, (int)ptr_anm->y-32, sprite_blood[(int)ptr_anm->frame] );
-				  ptr_anm->frame += ANIM_RATE*_game->getMpf();			// increment anim frame
-			    break;
+					if ( ptr_anm->frame >= MAX_BLOOD_FRAMES ) 
+					{
+						ptr_anm->alive = false;
+					}
+					else
+					{
+						_game->Sdl.AddToBlit( (int)ptr_anm->x-32, (int)ptr_anm->y-32, sprite_blood[(int)ptr_anm->frame] );
+					}
+				 	
+				 	ptr_anm->frame += ANIM_RATE * _game->getMpf();			// increment anim frame
+
+			    	break;
 
 				case ANIM_EXPLOSION:
-				  if ( ptr_anm->frame >= MAX_EXPLOSION_FRAMES ) 
-					ptr_anm->alive = false;
-				  else
-				  {
-					//_game->Sdl.Addtoblit( (int)ptr_anm->x-40, (int)ptr_anm->y-30, sprite_explosion[(int)ptr_anm->frame] );
-				    //_game->Sdl.Addtoblit( (int)ptr_anm->x-40, (int)ptr_anm->y-30, sprite_explosion[(int)ptr_anm->frame] );
-					//_game->Sdl.BlitShadow( (int)ptr_anm->x-40+8, (int)ptr_anm->y-30+24, sprite_explosion[(int)ptr_anm->frame] );
-					_game->Sdl.AddToBlit( (int)ptr_anm->x-50, (int)ptr_anm->y-50, sprite_explosion[(int)ptr_anm->frame] );
-				  }
+
+					if ( ptr_anm->frame >= MAX_EXPLOSION_FRAMES ) 
+					{
+						ptr_anm->alive = false;
+					}
+					else
+					{
+						//_game->Sdl.Addtoblit( (int)ptr_anm->x-40, (int)ptr_anm->y-30, sprite_explosion[(int)ptr_anm->frame] );
+						//_game->Sdl.Addtoblit( (int)ptr_anm->x-40, (int)ptr_anm->y-30, sprite_explosion[(int)ptr_anm->frame] );
+						//_game->Sdl.BlitShadow( (int)ptr_anm->x-40+8, (int)ptr_anm->y-30+24, sprite_explosion[(int)ptr_anm->frame] );
+						_game->Sdl.AddToBlit( (int)ptr_anm->x-50, (int)ptr_anm->y-50, sprite_explosion[(int)ptr_anm->frame] );
+					}
 				  
-				 ptr_anm->frame += ANIM_RATE*_game->getMpf();
-				break;
+					ptr_anm->frame += ANIM_RATE * _game->getMpf();
+
+					break;
 
 				case ANIM_SPLAT:
 				case ANIM_TIRESPLAT:
-				  if ( ptr_anm->life < _game->Timer.Time() ) 
-					ptr_anm->alive = false;
-				  else
-				    _game->Sdl.BlitNow( (int)ptr_anm->x-16, (int)ptr_anm->y-16, sprite_splat[(int)ptr_anm->frame] );
-				break;
+					if ( _game->Timer.Elapsed(ptr_anm->time_created, ptr_anm->life) )  // ( ptr_anm->life < _game->Timer.Time() ) 
+					{
+						ptr_anm->alive = false;
+					}
+					else
+					{
+						_game->Sdl.BlitNow( (int)ptr_anm->x-16, (int)ptr_anm->y-16, sprite_splat[(int)ptr_anm->frame] );
+					}
+
+					break;
 
 				/*case ANIM_TIRETRAILS:
 					rdest.x = (int)ptr_anm->x-4;
@@ -279,25 +296,30 @@ void CAnimations::Update()
 				case ANIM_REPAIR:
 				case ANIM_SPEED:
 					
-				  if ( ptr_anm->life < _game->Timer.Time() ) 
-					ptr_anm->alive = false;
-				  else
-				  {
-					  // do slide
-					  if ( ptr_anm->frame > 4 )
-					  {
-						  ptr_anm->x -= _game->getMpf() * 600;
-						  if ( ptr_anm->x < 490 ) ptr_anm->x = 490;
-					  }
-					  else
-					  {
-						  ptr_anm->x += _game->getMpf() * 600;
-						  if ( ptr_anm->x > 0 ) ptr_anm->x = 0;
-					  }
+					if ( _game->Timer.Elapsed(ptr_anm->time_created, ptr_anm->life) )  //( ptr_anm->life < _game->Timer.Time() ) 
+					{
+						ptr_anm->alive = false;
+					}
+					else if (!_game->Timer.IsPaused())
+					{
+						// do slide
+						if ( ptr_anm->frame > 4 )
+						{
+							ptr_anm->x -= _game->getMpf() * 600;
+							if ( ptr_anm->x < 490 ) 
+								ptr_anm->x = 490;
+						}
+						else
+						{
+							ptr_anm->x += _game->getMpf() * 600;
+							if ( ptr_anm->x > 0 ) 
+								ptr_anm->x = 0;
+						}
 
-   					  _game->Sdl.BlitNow( (int)ptr_anm->x, (int)ptr_anm->y, sprite_bmsg[(int)ptr_anm->frame] );
-				  }
-				break;
+						_game->Sdl.BlitNow( (int)ptr_anm->x, (int)ptr_anm->y, sprite_bmsg[(int)ptr_anm->frame] );
+					}
+				
+					break;
 			}
 		
 		}
@@ -318,5 +340,4 @@ void CAnimations::Reset()
 {
 	memset( CAnim, 0, ANIM_MAX_CHILDS * sizeof(CAnimation) );
 }
-
 

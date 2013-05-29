@@ -43,10 +43,9 @@
 class CTimer
 {
 private:
-	
-	int m_starttime;
-	int m_pausetime;
-	int m_pausestart;
+	Uint32 m_starttime;
+	Uint32 m_pausetime;
+	Uint32 m_pausestart;
 	bool m_paused;
 
 public:
@@ -58,10 +57,11 @@ public:
 	{};
 
 	void Start();
-	int Time();
+	Sint32 Time();
 	void Pause();
 	void Unpause();
-	bool Elapsed( int &time_start, int interval );
+    bool IsPaused() { return m_paused; };
+	bool Elapsed( Uint32 time_start, Uint32 interval );
 };
 
 
