@@ -72,7 +72,8 @@ static float g_diry[] = { 0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f,
 CVehicle::CVehicle()
 : _game( NULL ),
    released(true),
-   honk_status(0)
+   honk_status(0),
+   reset_frame(false)
 {
 
 	driver_name = (SDL_Surface *)NULL;
@@ -390,12 +391,15 @@ void CVehicle::Create()
  
 	if ( warpPos == 2 || warpPos == 3 )
 	{
-		motion_frame = 18;
-		display_frame = motion_frame;
+//		motion_frame = 18;
+//		display_frame = motion_frame;
+		motion_angle = PI;
+		display_frame = 18;
 	}
 	else
 	{
-		motion_frame = 0;
+//		motion_frame = 0;
+		motion_angle = 0.0f;
 		display_frame = 0;
 	}
 
@@ -403,8 +407,8 @@ void CVehicle::Create()
 //	center_y = (Uint32)y + (sprite[(int)motion_frame]->h / 2);
 
 	// check for memory access violation
-	ASSERT(sprite_norm[(int)motion_frame]->w < 500);
-	ASSERT(sprite_norm[(int)motion_frame]->h < 500);
+	ASSERT(sprite_norm[(int)display_frame]->w < 500);
+	ASSERT(sprite_norm[(int)display_frame]->h < 500);
 
 	tire_frame = 0;
 	vel = 0.0f;
@@ -412,7 +416,7 @@ void CVehicle::Create()
 	trails_time = 0;
 
 	// ai_facing
-	ai_cur_angle = motion_frame * 10;
+	ai_cur_angle = motion_angle;
 	ai_stuck = false;
 
 	visible = true;
@@ -469,7 +473,12 @@ void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 {
 	vmove = mvt;
-	motion_frame = display_frame;
+//	motion_frame = display_frame;
+
+	if (reset_frame) {
+		motion_angle = Deg2Rad(display_frame * 10.0f);
+		motion_angle = FixRad(motion_angle);
+	}
 }
 
 
@@ -480,7 +489,11 @@ void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 {
 	vrot = rot;
-	motion_frame = display_frame;
+//	motion_frame = display_frame;
+	if (reset_frame) {
+		motion_angle = Deg2Rad(display_frame * 10.0f);
+		motion_angle = FixRad(motion_angle);
+	}
 }
 
  
@@ -493,7 +506,7 @@ void CVehicle::DoMotion()
 {
 	// Init defaults
 	float tmp_df 		= display_frame;
-	float tmp_mf		= motion_frame;
+//	float tmp_mf		= motion_frame;
 	float tmp_x			= x;
 	float tmp_y			= y;
 	float tmp_maxvel	= (float)max_vel;
@@ -509,8 +522,6 @@ void CVehicle::DoMotion()
 	if ( control == VC_AI )
 	{
 		rot_m = 2.0f;  // double rotation speed for AI controlled vehicles
-
-		tmp_maxvel = max_vel; //ai_maxvel;
 
 		if ( ai_final_frame > display_frame ) 
 			vrot = VR_LEFT;
@@ -548,18 +559,23 @@ void CVehicle::DoMotion()
 	
 	if ( vrot == VR_LEFT && vel != 0 )
     {
-	    display_frame += (rot_speed * rot_m * _game->getMpf());
-
+		float step = (rot_speed * rot_m * _game->getMpf());
+	    display_frame += step;
 		if ( display_frame > MAX_ROTATION_FRAMES - 1 )
 			display_frame = 0;
 
 		// AI case
 		if ( control == VC_AI && display_frame > ai_final_frame )
 			display_frame = ai_final_frame;
+
+	    motion_angle += (rot_speed * (2*PI / 36.0f)* _game->getMpf());
+//	    motion_angle += PI;
+	    motion_angle = FixRad(motion_angle);
 	}
 	else if ( vrot == VR_RIGHT && vel != 0 )
 	{
-		display_frame -= (rot_speed * rot_m * _game->getMpf());
+		float step = (rot_speed * rot_m * _game->getMpf());
+	    display_frame -= step;
 
 		if ( display_frame < 0 )
 			display_frame = MAX_ROTATION_FRAMES - 1;
@@ -567,10 +583,14 @@ void CVehicle::DoMotion()
 		// AI case
 		if ( control == VC_AI && display_frame < ai_final_frame )
 			display_frame = ai_final_frame;
+
+		motion_angle -= (rot_speed * (2*PI / 36.0f) * _game->getMpf());
+//		motion_angle += PI;
+		motion_angle = FixRad(motion_angle);
 	}
 
 	vrot = VR_NONE;
-	motion_frame = display_frame;
+//	motion_frame = display_frame;
 
 	/*
 	 * Acceleration
@@ -641,14 +661,13 @@ void CVehicle::DoMotion()
 //		vel_x = g_dirx[(int)motion_frame] * vel;
 //		vel_y = g_diry[(int)motion_frame] * vel;
 
-//		float rrd = (motion_frame ) * 10.0f * 0.0174532925f;
-		float rrd = Deg2Rad(motion_frame * 10.0f);
+//		float rrd = Deg2Rad(motion_frame * 10.0f);
 
-		vel_x = cosf(rrd) * vel;
-		vel_y = sinf(rrd) * vel;
+		vel_x = cosf(motion_angle) * vel;
+		vel_y = sinf(motion_angle) * vel;
 
-		dir_angle = rrd; //acosf(g_dirx[(int)motion_frame]);
-		DBG(carname << " speed is " << vel << " motion_frame=" << motion_frame << " my_rad = " << rrd);
+		dir_angle = motion_angle; //acosf(g_dirx[(int)motion_frame]);
+//		DBG(carname << " speed is " << vel << " motion_angle=" << motion_angle);// << " my_rad = " << rrd);
 	}
 
 	x += vel_x * _game->getMpf();
@@ -687,14 +706,16 @@ void CVehicle::DoMotion()
 			float enemy_vel = ptr_veh->GetVelocity();
 
 			// Get velocity vectors in (new) rotated coordinate system
-			float my_velx = my_vel * cosf(dir_angle - collision_angle);
-			float my_vely = my_vel * sinf(dir_angle - collision_angle);
-			float ea = ptr_veh->GetDirectionAngle();
-			float enemy_velx = enemy_vel * cosf(ptr_veh->GetDirectionAngle()- collision_angle);
-			float enemy_vely = enemy_vel * sinf(ptr_veh->GetDirectionAngle()- collision_angle);
+			float my_ea = FixRad(dir_angle - collision_angle);
+			float my_velx = my_vel * cosf(my_ea);
+			float my_vely = my_vel * sinf(my_ea);
 
-			DBG("my_angle = " << dir_angle << "my_velx = " << my_velx << " my_vely = " << my_vely);
-			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << "enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
+			float ea = FixRad(ptr_veh->GetDirectionAngle()- collision_angle);
+			float enemy_velx = enemy_vel * cosf(ea);
+			float enemy_vely = enemy_vel * sinf(ea);
+
+			DBG("my_angle = " << dir_angle << " my_velx = " << my_velx << " my_vely = " << my_vely);
+			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << " enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
 
 			// Get final velocity vectors after collision
 			float my_mass = GetCompareVal();
@@ -718,9 +739,9 @@ void CVehicle::DoMotion()
 			float bb = atan2f(enemy_fy, enemy_fx);
 			float new_my_dir = aa + collision_angle;
 			float new_enemy_dir = bb + collision_angle;
-
-//			new_my_dir = FixRad(new_my_dir);
-//			new_enemy_dir = FixRad(new_enemy_dir);
+//
+			new_my_dir = FixRad(new_my_dir);
+			new_enemy_dir = FixRad(new_enemy_dir);
 
 			// Final
 
@@ -759,8 +780,8 @@ void CVehicle::DoMotion()
 			bool no_damage = false;
 			x = tmp_x;
 			y = tmp_y;
-			motion_frame = tmp_mf;
-			display_frame = tmp_mf;
+//			motion_frame = tmp_mf;
+//			display_frame = tmp_mf;
 
 //				if ( !fIsZero(hit_vel) )
 //				{
@@ -1185,7 +1206,8 @@ float CVehicle::GetDirectionAngle()
 		return ai_cur_angle;
 	}
 
-	return Deg2Rad(motion_frame * 10.0f); //(motion_frame ) * 10.0f * 0.0174532925f;
+	return motion_angle;
+//	return Deg2Rad(motion_frame * 10.0f); //(motion_frame ) * 10.0f * 0.0174532925f;
 //	return acosf(g_dirx[(int)motion_frame]);
 }
 
@@ -1201,9 +1223,12 @@ void CVehicle::SetDirectionAngle(float rad)
 	}
 	else
 	{
-		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
-		DBG(" new motion_frame = " << motion_frame);
+		motion_angle = rad;
+//		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
+		DBG(" new motion_frame = " << rad);
 	}
+
+	reset_frame = true;
 }
 
 ///////////////////////////////////////////////////////////////////////

@@ -168,7 +168,9 @@ private:
 	float		 x_acc, y_acc;  // ugly na uskorenie pri udar
 	float		 rep_frame;		// kadyr na udrqshtiqt ni avtomobil
 	float 	     display_frame;	// kadyr za rendirane
-	float		 motion_frame;  // kadyr za ygyla na dvijenie
+//	float		 motion_frame;  // kadyr za ygyla na dvijenie
+	bool		 reset_frame;
+	float		 motion_angle;
 	float		 tire_frame;	// kadyr na dvijenie na gumite
 	Uint16		 tire_frames;	 // kadri za vyrtqshti se gumi
 
@@ -269,7 +271,7 @@ public:
 //	float   GetMotionFrameMirror();
 	int	    GetCompareVal() { return lbs; };
 	float   GetVelocity() { return vel; };
-	void    SetVelocity( float setvel ) { vel = setvel; };
+	void    SetVelocity( float newVel ) { vel = newVel; };
 	int		GetHitPoints() { return max_hitpoints; };
 	CONST_VEHICLE_CONTROL GetControl() { return control; };
 	Uint16	GetTeam() { return team; };
