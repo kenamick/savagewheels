@@ -2,10 +2,10 @@ TODO-List:
 -------------
 
 * fix physics (or AI) problem with blocking vehicles
-* remove pstdint.h dependency (Windows platforms)
 * add SDL_mixer support instead of FMod 
 * implement gamepad (+feedback) support
 
+[done] * remove pstdint.h dependency (Windows platforms)
 [done] * revise game sounds
 [done] * clean-up code (remove externs)
 [done] * clean-up code (replace old-logging)
