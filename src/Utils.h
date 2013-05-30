@@ -54,6 +54,7 @@ Uint32 GetDistanceNSR(int x1, int y1, int x2, int y2);
 float fGetDistanceNSR(float, float, float, float);
 bool InRange(float val, float bound1, float bound2);
 void FixAngle(float *angle);
+float Rad2Deg(float rad);
 
 bool OpenLog(const char *filename);
 void AppendToLog(const char *dbgstring);

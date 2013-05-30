@@ -84,15 +84,28 @@ void FixAngle ( float *angle )
         {
             myangle -= ( float ) PI2;
         }
-        else if ( myangle < 0 )
+        else if ( myangle < 0.0f )
         {
             myangle += ( float ) PI2;
         }
         else
+        {
             bfixed = true;
+        }
     }
 
     *angle = myangle;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Name: Rad2Deg()
+// Desc: Convert radians (-PI/2, PI/2) to degress (0, 360)
+///////////////////////////////////////////////////////////////////////
+float Rad2Deg(float rad)
+{
+	float fixed_rad = rad > 0.0f ? rad : (2*PI + rad);
+	return fixed_rad * 360 / (2*PI);
 }
 
 
