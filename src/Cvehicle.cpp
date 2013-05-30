@@ -230,17 +230,21 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 
 	switch( diff )
 	{
-	case DIFF_EASY: diff_perc	= 0.75f; 
+	case DIFF_EASY:
+		diff_perc	= 0.75f;
 		break;
 
-	case DIFF_NORMAL: diff_perc = 1.0f; 
+	case DIFF_NORMAL:
+		diff_perc = 1.0f;
 		return; 
 		break;
 
-	case DIFF_HARD: diff_perc	= 1.3f; 
+	case DIFF_HARD:
+		diff_perc	= 1.3f;
 		break;
 	
 	default: 
+		LOG("Invalid difficulty attribute!");
 		return;
 	}
 	
@@ -1244,264 +1248,261 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
- 
- char		buf[64];
- float		perc		= 0.0f;
- Uint32		width		= 0U;
- Uint32		height		= 0U;
- SDL_Rect	rect;
+	char buf[64];
+	float perc = 0.0f;
+	Uint32 width = 0U;
+	Uint32 height = 0U;
+	SDL_Rect rect;
 
- // respawn vehicle (if not visible, e.g., destroyed)
- if ( !visible )
- {
-	 Create();  
-	//return;
- }
+	// respawn vehicle (if not visible, e.g., destroyed)
+	if (!visible) {
+		Create();
+		//return;
+	}
 
- Uint32 *cur_mask = GetCurrentFrameMask();
- SDL_Surface *surf = GetCurrentFrame();
+	Uint32 *cur_mask = GetCurrentFrameMask();
+	SDL_Surface *surf = GetCurrentFrame();
 
- // preizchisli center koordinati na avtomobila i kvadrat na kadyra
- width = surf->w;
- height = surf->h;
- center_x = x + (width >> 1);
- center_y = y + (height >> 1); 
+	// recalculate vehicle center pos given current surface frame
+	width = surf->w;
+	height = surf->h;
+	center_x = x + (width >> 1);
+	center_y = y + (height >> 1);
 
- DoMotion();
- //if ( control != VC_AI ) DoMotion();
+	DoMotion();
+//	if ( control != VC_AI ) DoMotion();
 
 // width		= surf->w;
 // height		= surf->h;
 // center_x	= x + (width >> 1);
 // center_y	= y + (height >> 1);
- rect.x		= 0;
- rect.y 	= 0;
- rect.w		= width; 
- rect.h		= height;
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = width;
+	rect.h = height;
  
- // expire 1 anger point
- if ( anger_time < _game->Timer.Time() && anger > 0 )
- {
-	 anger--;
-	 anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
- }
- // kill speed_bonus 
- if ( speed_time < _game->Timer.Time() && speed_bonus != 0 )
- {
-	 speed_bonus = 0;
- }
-
- // goal time expired?
- if ( goal_time < _game->Timer.Time() && has_the_goal )
- {
-	 // give 3 frags and set goal back
-	 has_the_goal = false;
-	 _game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
-	 frags += 1;
- }
-
- // blit shadow and vehicle
- //_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
- _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
- _game->Sdl.AddToBlit( x, y, surf );
- 
- 
- // blit status
- sprintf( buf, "%d", frags );
- _game->Sdl.DrawNum( pos_frag[myIndex].x, pos_frag[myIndex].y, buf );
- perc = ( (float)hit_points / (float)max_hitpoints ) * 100.0f;
- _game->scales[0]->w = (Uint32)( /*(130.0f / 100.0f )*/ 1.3f * perc);
- _game->Sdl.BlitNow( pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0] ); 
- _game->scales[1]->w = anger;
- _game->Sdl.BlitNow( pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1] ); 
-
-
- // proveri controla na autoto
- switch( control )
- {
-  
-  case VC_PLAYER1:
-	
-	if ( _game->Sdl.keys[_game->Bindings.GetP1Key( CBindings::BK_LEFT ) ] )
-		Rotate( VR_LEFT );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_RIGHT ) ] ) 
-		Rotate( VR_RIGHT );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_ACC ) ] ) 
-		Move( VM_FORWARD );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BREAK ) ] ) 
-		Move( VM_BACKWARD );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_HONK ) ] )
+	// expire 1 anger point
+	if (anger_time < _game->Timer.Time() && anger > 0)
 	{
-		honk_status = 1;
+		anger--;
+		anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
 	}
-	else {
-		honk_status = honk_status == 1 ? 2 : 0;
+	// kill speed_bonus
+	if (speed_time < _game->Timer.Time() && speed_bonus != 0)
+	{
+		speed_bonus = 0;
 	}
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BLOWUP ) ] )
+	// goal time expired?
+	if (goal_time < _game->Timer.Time() && has_the_goal)
 	{
-		self_destruct	= true;
-		i_self_destruct = true;
+		// give 3 frags and set goal back
+		has_the_goal = false;
+		_game->Dtoys.SetToyGoalState(DTG_ONTHEROAD);
+		frags += 1;
 	}
 
-	//{!}
-	if ( _game->Sdl.JoystickHatState == SDL_HAT_LEFT ) Rotate( VR_LEFT );
-	if ( _game->Sdl.JoystickHatState == SDL_HAT_RIGHT ) Rotate( VR_RIGHT );
-	if ( _game->Sdl.GetJoystickButtonPressed( 1 ) ) Move( VM_FORWARD );
-	if ( _game->Sdl.GetJoystickButtonPressed( 2 ) ) Move( VM_BACKWARD );
+	// blit shadow and vehicle
+	//_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
+	_game->Sdl.BlitShadow(x + 1.0f, y + 4.0f, cur_mask, &rect);
+	_game->Sdl.AddToBlit(x, y, surf);
+ 
+ 
+	// blit status
+	sprintf(buf, "%d", frags);
+	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
+	perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
+	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
+	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
+	_game->scales[1]->w = anger;
+	_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1]);
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_MINE ) ] )
-	{
-		if ( !bputmine )
+
+ switch (control)
+ {
+	case VC_PLAYER1:
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_LEFT)])
+			Rotate(VR_LEFT);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_RIGHT)])
+			Rotate(VR_RIGHT);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_ACC)])
+			Move(VM_FORWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_BREAK)])
+			Move(VM_BACKWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_HONK)])
+		{
+			honk_status = 1;
+		}
+		else
+		{
+			honk_status = honk_status == 1 ? 2 : 0;
+		}
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_BLOWUP)]) {
+			self_destruct = true;
+			i_self_destruct = true;
+		}
+
+		//{!}
+		if (_game->Sdl.JoystickHatState == SDL_HAT_LEFT)
+			Rotate(VR_LEFT);
+		if (_game->Sdl.JoystickHatState == SDL_HAT_RIGHT)
+			Rotate(VR_RIGHT);
+		if (_game->Sdl.GetJoystickButtonPressed(1))
+			Move(VM_FORWARD);
+		if (_game->Sdl.GetJoystickButtonPressed(2))
+			Move(VM_BACKWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_MINE)])
+		{
+			if (!bputmine)
+				bputminekey = true;
+		}
+		else if (!_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_MINE)])
+		{
+			bputminekey = false;
+			bputmine = false;
+		}
+
+		break;
+
+	case VC_PLAYER2:
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_LEFT)])
+			Rotate(VR_LEFT);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_RIGHT)])
+			Rotate(VR_RIGHT);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_ACC)])
+			Move(VM_FORWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_BREAK)])
+			Move(VM_BACKWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_BLOWUP)])
+		{
+			self_destruct = true;
+			i_self_destruct = true;
+		}
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_HONK)])
+		{
+			honk_status = 1;
+		}
+		else
+		{
+			honk_status = honk_status == 1 ? 2 : 0;
+		}
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_MINE)])
+		{
+			if (!bputmine)
+				bputminekey = true;
+		}
+		else if (!_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_MINE)])
+		{
+			bputminekey = false;
+			bputmine = false;
+		}
+
+		break;
+
+		// case VC_PLAYER3:
+		// 	if ( _game->Sdl.keys[SDLK_j] ) Rotate( VR_LEFT );
+		//if ( _game->Sdl.keys[SDLK_l] ) Rotate( VR_RIGHT );
+		//if ( _game->Sdl.keys[SDLK_i] ) Move( VM_FORWARD );
+		//if ( _game->Sdl.keys[SDLK_k] ) Move( VM_BACKWARD );
+		// break;
+
+	case VC_AI:
+		AI_Update();
+
+		if (ai_putmine)
+		{
+			ai_putmine = false;
 			bputminekey = true;
+		}
+
+		break;
+
+	default:
+		break;
+
 	}
-	else if ( ! _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_MINE ) ] )
+
+	// put down a landmine?
+	if (bputminekey)
 	{
+		bputmine = true;
+		if (landmines > 0) {
+			landmines--;
+			_game->Mines.Create(GetX(), GetY(), myIndex);
+		}
+
 		bputminekey = false;
-		bputmine = false;
 	}
-  
-	break;
 
-  case VC_PLAYER2:
-
-	if ( _game->Sdl.keys[_game->Bindings.GetP2Key( CBindings::BK_LEFT ) ] )
-		Rotate( VR_LEFT );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_RIGHT ) ] ) 
-		Rotate( VR_RIGHT );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_ACC ) ] ) 
-		Move( VM_FORWARD );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BREAK ) ] ) 
-		Move( VM_BACKWARD );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BLOWUP ) ] )
+	// if vehicle is stuck run automated destruction timer
+	if (fIsZero(vel) && !self_destruct)
 	{
-		self_destruct	= true;
-		i_self_destruct = true;
+		if (!ai_stuck) {
+			ai_stuck = true;
+			ai_stucktime = _game->Timer.Time() + 4000 + (rand() % 2000);
+		}
 	}
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_HONK ) ] )
+	else
 	{
-		honk_status = 1;
-	}
-	else {
-		honk_status = honk_status == 1 ? 2 : 0;
-	}
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
-	{
-		if ( !bputmine )
-			bputminekey = true;
-	}
-	else if ( ! _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
-	{
-		bputminekey = false;
-		bputmine = false;
-	}
-
-
-  break;
-  
- // case VC_PLAYER3:
- // 	if ( _game->Sdl.keys[SDLK_j] ) Rotate( VR_LEFT );
-	//if ( _game->Sdl.keys[SDLK_l] ) Rotate( VR_RIGHT );
-	//if ( _game->Sdl.keys[SDLK_i] ) Move( VM_FORWARD );
-	//if ( _game->Sdl.keys[SDLK_k] ) Move( VM_BACKWARD );
- // break;
-    
-  case VC_AI:
-	  AI_Update();
-
-	  if ( ai_putmine )
-	  {
-		  ai_putmine = false;
-		  bputminekey = true;
-	  }
-  
-  break;
-
-  default: 
-	  break;
-  
- }
-
- // trqbwa li da ostavim mina
- if ( bputminekey ) 
- {
-	 bputmine = true;
-	 if ( landmines > 0 ) 
-	 {
-		 landmines--;
-		 _game->Mines.Create( GetX(), GetY(), myIndex );
-	 }
-
-	 bputminekey = false;
- }
-
- // proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
- if ( fIsZero(vel) && !self_destruct )
- {
-	 if ( !ai_stuck )
-	 {
-		ai_stuck = true;
-		ai_stucktime = _game->Timer.Time() + 4000 + (rand()%2000);
-	 }
- }
- else
- {
-	 ai_stuck = false;
- }
-
- if ( ai_stuck )
- {
-	if ( ai_stucktime < _game->Timer.Time() )
-	{
-		self_destruct = true;
 		ai_stuck = false;
 	}
- }
 
- // proveri "_game->self_destruct" mechanizm
- if ( self_destruct && ! self_destruction ) 
- {
-	 self_destruction = true;
-	 self_destruct = false;
-	 destruct_time = _game->Timer.Time() + 3000;
- }
+	if (ai_stuck)
+	{
+		if (ai_stucktime < _game->Timer.Time())
+		{
+			self_destruct = true;
+			ai_stuck = false;
+		}
+	}
 
- if ( self_destruction )
- {
-	 if ( destruct_time > _game->Timer.Time() )
-	 {
-		 //_game->Sdl.DrawNum( (int)x, (int)y, "1" );
-		 _game->Sdl.BlitNow( (int)x, (int)y, _game->self_dest );
+	// check self-destruct flags
+	if (self_destruct && !self_destruction)
+	{
+		self_destruction = true;
+		self_destruct = false;
+		destruct_time = _game->Timer.Time() + 3000;
+	}
 
-		 // PLAY SOUND
-		 if ( warning_time < _game->Timer.Time() )
-		 {
-			 warning_time = _game->Timer.Time() + 1000;
-			 _game->Snd.Play( SND_WARNING, (int)x );
-		 }
-	 }
-	 else 
-	 {
-		 DoDamage( 1000U, myIndex );  
-		 self_destruction = false;  // clear local var
-	 }
- }
+	if (self_destruction)
+	{
+		if (destruct_time > _game->Timer.Time())
+		{
+			//_game->Sdl.DrawNum( (int)x, (int)y, "1" );
+			_game->Sdl.BlitNow((int) x, (int) y, _game->self_dest);
 
- if (honk_status == 2)
- {
-	 _game->Snd.Play( SND_MENU_HONK1, (int)x );
-	 honk_status = 0;
- }
+			// PLAY SOUND
+			if (warning_time < _game->Timer.Time()) {
+				warning_time = _game->Timer.Time() + 1000;
+				_game->Snd.Play(SND_WARNING, (int) x);
+			}
+		}
+		else
+		{
+			DoDamage(1000U, myIndex);
+			// clear local var
+			self_destruction = false;
+		}
+	}
+
+	if (honk_status == 2)
+	{
+		_game->Snd.Play( SND_MENU_HONK1, (int)x );
+		honk_status = 0;
+	}
 
 } 
 
