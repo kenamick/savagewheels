@@ -51,11 +51,11 @@ void FixAngle(float *angle)
     {
         if ( myangle > PI2 )
         {
-            myangle -= ( float ) PI2;
+            myangle -= PI2;
         }
         else if ( myangle < 0.0f )
         {
-            myangle += ( float ) PI2;
+            myangle += PI2;
         }
         else
         {
@@ -64,6 +64,20 @@ void FixAngle(float *angle)
     }
 
     *angle = myangle;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: Rad2Deg()
+// Desc: Keeps radians in the range of (-PI, PI)
+///////////////////////////////////////////////////////////////////////
+float FixRad(float rad)
+{
+	float fixed_rad = rad;
+
+	fixed_rad = fixed_rad > PI ? fixed_rad - PI2 : fixed_rad;
+	fixed_rad = fixed_rad < -PI ? PI2 + fixed_rad : fixed_rad;
+
+	return fixed_rad;
 }
 
 ///////////////////////////////////////////////////////////////////////

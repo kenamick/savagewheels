@@ -48,6 +48,7 @@
 //#define INRANGE(x,y,z) ( (z)-(y) > (z)-(x) ? true : false ) 
 
 void FixAngle(float *angle);
+float FixRad(float rad);
 float Rad2Deg(float rad);
 float Deg2Rad(float deg);
 float fGetRnd(float min_val, float max_val);
