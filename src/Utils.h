@@ -30,10 +30,13 @@
 #define PI			3.1415926f
 #define PI2			6.2831853f
 #define PI_2		1.5707963f
-#define RAD1		57.2957795786f;
+#define RAD1		57.2957795786f
+#define DEG1		0.0174532925f
 #define MIN_FLOAT	0.00000001f
+
 #define LOG_DASH   "------------------------------------------------"
 #define ANY_BACKSLASH         "/\\"
+#define LOG( stream_msg ) { OutputSStream ostr; ostr << stream_msg; AppendToLog( ostr.str().c_str() ); }
 
 #ifdef _DEBUG
 #	define DBG(x)	LOG("DBG: " << x)
@@ -41,12 +44,12 @@
 #	define DBG(x)	
 #endif
 
-#define LOG( stream_msg ) { OutputSStream ostr; ostr << stream_msg; AppendToLog( ostr.str().c_str() ); }
-
 #define INRANGE(x,y,z) ( (x) >= (y) ? ( (x) <= (z) ? true : false ) : false ) 
 //#define INRANGE(x,y,z) ( (z)-(y) > (z)-(x) ? true : false ) 
 
-// global functions prototypes
+void FixAngle(float *angle);
+float Rad2Deg(float rad);
+float Deg2Rad(float deg);
 float fGetRnd(float min_val, float max_val);
 int intGetRnd(int min_val, int max_val);
 //Uint16  GetDistance( int x1, int y1, int x2, int y2 ); 
@@ -54,19 +57,15 @@ int intGetRnd(int min_val, int max_val);
 Uint32 GetDistanceNSR(int x1, int y1, int x2, int y2);
 float fGetDistanceNSR(float, float, float, float);
 bool InRange(float val, float bound1, float bound2);
-void FixAngle(float *angle);
-float Rad2Deg(float rad);
+float fRangeGetXY(int in, int inMin, int inMax, float min, float max);
+float fRangeGet0255(int in, float min, float max);
+bool fIsZero(float value);
 
 bool OpenLog(const char *filename);
 void AppendToLog(const char *dbgstring);
 //void	AppendToMultilog( char *dbgstring, ... );
 void CloseLog(void);
-
 String ExtractFilename(const String strPath);
 bool PathExists(const String strPath, struct stat* _pStats = NULL);
-
-float fRangeGetXY(int in, int inMin, int inMax, float min, float max);
-float fRangeGet0255(int in, float min, float max);
-bool fIsZero(float value);
 
 #endif

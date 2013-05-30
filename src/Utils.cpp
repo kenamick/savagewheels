@@ -27,53 +27,22 @@
 #include "Main.h"
 
 #ifdef LINUX_BUILD
-#	include <sys/timeb.h>
-#	include <time.h>
-
-#	define _ftime	ftime
-
+#include <sys/timeb.h>
+#include <time.h>
+#define _ftime	ftime
 struct timeb   time_struct;
-#else
+#else /*  LINUX_BUILD */
 struct _timeb  time_struct;
-#endif
+#endif  /*  LINUX_BUILD */
 
 static std::ofstream debug_file;
-
-
-
-///////////////////////////////////////////////////////////////////////
-// Name: GetFormattedTime()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-inline String GetFormattedTime()
-{
-    char buf[255];
-
-#ifdef LINUX_BUILD
-    time_t cur_time;
-    tm *ptm = NULL;
-    
-    time ( &cur_time );
-    ptm = localtime( &cur_time );
-    
-    sprintf ( buf, "%d:%d:%d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
-    //sprintf ( buf1, "%s", ctime( &cur_time ) );
-#else
-    _strtime ( buf );
-#endif
-  
-    _ftime ( &time_struct );
-    sprintf ( buf, "%s.%.3u ", buf, time_struct.millitm );
-    
-    return buf;
-}
 
 
 ///////////////////////////////////////////////////////////////////////
 // Name: FixAngle()
 // Desc: angle E{ 0, PI*2 ) (RAD)
 ///////////////////////////////////////////////////////////////////////
-void FixAngle ( float *angle )
+void FixAngle(float *angle)
 {
     float myangle	= *angle;
     bool  bfixed	= false;
@@ -97,10 +66,9 @@ void FixAngle ( float *angle )
     *angle = myangle;
 }
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: Rad2Deg()
-// Desc: Convert radians (-PI/2, PI/2) to degress (0, 360)
+// Desc: Convert radians (-PI, PI) to degress (0, 360)
 ///////////////////////////////////////////////////////////////////////
 float Rad2Deg(float rad)
 {
@@ -109,6 +77,21 @@ float Rad2Deg(float rad)
 	return fixed_rad * RAD1;
 }
 
+///////////////////////////////////////////////////////////////////////
+// Name: Deg2Rad()
+// Desc: Convert degress (0, 360) to radians (-PI, PI)
+///////////////////////////////////////////////////////////////////////
+float Deg2Rad(float deg)
+{
+	deg = deg < 0.0 ? 360.0f - deg : deg;
+	deg = deg > 360.0f ? deg - 360.0f : deg;
+
+	float fixed_rad = deg * DEG1;
+	fixed_rad = fixed_rad > PI ? fixed_rad - PI2 : fixed_rad;
+	fixed_rad = fixed_rad < -PI ? PI2 + fixed_rad : fixed_rad;
+
+	return fixed_rad;
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Name: intGetRnd()
@@ -131,7 +114,6 @@ float fGetRnd ( float min_val, float max_val )
     return ( ( max_val - min_val ) * ( float ) rand() / ( float ) RAND_MAX ) + min_val;
 }
 
-
 /////////////////////////////////////////////////////////////////////////
 //// Name: GetDistance()
 //// Desc: Vryshta razstoqnieto m/u 2 tochki
@@ -145,7 +127,6 @@ float fGetRnd ( float min_val, float max_val )
 //	return (Uint16)sqrt( product );
 //}
 
-
 /////////////////////////////////////////////////////////////////////////
 //// Name: fGetDistance()
 //// Desc: Vryshta razstoqnieto m/u 2 tochki (FLOAT)
@@ -157,7 +138,6 @@ float fGetRnd ( float min_val, float max_val )
 //
 //	return sqrt( (float)( dx*dx + dy*dy ) );
 //}
-
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetDistanceNSR()
@@ -171,7 +151,6 @@ Uint32  GetDistanceNSR ( int x1, int y1, int x2, int y2 )
     return ( Uint32 ) ( dx*dx + dy*dy );
 }
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: GetDistanceNSR()
 // Desc: (FLOAT)
@@ -183,7 +162,6 @@ float  fGetDistanceNSR ( float x1, float y1, float x2, float y2 )
 
     return ( dx*dx + dy*dy );
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 // Name: InRange()
@@ -203,6 +181,63 @@ bool InRange ( float val, float rangeMin, float rangeMax )
     return false;
 }
 
+///////////////////////////////////////////////////////////////////////
+// Name: fRangeGetXY()
+// Desc: Convert one range to another
+///////////////////////////////////////////////////////////////////////
+float	fRangeGetXY(int in, int inMin, int inMax, float min, float max)
+{
+	int inRange = (inMax - inMin);
+	float newRange = (max - min);
+	float result = (((in - inMin) * newRange) / inRange) + min;
+
+	return result;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: fRangeGet0255()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+float	fRangeGet0255(int in, float min, float max)
+{
+	return fRangeGetXY(in, 0, 255, min, max);
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: fRangeGet0255()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+bool	fIsZero(float value)
+{
+	return fabsf(value) < MIN_FLOAT;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: GetFormattedTime()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+inline String GetFormattedTime()
+{
+    char buf[255];
+
+#ifdef LINUX_BUILD
+    time_t cur_time;
+    tm *ptm = NULL;
+
+    time ( &cur_time );
+    ptm = localtime( &cur_time );
+
+    sprintf ( buf, "%d:%d:%d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
+    //sprintf ( buf1, "%s", ctime( &cur_time ) );
+#else
+    _strtime ( buf );
+#endif
+
+    _ftime ( &time_struct );
+    sprintf ( buf, "%s.%.3u ", buf, time_struct.millitm );
+
+    return buf;
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Name: OpenLog()
@@ -228,7 +263,6 @@ bool OpenLog ( const char* filename )
     return true;
 }
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: AppendToLog()
 // Desc: add a line to global log file
@@ -242,7 +276,6 @@ void AppendToLog ( const char *dbgstring )
     //      against losing log info if game suddenly crashes !
     debug_file.flush();
 }
-
 
 /////////////////////////////////////////////////////////////////////////
 //// Name: AppendToMultilog()
@@ -283,7 +316,6 @@ void AppendToLog ( const char *dbgstring )
 //
 //}
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: CloseLog()
 // Desc: close global log file
@@ -294,7 +326,6 @@ void CloseLog ( void )
     debug_file << "\n</pre></body></html>";
     debug_file.close();
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 // Name: ExtractFilename()
@@ -312,14 +343,12 @@ String ExtractFilename ( const String strPath )
     return strResult;
 }
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: PathExists()
 // Desc:
 ///////////////////////////////////////////////////////////////////////
 bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
 {
-
 //#ifndef LINUX_BUILD
 #if 0
     if ( INVALID_FILE_ATTRIBUTES != ::GetFileAttributesA ( strPath.c_str() ) )
@@ -331,7 +360,6 @@ bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
         DBG ( "Failed to find file %s! lasterror=%d", strPath.c_str(), GetLastError(), NULL );
     }
 #else
-
     if ( _pStats )
     {
         //pStats = _pStats;
@@ -345,41 +373,7 @@ bool PathExists ( const String strPath, struct stat* _pStats /*= NULL*/ )
         if ( -1 != stat( strPath.c_str(), &_stats ) )
             return true;
     }
-
 #endif
 
     return false;
 }
-
-///////////////////////////////////////////////////////////////////////
-// Name: fRangeGetXY()
-// Desc: Convert one range to another
-///////////////////////////////////////////////////////////////////////
-float	fRangeGetXY(int in, int inMin, int inMax, float min, float max)
-{
-	int inRange = (inMax - inMin);
-	float newRange = (max - min);
-	float result = (((in - inMin) * newRange) / inRange) + min;
-
-	return result;
-}
-
-///////////////////////////////////////////////////////////////////////
-// Name: fRangeGet0255()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-float	fRangeGet0255(int in, float min, float max)
-{
-	return fRangeGetXY(in, 0, 255, min, max);
-}
-
-///////////////////////////////////////////////////////////////////////
-// Name: fRangeGet0255()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-bool	fIsZero(float value)
-{
-	return fabsf(value) < MIN_FLOAT;
-}
-
-
