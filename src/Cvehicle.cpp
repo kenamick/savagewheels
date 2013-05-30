@@ -693,6 +693,9 @@ void CVehicle::DoMotion()
 
 		if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
 		{
+			if (_game->Timer.Time() < skip_hit_timer)
+				continue;
+
 			DBG( "[COLLIDE] ----- New Collision [" << carname << "] [" << j << "] -----" );
 
 			// Get angle of collision
@@ -706,11 +709,11 @@ void CVehicle::DoMotion()
 			float enemy_vel = ptr_veh->GetVelocity();
 
 			// Get velocity vectors in (new) rotated coordinate system
-			float my_ea = FixRad(dir_angle - collision_angle);
+			float my_ea = (dir_angle - collision_angle);
 			float my_velx = my_vel * cosf(my_ea);
 			float my_vely = my_vel * sinf(my_ea);
 
-			float ea = FixRad(ptr_veh->GetDirectionAngle()- collision_angle);
+			float ea = (ptr_veh->GetDirectionAngle()- collision_angle);
 			float enemy_velx = enemy_vel * cosf(ea);
 			float enemy_vely = enemy_vel * sinf(ea);
 
@@ -740,8 +743,8 @@ void CVehicle::DoMotion()
 			float new_my_dir = aa + collision_angle;
 			float new_enemy_dir = bb + collision_angle;
 //
-			new_my_dir = FixRad(new_my_dir);
-			new_enemy_dir = FixRad(new_enemy_dir);
+//			new_my_dir = FixRad(new_my_dir);
+//			new_enemy_dir = FixRad(new_enemy_dir);
 
 			// Final
 
@@ -1228,6 +1231,7 @@ void CVehicle::SetDirectionAngle(float rad)
 		DBG(" new motion_frame = " << rad);
 	}
 
+	skip_hit_timer = _game->Timer.Time() + 2800;
 	reset_frame = true;
 }
 

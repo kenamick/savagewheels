@@ -226,6 +226,8 @@ private:
 
 	Uint16					team;					// vehicle Team
 
+	Uint32					skip_hit_timer;
+
 private:
 	void DoMotion();
 	void Move( CONST_VEHICLE_MOVEMENT mvt );
