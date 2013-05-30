@@ -30,6 +30,7 @@
 #define PI			3.1415926f
 #define PI2			6.2831853f
 #define PI_2		1.5707963f
+#define RAD1		57.2957795786f;
 #define MIN_FLOAT	0.00000001f
 #define LOG_DASH   "------------------------------------------------"
 #define ANY_BACKSLASH         "/\\"

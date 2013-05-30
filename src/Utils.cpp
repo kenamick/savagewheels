@@ -104,8 +104,9 @@ void FixAngle ( float *angle )
 ///////////////////////////////////////////////////////////////////////
 float Rad2Deg(float rad)
 {
-	float fixed_rad = rad > 0.0f ? rad : (2*PI + rad);
-	return fixed_rad * 360 / (2*PI);
+	float fixed_rad = rad > 0.0f ? rad : (PI2 + rad);
+
+	return fixed_rad * RAD1;
 }
 
 
