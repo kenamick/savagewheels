@@ -35,25 +35,24 @@ extern int attribARMOUR[4];
 /*POINT	pos_opt_but[13] = { 230, 50, 230, 80, 230, 110, 230, 140, 230, 170, 230, 200,
 							470, 50, 300, 80, 300, 110, 300, 140, 400, 170, 400, 200, 
 							420, 400 };*/
-POINT	pos_options[6]	= {37, 60, 37, 110, 37, 160, 37, 210, 37, 260, 37, 310, //37, 360 
-							};
-POINT	pos_opt_but[13] = { 230, 50, 230, 100, 230, 150, 230, 200, 230, 250, 230, 300, //230, 350,
-							470, 50, 330, 100, 300, 150, 300, 200, 400, 250, 400, 300, //400, 350,
-							520, 420 };
+static POINT pos_options[6]	= {37, 60, 37, 110, 37, 160, 37, 210, 37, 260, 37, 310, /*37, 360*/};
+static POINT pos_opt_but[13] = { 230, 50, 230, 100, 230, 150, 230, 200, 230, 250, 230, 300, //230, 350,
+		470, 50, 330, 100, 300, 150, 300, 200, 400, 250, 400, 300, //400, 350,
+		520, 420 };
 
-POINT   pos_sel[8]		= { 20, 100, 590, 100, 440, 420, 520, 420, 
-							160, 335, 360, 335, 
-							160, 385, 360, 385  }; 
-POINT	pos_menu[5]			= { 20, 110, 10, 180, 0, 245, 0, 310, 0, 375 };
-POINT	pos_campmenu[2]		= { 440, 420, 520, 420 };
-POINT   pos_campselect[2]	= { 59, 15, 59, 285 };
+static POINT   pos_sel[8] = { 20, 100, 590, 100, 440, 420, 520, 420,
+		160, 335, 360, 335,
+		160, 385, 360, 385  };
+static POINT pos_menu[5]		= { 20, 110, 10, 180, 0, 245, 0, 310, 0, 375 };
+//static POINT pos_campmenu[2]	= { 440, 420, 520, 420 };
+static POINT pos_campselect[2]	= { 59, 15, 59, 285 };
 
-int		current_car			= 1;
-bool	faces_released		= true;
-bool	p2_choice			= false;
+static int current_car 		= 1;
+static bool faces_released	= true;
+static bool p2_choice		= false;
 
-SDL_Surface		  *ssButtons[MENU_BUTTONS];
-SDL_Surface		  *ssStrings[STRINGS_SURFACES];
+static SDL_Surface *ssButtons[MENU_BUTTONS];
+static SDL_Surface *ssStrings[STRINGS_SURFACES];
 
 //////////////////////////////////////////////////////////////////////
 // Ime: CMainMenu()
