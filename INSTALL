@@ -17,8 +17,8 @@ Get the latest source code from GitHub:
 
 Get the data files from https://code.google.com/p/savagewheels.
 You will need those since they contain all graphics, sound, and vehicles data. 
-Extract the downloaded archive into the bin/ folder. 
-(The important folders are - autos/, graphics/, sounds/)
+Extract the downloaded archive 'savagewheels-gamedata.tar.gz' into the bin/ folder. 
+(It should contain the folders - autos/, graphics/, sounds/)
 
 3) Installation on Linux platforms
 
