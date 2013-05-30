@@ -26,18 +26,16 @@
 
 #include "Main.h"
 
-
-Uint16 dt_values[DT_MAX_DEADTOYS]		= { 1, 66, 75, 1, 3 }; //bear,anger,hp,speed,landmine
-Uint32 dt_timespawn[DT_MAX_DEADTOYS]	= { 45000, 4000, 15000, 8000, 10000 };
-Uint32 dt_timestay[DT_MAX_DEADTOYS]		= { 6000, 4000, 8000, 3000, 5000 };
-
+static Uint16 dt_values[DT_MAX_DEADTOYS] = { 1, 66, 75, 1, 3 }; //bear,anger,hp,speed,landmine
+static Uint32 dt_timespawn[DT_MAX_DEADTOYS] = { 45000, 4000, 15000, 8000, 10000 };
+static Uint32 dt_timestay[DT_MAX_DEADTOYS] = { 6000, 4000, 8000, 3000, 5000 };
 
 ////////////////////////////////////////Class DeadToys///////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////
 // Name: CDeadtoys()
-// Desc: konstructor
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 CDeadtoys::CDeadtoys()
 : _game( NULL ), goal_index( 0 ), goal_state( DTG_ONTHEROAD )
@@ -88,7 +86,7 @@ void CDeadtoys::Reset()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Initialize()
-// Desc: inicializira/zarejda dead_toya
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 int CDeadtoys::Initialize( CGame *game )
 {
@@ -106,7 +104,7 @@ int CDeadtoys::Initialize( CGame *game )
 	if ( ( sprite[1][1] = _game->Sdl.LoadBitmap( "gfx/dtoys/dtoy12.bmp", MAGENTA )) == NULL ) return 0; 
 
 	// load other-bugs	
-	for ( Uint32 i = 2; i < DT_MAX_DEADTOYS; i++ )
+	for ( int i = 2; i < DT_MAX_DEADTOYS; i++ )
 	{
 		sprintf( dirname, "gfx/dtoys/dtoy%d.bmp", i );
 		if ( ( sprite[i][0] = _game->Sdl.LoadBitmap( dirname, MAGENTA )) == NULL ) return 0; 
@@ -118,12 +116,12 @@ int CDeadtoys::Initialize( CGame *game )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Create()
-// Desc: syzdava dead_toya na ekrana
+// Desc: Create new bonus on the map
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Create( Uint16 pos_x, Uint16 pos_y, CONST_DEADTOYS toy_type )
 {
 	
-	Uint32 i = 0;
+	int i = 0;
 	CDeadtoy  *ptr_cdt;	
 
 	ptr_cdt = CDt;
@@ -144,7 +142,7 @@ void CDeadtoys::Create( Uint16 pos_x, Uint16 pos_y, CONST_DEADTOYS toy_type )
 			ptr_cdt->frame = 0;
 			ptr_cdt->max_frames = 0;
 
-			// prisvoi na glb vars v klasa inf za kyde e goal-a
+			// set information where the 'goal' type bonus is
 			if ( toy_type == DT_BEARGOAL )
 			{
 				ptr_cdt->max_frames = 1;
@@ -172,7 +170,6 @@ void CDeadtoys::Create( Uint16 pos_x, Uint16 pos_y, CONST_DEADTOYS toy_type )
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::Update()
 {
-	Uint32	  i;
 	Uint16    dx, dy;
 	Uint32	  cur_ticks = _game->Timer.Time();
 	CDeadtoy  *ptr_cdt;	
@@ -183,7 +180,8 @@ void CDeadtoys::Update()
 	static Uint32  tick_last_speedtoy = 0;
 	static Uint32  tick_last_landminetoy = 0;
 
-	// proveri dali ne e vreme da se syzdade nova igrachka
+	// check if it is time to create new bonus on the map
+
 	if ( tick_last_goaltoy < cur_ticks && goal_state == DTG_ONTHEROAD )
 	{
 		tick_last_goaltoy = cur_ticks + dt_timespawn[DT_BEARGOAL];
@@ -215,11 +213,10 @@ void CDeadtoys::Update()
 		Create( dx, dy, DT_BEARLANDMINE );
 	}
 
-	
-	// point v nachaloto na array-a
 	ptr_cdt = CDt;
+
     // loop & updata all
-	for( i = 0; i < DT_MAX_CHILDS; i++ )
+	for( int i = 0; i < DT_MAX_CHILDS; i++ )
 	{
 		if ( ptr_cdt->alive )
 		{
@@ -246,49 +243,48 @@ void CDeadtoys::Update()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetToyRect()
-// Desc: kvadrat za stylknovenie
+// Desc: Collisions rectangle
 ///////////////////////////////////////////////////////////////////////
 void CDeadtoys::GetToyRect( Uint32 toy_index, SDL_Rect *rect )
 {
-
 	int frame = (int)CDt[toy_index].frame;
 
 	rect->x = (Uint16)CDt[toy_index].x;
 	rect->y = (Uint16)CDt[toy_index].y; 
 	rect->w = rect->x + sprite[CDt[toy_index].type][frame]->w;
 	rect->h = rect->y + sprite[CDt[toy_index].type][frame]->h;
-	
 }
 
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetSafePosition()
-// Desc: vzemi bezopasna poziciq
+// Desc: Get safe-enough distance (away from vehicles) to spawn
 ///////////////////////////////////////////////////////////////////////
-void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range )
+void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint32 range )
 {
-	Uint16  dx, dy, dist, loopcount = 0;
-	bool    cantspawn = true;
+	int loopcount = 0;
+	bool cantspawn = true;
 	
 	do
 	{
 		cantspawn = false;
-		dx = intGetRnd( _game->rScreen.x, _game->rScreen.w - 20);
-		dy = intGetRnd( _game->rScreen.y, _game->rScreen.h - 20);
+		int dx = intGetRnd(_game->rScreen.x, _game->rScreen.w - 20);
+		int dy = intGetRnd(_game->rScreen.y, _game->rScreen.h - 20);
 
-		for ( Uint32 i = 0; i < _game->game_num_cars; i++ )
+		for (int i = 0; i < _game->game_num_cars; i++)
 		{
-			dist = GetDistanceNSR( dx, dy, _game->Auto[i].GetX(), _game->Auto[i].GetY() );
-			if ( dist < range )
+			Uint32 dist = GetDistanceNSR(dx, dy, _game->Auto[i].GetX(),
+					_game->Auto[i].GetY());
+			if (dist < range)
 			{
 				cantspawn = true;
 			}
 		}
 
-		
-	  if ( loopcount++ > 20 ) break;
-	  
-	} while( cantspawn );
+		if (loopcount++ > 50)
+			break;
+
+	} while (cantspawn);
 
 	// return coords
 	*x = dx;
@@ -305,7 +301,7 @@ void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range )
 CLandMines::CLandMines()
 : _game(NULL)
 {
-  memset( sprite, NLPTR_SURF, sizeof(SDL_Surface) * LANDMINE_FRAMES );
+	memset(sprite, NLPTR_SURF, sizeof(SDL_Surface) * LANDMINE_FRAMES);
 }
 
 
@@ -325,14 +321,12 @@ CLandMines::~CLandMines()
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Release()
 {
-
 	AppendToLog("Closing CLandMines() class...");
 
 	for ( Uint32 i = 0; i < LANDMINE_FRAMES; i++ )
 	{
 		RELEASE_SURF( sprite[i] );
 	}
-
 }
 
 
@@ -343,7 +337,7 @@ void CLandMines::Release()
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Reset()
 {
-	memset( child, 0, sizeof(CLandMine) * LANDMINE_CHILDS );
+	memset(child, 0, sizeof(CLandMine) * LANDMINE_CHILDS);
 }
 
 
@@ -359,7 +353,7 @@ int CLandMines::Initialize( CGame *game )
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	for ( Uint32 i = 0; i < LANDMINE_FRAMES; i++ )
+	for ( int i = 0; i < LANDMINE_FRAMES; i++ )
 	{
 		sprintf( dirname, "gfx/landmine/mine%d.bmp", i );
 		if ( ( sprite[i] = _game->Sdl.LoadBitmap( dirname, MAGENTA )) == NULL ) return 0; 
@@ -377,9 +371,8 @@ int CLandMines::Initialize( CGame *game )
 void CLandMines::Create( Uint16 x, Uint16 y, Uint32 carIndex )
 {
 
-	Uint32	  i = 0;
+	int i = 0;
 	CLandMine *ptr_lm = child;
-
 	
 	while ( i < LANDMINE_CHILDS )
 	{
@@ -408,10 +401,9 @@ void CLandMines::Create( Uint16 x, Uint16 y, Uint32 carIndex )
 ///////////////////////////////////////////////////////////////////////
 void CLandMines::Update()
 {
-	
 	CLandMine *ptr_lm = child;
 
-	for( Uint32 i = 0; i < LANDMINE_CHILDS; i++ )
+	for( int i = 0; i < LANDMINE_CHILDS; i++ )
 	{
 
 		if ( ptr_lm->alive )

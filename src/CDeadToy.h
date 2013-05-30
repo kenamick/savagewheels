@@ -37,7 +37,7 @@ class CLandMines;
 
 #define DT_MAX_DEADTOYS       5
 #define DT_MAX_CHILDS	      15		
-#define DT_TOYSPAWNRANGE      400 //20pixels
+#define DT_TOYSPAWNRANGE      900 //30pixels
 #define LANDMINE_FRAMES       2
 #define LANDMINE_CHILDS       24
 #define LANDMINE_TIMETOSTAY   12000
@@ -108,7 +108,7 @@ public:
 	void Reset();
 	void Create( Uint16 x, Uint16 y, CONST_DEADTOYS toy_type );
 	void Update();
-	void GetSafePosition( Uint16 *x, Uint16 *y, Uint16 range );
+	void GetSafePosition( Uint16 *x, Uint16 *y, Uint32 range );
 
 	void   KillToy( Uint32 toy_index ) { CDt[toy_index].alive = false; };
 	void   GetToyRect( Uint32 toy_index, SDL_Rect *rect );
