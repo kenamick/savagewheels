@@ -243,27 +243,28 @@ public:
 	bool Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex );
 	void Release();
 	void Create();
-	void GetFrameRect( SDL_Rect *rect );
 	void DoDamage( int damageAmount, Uint32 attackerIndex );
 	void Update();
 	void AddFrags( int fragnum ) { frags += fragnum; }; 
 
 	SDL_Surface*	GetCurrentFrame();
 	Uint32*			GetCurrentFrameMask();
-	SDL_Surface*	GetDriverNameSurface() { return driver_name; }; 
-	Uint32  GetX() { return center_x; };
-	Uint32  GetY() { return center_y; };
+	void 			GetFrameRect( SDL_Rect *rect );
+	SDL_Surface*	GetDriverNameSurface() { return driver_name; };
+	float			GetDirectionAngle();
+	void			SetDirectionAngle(float rad);
 
-	// ...
-  	//Uint16  GetXT() { return (Uint16)x + g_dirx[(int)display_frame]; };
-	//Uint16  GetYT() { return (Uint16)y + g_diry[(int)display_frame]; };  
+	Uint32  GetX() { return center_x; };
+	void	SetX(float newX) { x = newX; };
+	Uint32  GetY() { return center_y; };
+	void	SetY(float newY) { y = newY; };
 
 	bool	GetVisible() { return visible; };
 	//Uint32	GetIndex() { return myIndex; };
 	Uint16	GetAnger() { return anger; }; // {!}
 	bool	GetPossessTheGoal() { return has_the_goal; };
 	int		GetFrags() { return frags; };
-	float   GetMotionFrame() { return motion_frame; };
+	float   GetMotionFrame();
 	float   GetMotionFrameMirror();
 	int	    GetCompareVal() { return lbs; }; //abs(vel); };
 	float   GetVelocity() { return vel; };

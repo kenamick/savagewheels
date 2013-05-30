@@ -486,6 +486,7 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 void CVehicle::DoMotion()
 {
 	// Init defaults
+	float tmp_df 		= display_frame;
 	float tmp_mf		= motion_frame;
 	float tmp_x			= x;
 	float tmp_y			= y;
@@ -546,10 +547,9 @@ void CVehicle::DoMotion()
 		if ( display_frame > MAX_ROTATION_FRAMES - 1 )
 			display_frame = 0;
 
-		if ( control == VC_AI ) // ai_case
-		  if ( display_frame > ai_final_frame )
-			  display_frame = ai_final_frame;
-
+		// AI case
+		if ( control == VC_AI && display_frame > ai_final_frame )
+			display_frame = ai_final_frame;
 	}
 	else if ( vrot == VR_RIGHT && vel != 0 )
 	{
@@ -558,10 +558,9 @@ void CVehicle::DoMotion()
 		if ( display_frame < 0 )
 			display_frame = MAX_ROTATION_FRAMES - 1;
 
-		if ( control == VC_AI ) // ai_case
-		  if ( display_frame < ai_final_frame )
-			  display_frame = ai_final_frame;
-
+		// AI case
+		if ( control == VC_AI && display_frame < ai_final_frame )
+			display_frame = ai_final_frame;
 	}
 
 	vrot = VR_NONE;
@@ -589,7 +588,8 @@ void CVehicle::DoMotion()
 	}
 	else
 	{
-		// winagi skorostta da kloni kym 0 (toest kolata kym spirane)
+		// (Newton's First law)
+		// Speed always closes 0 due to friction defined by 'dec_acc'
 		if ( vel > 0.0f ) 
 		{
 			vel -= (float)dec_acc * _game->getMpf();
@@ -605,21 +605,7 @@ void CVehicle::DoMotion()
 		}
 	}
 
-	// impact speed friction
-//	if ( hit_vel > 0.0f )
-//	{
-//		hit_vel -= _game->getMpf() * (float)dec_acc;
-//		if ( hit_vel < 0.0f )
-//			hit_vel = 0.0f;
-//	}
-//	else if ( hit_vel < 0.0f )
-//	{
-//		hit_vel += _game->getMpf() * (float)dec_acc;
-//		if ( hit_vel > 0.0f )
-//			hit_vel = 0.0f;
-//	}
-
-	// rotate vehicle tires (if moving)
+	// Rotate vehicle tires (if moving)
 	if (tire_frames > 1 && abs_vel > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
@@ -627,24 +613,41 @@ void CVehicle::DoMotion()
 			tire_frame = 0;
 	}
 
-	float mpf_vel = _game->getMpf() * vel;
+//	float mpf_vel = _game->getMpf() * vel;
 //	float mpf_hitvel = _game->getMpf() * hit_vel;
 
-	// translate position
+	float vel_x, vel_y;
+	float dir_angle;
+
+	// position translation
 	if ( control == VC_AI )
 	{
 //		x += (cosf(ai_cur_angle) * mpf_vel + x_acc * mpf_hitvel );
 //		y -= (sinf(ai_cur_angle) * mpf_vel + y_acc * mpf_hitvel );
-		x += (cosf(ai_cur_angle) * mpf_vel);
-		y -= (sinf(ai_cur_angle) * mpf_vel);
+		vel_x = cosf(ai_cur_angle) * vel;
+		vel_y = sinf(ai_cur_angle) * vel;
+
+		dir_angle = ai_cur_angle;
 	}
 	else
 	{
 //		x += (g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel );
 //		y -= (g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel );
-		x += (g_dirx[(int)motion_frame] * mpf_vel);
-		y -= (g_diry[(int)motion_frame] * mpf_vel);
+//		vel_x = g_dirx[(int)motion_frame] * vel;
+//		vel_y = g_diry[(int)motion_frame] * vel;
+
+//		float rrd = (motion_frame ) * 10.0f * 0.0174532925f;
+		float rrd = Deg2Rad(motion_frame * 10.0f);
+
+		vel_x = cosf(rrd) * vel;
+		vel_y = sinf(rrd) * vel;
+
+		dir_angle = rrd; //acosf(g_dirx[(int)motion_frame]);
+//		DBG("my_rad = " << rrd << " dir_angle = " << dir_angle);
 	}
+
+	x += vel_x * _game->getMpf();
+	y -= vel_y * _game->getMpf();
 
 
 	/*
@@ -653,34 +656,94 @@ void CVehicle::DoMotion()
 
 	SDL_Rect rPrey;
 	SDL_Rect rMine;
-    GetFrameRect( &rMine );
-	
+
+	GetFrameRect( &rMine );
     CVehicle *ptr_veh = _game->Auto;
 
-	for ( int j = 0; j < _game->game_num_cars; j++ )
+	for ( int j = 0; j < _game->game_num_cars; j++, ptr_veh++ )
 	{
-		if ( j != myIndex )
-		{
-//			DBG("me vel:" << this->vel);
-//			DBG("him vel:" << ptr_veh->GetVelocity());
-//			if ( abs(this->vel) < 1.5f && abs(ptr_veh->GetVelocity()) < 1.5f ) //remove this - 12.nov
-//				continue;
+		if (j == myIndex)
+			continue;
 
-			// setup rectangles
-			ptr_veh->GetFrameRect( &rPrey );
-	
-			//if ( _game->Sdl.Collide( NULL, &rMine, &rPrey ) )
-			if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
+		ptr_veh->GetFrameRect( &rPrey );
+
+		if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
+		{
+			DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
+
+			// Get angle of collision
+			float distX = GetX() - ptr_veh->GetX();
+			float distY = GetY() - ptr_veh->GetY();
+			float collision_angle = atan2f(distY, distX);
+
+			// Get velocity vectors in (new) rotated coordinate system
+			float my_velx = vel * cosf(dir_angle - collision_angle);
+			float my_vely = vel * sinf(dir_angle - collision_angle);
+			float enemy_velx = ptr_veh->GetVelocity()
+					* cosf(ptr_veh->GetDirectionAngle()- collision_angle);
+			float enemy_vely = ptr_veh->GetVelocity()
+					* sinf(ptr_veh->GetDirectionAngle()- collision_angle);
+
+			DBG("my_angle = " << dir_angle << "my_velx = " << my_velx << " my_vely = " << my_vely);
+			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << "enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
+			DBG("col_angle = " << collision_angle);
+
+			// Get final velocity vectors after collision
+			float my_mass = GetCompareVal();
+			float enemy_mass = ptr_veh->GetCompareVal();
+
+			float my_fx = (my_velx * (my_mass - enemy_mass) + 2 * enemy_mass * enemy_velx)
+					/ (my_mass + enemy_mass);
+
+			float enemy_fx = (enemy_velx * (enemy_mass - my_mass) + 2 * my_mass * my_velx)
+					/ (my_mass + enemy_mass);
+
+			float my_fy = my_vely;
+			float enemy_fy = enemy_vely;
+
+			// convert vectors to normal Cartesian coordinate system
+
+			float new_my_vel = sqrtf(my_fx * my_fx + my_fy * my_fy);
+			float new_enemy_vel = sqrtf(enemy_fx * enemy_fx + enemy_fy * enemy_fy);
+
+			float new_my_dir = atan2f(my_fy, my_fx) + collision_angle;
+			float new_enemy_dir = atan2f(enemy_fy, enemy_fx) + collision_angle;
+
+			// Final
+
+			x = tmp_x;
+			y = tmp_y;
+//			display_frame = tmp_df;
+//			motion_frame = tmp_mf;
+//			motion_frame = new_my_dir *  57.2957795f; //rad2deg
+			SetDirectionAngle(new_my_dir);
+			SetVelocity(new_my_vel);
+
+			ptr_veh->SetDirectionAngle(new_my_dir);
+			ptr_veh->SetVelocity(new_enemy_vel);
+
+			if ( control == VC_AI )
 			{
-				DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
+				DBG( "[COLLIDE] Step #8" );
+				waypoint.do_reverse = true;
+				waypoint.do_reverseTime = _game->Timer.Time() + 500;
+//					waypoint.do_precalculate = true;
+			}
+
+			break;
+
+			// ----------------------------------
+
+
+			DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
 //				DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel << " vmove=" << vmove);
 
-				bool bHit = true;  // we have impact
-				bool no_damage = false;
-				x = tmp_x;
-				y = tmp_y;
-				motion_frame = tmp_mf;
-				display_frame = tmp_mf;
+			bool bHit = true;  // we have impact
+			bool no_damage = false;
+			x = tmp_x;
+			y = tmp_y;
+			motion_frame = tmp_mf;
+			display_frame = tmp_mf;
 
 //				if ( !fIsZero(hit_vel) )
 //				{
@@ -689,7 +752,7 @@ void CVehicle::DoMotion()
 //				}
 //				else
 //				{
-					DBG( "[COLLIDE] Step #3" );
+				DBG( "[COLLIDE] Step #3" );
 
 //					// is velocity 0 ?
 //					if ( !fIsZero(vel) )
@@ -714,55 +777,54 @@ void CVehicle::DoMotion()
 //				}
 
 
-				// TODO: fix this because it disbalances the game!
-				if ( abs_vel <= MIN_DAMAGE_VELOCITY ) 
-				{
-					no_damage = true;
-					DBG( "[COLLIDE] Step #6" );
-				}
+			// TODO: fix this because it disbalances the game!
+			if ( abs_vel <= MIN_DAMAGE_VELOCITY )
+			{
+				no_damage = true;
+				DBG( "[COLLIDE] Step #6" );
+			}
 
-				// enemy vehicle damage calculations
-				if ( !no_damage )
-				{
-					float perc = ( (float)abs_vel / (float)max_vel ) * 100.0f;
-					Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
+			// enemy vehicle damage calculations
+			if ( !no_damage )
+			{
+				float perc = ( (float)abs_vel / (float)max_vel ) * 100.0f;
+				Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
 
-					anger -= tmp_anger;
-					anger = anger < 0 ? 0 : anger;
-					anger = anger > 110 ? 110 : anger;
+				anger -= tmp_anger;
+				anger = anger < 0 ? 0 : anger;
+				anger = anger > 110 ? 110 : anger;
+
+				float speed_damage = (float)damage + 0.10f * (float)abs_vel;
+				float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
+				DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
+				int fulldmg = speed_damage - armour_absorb + tmp_anger;
+				fulldmg = fulldmg < 0 ? 0 : fulldmg;
+
+				DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " abs_vel=" << abs_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
+
+				ptr_veh->DoDamage( fulldmg, myIndex );
+
+				// PLAY CRASH SOUND
+				if ( intGetRnd( 0, 50 ) < 25 )
+					_game->Snd.Play( SND_CRASHLIGHT1, (int)x );
+				else
+					_game->Snd.Play( SND_CRASHLIGHT2, (int)x );
 					
-					float speed_damage = (float)damage + 0.10f * (float)abs_vel;
-					float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
-					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
-					int fulldmg = speed_damage - armour_absorb + tmp_anger;
-					fulldmg = fulldmg < 0 ? 0 : fulldmg;
-					
-					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " abs_vel=" << abs_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
+			}
 
-					ptr_veh->DoDamage( fulldmg, myIndex );
-				
-					// PLAY CRASH SOUND
-					if ( intGetRnd( 0, 50 ) < 25 )
-						_game->Snd.Play( SND_CRASHLIGHT1, (int)x ); 
-					else
-						_game->Snd.Play( SND_CRASHLIGHT2, (int)x ); 
-						
-				}
-
-				/*
-				 * FIXME:
-				 * This is a problem right here! Both vehicles will collide thus none
-				 * will move. This is the main reason for the nasty physics bug.
-				 */
+			/*
+			 * FIXME:
+			 * This is a problem right here! Both vehicles will collide thus none
+			 * will move. This is the main reason for the nasty physics bug.
+			 */
 //				this->set_stop = true; //remove this 12.nov
 //				vel = vel * -0.6f;
-				vel = 0.0f;
 
-				if ( control == VC_AI )
-				{
-					DBG( "[COLLIDE] Step #8" );
-					waypoint.do_reverse = true;
-					waypoint.do_reverseTime = _game->Timer.Time() + 500;
+			if ( control == VC_AI )
+			{
+				DBG( "[COLLIDE] Step #8" );
+				waypoint.do_reverse = true;
+				waypoint.do_reverseTime = _game->Timer.Time() + 500;
 
 //					vel = vel * 0.5f;
 
@@ -773,17 +835,14 @@ void CVehicle::DoMotion()
 //						waypoint.do_reverse = true;
 //						DBG( "[COLLIDE] Step #9" );
 //					}
-				}
-				else
-				{
-//					vel = vel * -0.6f;
-				}
-
-				DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
 			}
-		} 
+			else
+			{
+//					vel = vel * -0.6f;
+			}
 
-		ptr_veh++;
+			DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
+		}
 	}
 
 	// should we leave trails
@@ -1071,6 +1130,14 @@ void CVehicle::GetFrameRect( SDL_Rect *rect )
 	rect->h = rect->y + currentSurf->h;
 }
 
+///////////////////////////////////////////////////////////////////////
+// Name: GetMotionFrame()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+float CVehicle::GetMotionFrame()
+{
+	return motion_frame;
+};
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetMotionFrameMirror()
@@ -1089,6 +1156,38 @@ float CVehicle::GetMotionFrameMirror()
 	return tmp_frame;
 }
 
+
+///////////////////////////////////////////////////////////////////////
+// Name: GetDirectionAngle()
+// Desc: Get angle of movement relative to local coord. system
+///////////////////////////////////////////////////////////////////////
+float CVehicle::GetDirectionAngle()
+{
+	if ( control == VC_AI )
+	{
+		return ai_cur_angle;
+	}
+
+	return (motion_frame ) * 10.0f * 0.0174532925f;
+//	return acosf(g_dirx[(int)motion_frame]);
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: SetDirectionAngle()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+void CVehicle::SetDirectionAngle(float rad)
+{
+	if ( control == VC_AI )
+	{
+		ai_cur_angle = rad;
+	}
+	else
+	{
+		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
+		DBG(" new motion_frame = " << motion_frame);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Name: DoDamage()
@@ -1152,12 +1251,6 @@ void CVehicle::Update()
  Uint32		height		= 0U;
  SDL_Rect	rect;
 
- SDL_Surface	*surf		= NULL;
- Uint32			*cur_mask	= NULL;
- 
- cur_mask = GetCurrentFrameMask();
- surf = sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
-
  // respawn vehicle (if not visible, e.g., destroyed)
  if ( !visible )
  {
@@ -1165,21 +1258,24 @@ void CVehicle::Update()
 	//return;
  }
 
+ Uint32 *cur_mask = GetCurrentFrameMask();
+ SDL_Surface *surf = GetCurrentFrame();
+
  // preizchisli center koordinati na avtomobila i kvadrat na kadyra
  width = surf->w;
  height = surf->h;
  center_x = x + (width >> 1);
  center_y = y + (height >> 1); 
 
- // pridviji MPS-to $p.petrov - comented
  DoMotion();
  //if ( control != VC_AI ) DoMotion();
 
- width		= surf->w;
- height		= surf->h;
- center_x	= x + (width >> 1);
- center_y	= y + (height >> 1); 
- rect.x		= rect.y = 0;
+// width		= surf->w;
+// height		= surf->h;
+// center_x	= x + (width >> 1);
+// center_y	= y + (height >> 1);
+ rect.x		= 0;
+ rect.y 	= 0;
  rect.w		= width; 
  rect.h		= height;
  
@@ -1194,10 +1290,11 @@ void CVehicle::Update()
  {
 	 speed_bonus = 0;
  }
- // expire goal
+
+ // goal time expired?
  if ( goal_time < _game->Timer.Time() && has_the_goal )
  {
-	 // dai 3 fraga i varni goal-a otnovo na pytq
+	 // give 3 frags and set goal back
 	 has_the_goal = false;
 	 _game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
 	 frags += 1;
@@ -1208,7 +1305,6 @@ void CVehicle::Update()
  _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
  _game->Sdl.AddToBlit( x, y, surf );
  
-// DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
  
  // blit status
  sprintf( buf, "%d", frags );
@@ -1350,7 +1446,7 @@ void CVehicle::Update()
  }
 
  // proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
- if ( vel == 0 && ! self_destruct )
+ if ( fIsZero(vel) && !self_destruct )
  {
 	 if ( !ai_stuck )
 	 {
@@ -1382,7 +1478,6 @@ void CVehicle::Update()
 
  if ( self_destruction )
  {
-
 	 if ( destruct_time > _game->Timer.Time() )
 	 {
 		 //_game->Sdl.DrawNum( (int)x, (int)y, "1" );
@@ -1682,19 +1777,18 @@ void CVehicle::AI_ProcessWaypoint()
 	x_dist = (waypoint.x - x);
 	y_dist = (waypoint.y - y);
 		
-		
-	if ( y_dist > 0 ) 
+	if ( y_dist > 0.0f )
 	{
-		ai_dest_angle = (float)(atan( x_dist / y_dist ) - PI_2);
+		ai_dest_angle = atanf( x_dist / y_dist ) - PI_2;
 	}
-	else if ( y_dist < 0 )
+	else if ( y_dist < 0.0f )
 	{
 		//st_angle = atan2( x_dist, y_dist );// + PI_2;
-		ai_dest_angle = (float)(atan( x_dist / y_dist ) + PI_2);
+		ai_dest_angle = atanf( x_dist / y_dist ) + PI_2;
 	}
 	else
 	{
-		ai_dest_angle = (float)(atan( x_dist /y_dist ) - PI_2);
+		ai_dest_angle = atanf( x_dist /y_dist ) - PI_2;
 	}
 
 	// check if display frame must be recalculated
