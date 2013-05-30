@@ -264,12 +264,14 @@ void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint32 range )
 {
 	int loopcount = 0;
 	bool cantspawn = true;
+	Uint16 dx = 0;
+	Uint16 dy = 0;
 	
 	do
 	{
 		cantspawn = false;
-		int dx = intGetRnd(_game->rScreen.x, _game->rScreen.w - 20);
-		int dy = intGetRnd(_game->rScreen.y, _game->rScreen.h - 20);
+		dx = intGetRnd(_game->rScreen.x, _game->rScreen.w - 20);
+		dy = intGetRnd(_game->rScreen.y, _game->rScreen.h - 20);
 
 		for (int i = 0; i < _game->game_num_cars; i++)
 		{
