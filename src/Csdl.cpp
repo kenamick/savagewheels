@@ -395,19 +395,19 @@ bool CSdl::GetJoystickButtonPressed( int idx )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Collide()
-// Desc: proverqwa dali 2 kvadrata se zastpywat
+// Desc: Checks if two rectangles collide. Result is written back
+//       into r_result (if valid object ptr is passed).
 ///////////////////////////////////////////////////////////////////////
-int CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
+bool CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 {
 
 	if ( 
-		 ((r1->x > r2->x && r1->x < r2->w) || (r1->w > r2->x && r1->w < r2->w)) &&
-		 ((r1->y > r2->y && r1->y < r2->h) || (r1->h > r2->y && r1->h < r2->h)) || 
-	     ((r2->x > r1->x && r2->x < r1->w) || (r2->w > r1->x && r2->w < r1->w)) &&
-		 ((r2->y > r1->y && r2->y < r1->h) || (r2->h > r1->y && r2->h < r1->h))
+		 (((r1->x > r2->x && r1->x < r2->w) || (r1->w > r2->x && r1->w < r2->w))
+				 && ((r1->y > r2->y && r1->y < r2->h) || (r1->h > r2->y && r1->h < r2->h)))
+		 || (((r2->x > r1->x && r2->x < r1->w) || (r2->w > r1->x && r2->w < r1->w))
+				 && ((r2->y > r1->y && r2->y < r1->h) || (r2->h > r1->y && r2->h < r1->h)))
 		 )
 	{
-		
 			if ( r_result != NULL )
 			{
 				if ( r1->x < r2->x )
@@ -431,10 +431,10 @@ int CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 					r_result->h = r1->h;
 			}
 
-			return 1;
+			return true;
 	}
 
-	return 0;
+	return false;
 }
 
 
@@ -700,26 +700,24 @@ void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 {
-	Uint32 	pos = 0;
-	Uint32 	w = surf->w;
-	Uint32 	h = surf->h;
-	Uint16	*pixel = NULL;
+	Uint32 	width = surf->w;
+	Uint32 	height = surf->h;
 	
-	//DBG("Making bool mask (16bit) with W: " << w << " H: " << h );
-	mask = new Uint32[w*h];
+	mask = new Uint32[width * height];
 
 	_Slock( surf );
-	pixel = (Uint16 *)((Uint8 *)surf->pixels );
 	
-	for ( Uint32 j = 0; j < h; j++ )
+	Uint16 *pixel = (Uint16 *)((Uint8 *)surf->pixels );
+
+	for ( Uint32 j = 0; j < height; j++ )
 	{
-		for ( Uint32 i = 0; i < w; i++, pixel++ )
+		for ( Uint32 i = 0; i < width; i++, pixel++ )
 		{
-			pos = w * j + i; 
+			Uint32 pos = width * j + i;
 			mask[pos] = ( *pixel != magenta16 ) ? 1 : 0;
 		}
 
-		// premseti pad-a
+		// y-padding offset
 		pixel = (Uint16 *)((Uint8 *)surf->pixels + j * surf->pitch );
 	}
 
@@ -732,27 +730,25 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 {
-	Uint32	*pixel = NULL;
-	Uint32  pos = 0;
-	Uint32 	w = surf->w;
-	Uint32 	h = surf->h;
+	Uint32 	width = surf->w;
+	Uint32 	height = surf->h;
 	
-	//DBG("Making bool mask (32bit) with W: " << w << " H: " << h );
-	mask = (Uint32 *) new Uint32[w*h];
+	mask = (Uint32 *) new Uint32[width * height];
 	
 	_Slock( surf );
-	pixel = (Uint32 *)surf->pixels;
 
-	for ( Uint32 j = 0; j < h; j++ )
+	Uint32 *pixel = (Uint32 *)surf->pixels;
+
+	for ( Uint32 j = 0; j < height; j++ )
 	{
-		for ( Uint32 i = 0; i < w; i++, pixel++ )
+		for ( Uint32 i = 0; i < width; i++, pixel++ )
 		{
-			pos = w * j + i; 
+			Uint32 pos = width * j + i;
 			mask[pos] = ( *pixel != MAGENTA ) ? 1 : 0;
 		}
 
-		// premseti pad-a
-		pixel = (Uint32 *)surf->pixels + j * surf->pitch/4;
+		// y-padding offset
+		pixel = (Uint32 *)surf->pixels + j * surf->pitch / 4;
 	}
 
 	_Sunlock( surf );
@@ -761,38 +757,37 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Collide()
-// Desc: proverqwa dali pixelite na 2 povyrhnosti se zastypwat
-// PIXELPERFECT - collision detection using int Masks
+// Desc: pixel-perfect collision detection using integer masks
 ///////////////////////////////////////////////////////////////////////
-//int CSdl::Collide( SDL_Rect *r1, SDL_Surface *surf1, SDL_Rect *r2, SDL_Surface *surf2 )
-int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
+bool CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 {
+	bool result = false;
 
-	SDL_Rect 	rt1 = { 0, 0, 0, 0 },
-				rt2 = { 0, 0, 0, 0 },
-				rret = { 0, 0, 0, 0 };
-	SDL_Rect 	rSurf1 = { 0, 0, 0, 0 },
-				rSurf2 = { 0, 0, 0, 0 };
+	SDL_Rect rt1 = { 0, 0, 0, 0 };
+	SDL_Rect rt2 = { 0, 0, 0, 0 };
+	SDL_Rect rret = { 0, 0, 0, 0 };
+	SDL_Rect rSurf1 = { 0, 0, 0, 0 };
+	SDL_Rect rSurf2 = { 0, 0, 0, 0 };
 
 	Sint32 col_width, col_height;
 	Sint32 x_off1, y_off1;
 	Sint32 x_off2, y_off2;
-	bool bcollision = false;
-	Uint32 *pm1 = NULL, *pm2 = NULL;
-	Sint32 w1 = 0, w2 = 0; //, h1, h2;
+	Sint32 width1 = 0, width2 = 0;
 
 	SetRect( &rt1, r1->x, r1->y, r1->w, r1->h );
 	SetRect( &rt2, r2->x, r2->y, r2->w, r2->h );
     
-	w1 = r1->w - r1->x;
-	w2 = r2->w - r2->x;
+	width1 = r1->w - r1->x;
+	width2 = r2->w - r2->x;
 
-	if ( w1 < 0 || w2 < 0 || 
+#ifdef _DEBUG
+	if ( width1 < 0 || width2 < 0 || 
 		 r1->w > 1000 || r1->h > 1000 || 
 		 r2->w > 1000 || r2->h > 1000 )
 	{
-		DBG( "RECTANGLE OVERFLOW!" );
+		DBG( "RECTANGLE OVERFLOW! (surf may be corrupted)" );
 	}
+#endif
 
 	//h1 = r1->h - r1->y;
 	//h2 = r2->h - r2->y;
@@ -804,37 +799,38 @@ int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 		rSurf1.y = rret.y - rt1.y;
 		rSurf1.w = rret.w - rt1.x;
 		rSurf1.h = rret.h - rt1.y;
-		x_off1 = ( rSurf1.y * w1 ) + rSurf1.x;
+		x_off1 = rSurf1.y * width1 + rSurf1.x;
 		
 		rSurf2.x = rret.x - rt2.x;
 		rSurf2.y = rret.y - rt2.y;
 		rSurf2.w = rret.w - rt2.x;
 		rSurf2.h = rret.h - rt2.y;
-		x_off2 = ( rSurf2.y * w2 ) + rSurf2.x;
+		x_off2 = rSurf2.y * width2 + rSurf2.x;
 
-		// dimensii na intersekciqta
-		col_width = (rret.w - rret.x);
-		col_height = (rret.h - rret.y);
+		// get intersection dimensions
+		col_width = rret.w - rret.x;
+		col_height = rret.h - rret.y;
 		
-		DBG("Collision rect => Rect-X: " << rret.x << " Rect-Y:" << rret.y << " W: " << col_width << " H:" << col_height );
+//		DBG("Collision rect => Rect-X: " << rret.x << " Rect-Y:" << rret.y << " W: " << col_width << " H:" << col_height );
 
 		for ( int j = 0; j < col_height; j++ )
 		{
-			// y - posiciq
-			y_off1 = j * w1 + x_off1;
-			y_off2 = j * w2 + x_off2;
-			pm1 = &mask1[ y_off1 ];
-			pm2 = &mask2[ y_off2 ];
+			// y - position
+			y_off1 = j * width1 + x_off1;
+			y_off2 = j * width2 + x_off2;
+			Uint32 *pm1 = &mask1[ y_off1 ];
+			Uint32 *pm2 = &mask2[ y_off2 ];
 
 			for ( int i = 0; i < col_width; i++, pm1++, pm2++ )
 			{
 				//DBG("Collision offsets => 1: " << y_off1 << " 2:" << y_off2 );
-				if ( *pm1 && *pm2 )
-					bcollision = true;
+				if ( *pm1 && *pm2 ) {
+					result = true;
+					break;
+				}
 			}
 
-			// zatvori cikyla
-			if ( bcollision ) 
+			if ( result )
 				break;
 		}
 
@@ -870,10 +866,8 @@ int CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 		_Sunlock( surf2 );*/
 	}
 
-	return bcollision;
+	return result;
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////
