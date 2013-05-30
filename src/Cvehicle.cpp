@@ -216,6 +216,8 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 
 	released = false;
 
+	sprintf(carname, "%s", swv->vehiclename);
+
 	return true;
 }
 
@@ -397,8 +399,8 @@ void CVehicle::Create()
 		display_frame = 0;
 	}
 
-	center_x = (Uint32)x + (sprite[(int)motion_frame]->w / 2);
-	center_y = (Uint32)y + (sprite[(int)motion_frame]->h / 2);
+//	center_x = (Uint32)x + (sprite[(int)motion_frame]->w / 2);
+//	center_y = (Uint32)y + (sprite[(int)motion_frame]->h / 2);
 
 	// check for memory access violation
 	ASSERT(sprite_norm[(int)motion_frame]->w < 500);
@@ -574,7 +576,6 @@ void CVehicle::DoMotion()
 	 * Acceleration
 	 */
 
-	float facc = (float)acc;
 	float fmaxvel_p = tmp_maxvel + speed_bonus;
 	float fmaxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
 
@@ -647,7 +648,7 @@ void CVehicle::DoMotion()
 		vel_y = sinf(rrd) * vel;
 
 		dir_angle = rrd; //acosf(g_dirx[(int)motion_frame]);
-//		DBG("my_rad = " << rrd << " dir_angle = " << dir_angle);
+		DBG(carname << " speed is " << vel << " motion_frame=" << motion_frame << " my_rad = " << rrd);
 	}
 
 	x += vel_x * _game->getMpf();
@@ -673,24 +674,27 @@ void CVehicle::DoMotion()
 
 		if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
 		{
-			DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
+			DBG( "[COLLIDE] ----- New Collision [" << carname << "] [" << j << "] -----" );
 
 			// Get angle of collision
 			float distX = GetX() - ptr_veh->GetX();
 			float distY = GetY() - ptr_veh->GetY();
 			float collision_angle = atan2f(distY, distX);
 
+			DBG("col_angle = " << collision_angle);
+
+			float my_vel = vel;
+			float enemy_vel = ptr_veh->GetVelocity();
+
 			// Get velocity vectors in (new) rotated coordinate system
-			float my_velx = vel * cosf(dir_angle - collision_angle);
-			float my_vely = vel * sinf(dir_angle - collision_angle);
-			float enemy_velx = ptr_veh->GetVelocity()
-					* cosf(ptr_veh->GetDirectionAngle()- collision_angle);
-			float enemy_vely = ptr_veh->GetVelocity()
-					* sinf(ptr_veh->GetDirectionAngle()- collision_angle);
+			float my_velx = my_vel * cosf(dir_angle - collision_angle);
+			float my_vely = my_vel * sinf(dir_angle - collision_angle);
+			float ea = ptr_veh->GetDirectionAngle();
+			float enemy_velx = enemy_vel * cosf(ptr_veh->GetDirectionAngle()- collision_angle);
+			float enemy_vely = enemy_vel * sinf(ptr_veh->GetDirectionAngle()- collision_angle);
 
 			DBG("my_angle = " << dir_angle << "my_velx = " << my_velx << " my_vely = " << my_vely);
 			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << "enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
-			DBG("col_angle = " << collision_angle);
 
 			// Get final velocity vectors after collision
 			float my_mass = GetCompareVal();
@@ -710,10 +714,19 @@ void CVehicle::DoMotion()
 			float new_my_vel = sqrtf(my_fx * my_fx + my_fy * my_fy);
 			float new_enemy_vel = sqrtf(enemy_fx * enemy_fx + enemy_fy * enemy_fy);
 
-			float new_my_dir = atan2f(my_fy, my_fx) + collision_angle;
-			float new_enemy_dir = atan2f(enemy_fy, enemy_fx) + collision_angle;
+			float aa = atan2f(my_fy, my_fx);
+			float bb = atan2f(enemy_fy, enemy_fx);
+			float new_my_dir = aa + collision_angle;
+			float new_enemy_dir = bb + collision_angle;
+
+//			new_my_dir = FixRad(new_my_dir);
+//			new_enemy_dir = FixRad(new_enemy_dir);
 
 			// Final
+
+			DBG("new_my_dir = " << new_my_dir << " aa= " << aa << "  my_vel = " << new_my_vel);
+			DBG("new_enemy_dir = " << new_enemy_dir << " bb=" << bb << "  enemy_vel = " << new_enemy_vel );
+			DBG("---------------------------------------------");
 
 			x = tmp_x;
 			y = tmp_y;
@@ -723,7 +736,7 @@ void CVehicle::DoMotion()
 			SetDirectionAngle(new_my_dir);
 			SetVelocity(new_my_vel);
 
-			ptr_veh->SetDirectionAngle(new_my_dir);
+			ptr_veh->SetDirectionAngle(new_enemy_dir);
 			ptr_veh->SetVelocity(new_enemy_vel);
 
 			if ( control == VC_AI )
@@ -1134,31 +1147,31 @@ void CVehicle::GetFrameRect( SDL_Rect *rect )
 	rect->h = rect->y + currentSurf->h;
 }
 
-///////////////////////////////////////////////////////////////////////
-// Name: GetMotionFrame()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-float CVehicle::GetMotionFrame()
-{
-	return motion_frame;
-};
-
-///////////////////////////////////////////////////////////////////////
-// Name: GetMotionFrameMirror()
-// Desc: Get an opposite (to the current) movement angle.
-///////////////////////////////////////////////////////////////////////
-float CVehicle::GetMotionFrameMirror()
-{
-	float tmp_frame = motion_frame;
-
-	tmp_frame += HALF_ROTATION_FRAMES;
-	if ( tmp_frame > MAX_ROTATION_FRAMES )
-		tmp_frame -= MAX_ROTATION_FRAMES;
-
-	//tmp_frame--;
-	
-	return tmp_frame;
-}
+/////////////////////////////////////////////////////////////////////////
+//// Name: GetMotionFrame()
+//// Desc:
+/////////////////////////////////////////////////////////////////////////
+//float CVehicle::GetMotionFrame()
+//{
+//	return motion_frame;
+//};
+//
+/////////////////////////////////////////////////////////////////////////
+//// Name: GetMotionFrameMirror()
+//// Desc: Get an opposite (to the current) movement angle.
+/////////////////////////////////////////////////////////////////////////
+//float CVehicle::GetMotionFrameMirror()
+//{
+//	float tmp_frame = motion_frame;
+//
+//	tmp_frame += HALF_ROTATION_FRAMES;
+//	if ( tmp_frame > MAX_ROTATION_FRAMES )
+//		tmp_frame -= MAX_ROTATION_FRAMES;
+//
+//	//tmp_frame--;
+//
+//	return tmp_frame;
+//}
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1172,7 +1185,7 @@ float CVehicle::GetDirectionAngle()
 		return ai_cur_angle;
 	}
 
-	return (motion_frame ) * 10.0f * 0.0174532925f;
+	return Deg2Rad(motion_frame * 10.0f); //(motion_frame ) * 10.0f * 0.0174532925f;
 //	return acosf(g_dirx[(int)motion_frame]);
 }
 
@@ -1191,6 +1204,26 @@ void CVehicle::SetDirectionAngle(float rad)
 		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
 		DBG(" new motion_frame = " << motion_frame);
 	}
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: GetX()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+float CVehicle::GetX()
+{
+	SDL_Surface *surf = GetCurrentFrame();
+	return x + surf->w * 0.5f;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: GetY()
+// Desc:
+///////////////////////////////////////////////////////////////////////
+float CVehicle::GetY()
+{
+	SDL_Surface *surf = GetCurrentFrame();
+	return y + surf->h * 0.5f;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1248,38 +1281,14 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
-	char buf[64];
-	float perc = 0.0f;
-	Uint32 width = 0U;
-	Uint32 height = 0U;
-	SDL_Rect rect;
-
 	// respawn vehicle (if not visible, e.g., destroyed)
 	if (!visible) {
 		Create();
 		//return;
 	}
 
-	Uint32 *cur_mask = GetCurrentFrameMask();
-	SDL_Surface *surf = GetCurrentFrame();
-
-	// recalculate vehicle center pos given current surface frame
-	width = surf->w;
-	height = surf->h;
-	center_x = x + (width >> 1);
-	center_y = y + (height >> 1);
-
 	DoMotion();
 //	if ( control != VC_AI ) DoMotion();
-
-// width		= surf->w;
-// height		= surf->h;
-// center_x	= x + (width >> 1);
-// center_y	= y + (height >> 1);
-	rect.x = 0;
-	rect.y = 0;
-	rect.w = width;
-	rect.h = height;
  
 	// expire 1 anger point
 	if (anger_time < _game->Timer.Time() && anger > 0)
@@ -1302,24 +1311,30 @@ void CVehicle::Update()
 		frags += 1;
 	}
 
+	Uint32 *cur_mask = GetCurrentFrameMask();
+	SDL_Surface *surf = GetCurrentFrame();
+	SDL_Rect rect = {0, 0, surf->w, surf->h};
+
 	// blit shadow and vehicle
-	//_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
-	_game->Sdl.BlitShadow(x + 1.0f, y + 4.0f, cur_mask, &rect);
+	_game->Sdl.BlitShadow(x + 1, y + 4, cur_mask, &rect);
 	_game->Sdl.AddToBlit(x, y, surf);
  
  
 	// blit status
+	char buf[8];
+
 	sprintf(buf, "%d", frags);
 	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
-	perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
+
+	float perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
 	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
 	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
 	_game->scales[1]->w = anger;
 	_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1]);
 
-
- switch (control)
- {
+	// update controls
+	switch (control)
+	{
 	case VC_PLAYER1:
 
 		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_LEFT)])
@@ -1464,8 +1479,8 @@ void CVehicle::Update()
 	{
 		if (ai_stucktime < _game->Timer.Time())
 		{
-			self_destruct = true;
-			ai_stuck = false;
+//			self_destruct = true;
+//			ai_stuck = false;
 		}
 	}
 

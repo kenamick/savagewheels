@@ -162,7 +162,7 @@ private:
 	int			 lbs;			// kolko teji 
 	int			 rot_speed;		// rotation speed
 	SDL_Rect     rCollide;		// kvadrat na zasichane
-	Uint32		 center_x, center_y;
+//	Uint32		 center_x, center_y;
 	//SDL_Rect	 rFrame;
 	float	     x,y;			// poziciq
 	float		 x_acc, y_acc;  // ugly na uskorenie pri udar
@@ -198,6 +198,7 @@ private:
 	SDL_Surface  **sprite_crash;
 	Uint32 	     **mask, **mask_norm, **mask_crash;
 	SDL_Surface  *driver_name;
+	char		 carname[255];
 	//SDL_Surface	 ***sprite_norm; //*sprite_norm[36];  // car faces
 	//SDL_Surface  ***sprite_crash; //*sprite_crash[36]; // car crashed-faces
 	
@@ -254,19 +255,19 @@ public:
 	float			GetDirectionAngle();
 	void			SetDirectionAngle(float rad);
 
-	Uint32  GetX() { return center_x; };
-	void	SetX(float newX) { x = newX; };
-	Uint32  GetY() { return center_y; };
-	void	SetY(float newY) { y = newY; };
+	float GetX();
+	void SetX(float newX) { x = newX; };
+	float GetY();
+	void SetY(float newY) { y = newY; };
 
 	bool	GetVisible() { return visible; };
 	//Uint32	GetIndex() { return myIndex; };
 	Uint16	GetAnger() { return anger; }; // {!}
 	bool	GetPossessTheGoal() { return has_the_goal; };
 	int		GetFrags() { return frags; };
-	float   GetMotionFrame();
-	float   GetMotionFrameMirror();
-	int	    GetCompareVal() { return lbs; }; //abs(vel); };
+//	float   GetMotionFrame();
+//	float   GetMotionFrameMirror();
+	int	    GetCompareVal() { return lbs; };
 	float   GetVelocity() { return vel; };
 	void    SetVelocity( float setvel ) { vel = setvel; };
 	int		GetHitPoints() { return max_hitpoints; };
