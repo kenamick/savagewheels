@@ -275,8 +275,8 @@ void CDeadtoys::GetSafePosition( Uint16 *x, Uint16 *y, Uint32 range )
 
 		for (int i = 0; i < _game->game_num_cars; i++)
 		{
-			Uint32 dist = GetDistanceNSR(dx, dy, _game->Auto[i].GetX(),
-					_game->Auto[i].GetY());
+			Uint32 dist = GetDistanceNSR(dx, dy, _game->Auto[i].GetCX(),
+					_game->Auto[i].GetCY());
 			if (dist < range)
 			{
 				cantspawn = true;
