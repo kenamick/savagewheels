@@ -200,8 +200,8 @@ public:
 	void BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf );
 	void BlitShadow( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow( Sint32 x, Sint32 y, SDL_Surface *surf);
-	bool Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 );
-	bool Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 );
+	bool Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2);
+	bool Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2, SDL_Rect *rectResult = NULL );
 	void MakeBoolMask( SDL_Surface *surf, Uint32 *& );
 	//SDL_Surface* LoadBitmap( char *filename, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );
 	//SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint8 alpha_value = NO_ALPHA );

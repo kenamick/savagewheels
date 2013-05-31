@@ -400,7 +400,6 @@ bool CSdl::GetJoystickButtonPressed( int idx )
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::Collide( SDL_Rect *r_result, SDL_Rect *r1, SDL_Rect *r2 )
 {
-
 	if ( 
 		 (((r1->x > r2->x && r1->x < r2->w) || (r1->w > r2->x && r1->w < r2->w))
 				 && ((r1->y > r2->y && r1->y < r2->h) || (r1->h > r2->y && r1->h < r2->h)))
@@ -759,7 +758,9 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 // Name: Collide()
 // Desc: pixel-perfect collision detection using integer masks
 ///////////////////////////////////////////////////////////////////////
-bool CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
+bool CSdl::Collide( SDL_Rect *r1, Uint32 *mask1,
+		SDL_Rect *r2, Uint32 *mask2,
+		SDL_Rect *rectResult /* = NULL */ )
 {
 	bool result = false;
 
@@ -794,6 +795,13 @@ bool CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 
 	if ( Collide( &rret, &rt1, &rt2 ) )
 	{
+		if (rectResult != NULL) {
+			rectResult->x = rret.x;
+			rectResult->y = rret.y;
+			rectResult->w = rret.w;
+			rectResult->h = rret.h;
+		}
+
 		// get overlappings
 		rSurf1.x = rret.x - rt1.x;
 		rSurf1.y = rret.y - rt1.y;
@@ -823,7 +831,6 @@ bool CSdl::Collide( SDL_Rect *r1, Uint32 *mask1, SDL_Rect *r2, Uint32 *mask2 )
 
 			for ( int i = 0; i < col_width; i++, pm1++, pm2++ )
 			{
-				//DBG("Collision offsets => 1: " << y_off1 << " 2:" << y_off2 );
 				if ( *pm1 && *pm2 ) {
 					result = true;
 					break;
