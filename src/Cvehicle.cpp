@@ -700,50 +700,88 @@ void CVehicle::DoMotion()
 
 			DBG( "[COLLIDE] ----- New Collision [" << carname << "] [" << j << "] -----" );
 
-			// Get angle of collision
-			float distX = GetX() - ptr_veh->GetX();
-			float distY = GetY() - ptr_veh->GetY();
-			float collision_angle = atan2f(distY, distX);
+			// Get velocity magnitudes for both vehicles
+			float magnitude1 = sqrtf(vel * vel);
+			float magnitude2 = sqrtf(ptr_veh->GetVelocity() * ptr_veh->GetVelocity());
 
-			DBG("col_angle = " << collision_angle);
+			// Get Normal vector (We use the difference between the centers of the vehicles)
+			// We assume that the center of mass is in the center of each vehicle [image]
+			float normal_x = GetX() - ptr_veh->GetX();
+			float normal_y = GetY() - ptr_veh->GetY();
+//			float collision_angle = atan2f(distY, distX);
+//			DBG("col_angle = " << collision_angle);
 
-			float my_magnitude = sqrtf(vel * vel);
-			float enemy_magnitude = sqrtf(ptr_veh->GetVelocity() * ptr_veh->GetVelocity());
+			// Normal vector as Unit vector (unit normal)
+			float normal_len = sqrtf(normal_x * normal_x + normal_y * normal_y);
+			float unormal_x = normal_x / normal_len;
+			float unormal_y = normal_y / normal_len;
 
-			// Get velocity vectors in (new) rotated coordinate system
-			float my_ea = (dir_angle - collision_angle);
-			float my_velx = my_magnitude * cosf(my_ea);
-			float my_vely = my_magnitude * sinf(my_ea);
+			// Get Tangent vector (perpendicular to the normal)
+			// This is the vector along which the vehicles collide
+			float utangent_x = -unormal_y;
+			float utangent_y = unormal_x;
 
-			float ea = (ptr_veh->GetDirectionAngle() - collision_angle);
-			float enemy_velx = enemy_magnitude * cosf(ea);
-			float enemy_vely = enemy_magnitude * sinf(ea);
+			// Get velocity vectors (before collision)
+			float vel1_x = magnitude1 * cosf(dir_angle);
+			float vel1_y = magnitude1 * sinf(dir_angle);
+			float vel2_x = magnitude2 * cosf(ptr_veh->GetDirectionAngle());
+			float vel2_y = magnitude2 * sinf(ptr_veh->GetDirectionAngle());
+
+			// Projection of velocity onto unit normal and unit tangent vectors
+			float vel1_n = unormal_x * vel1_x + unormal_y * vel1_y;
+			float vel1_t = utangent_x * vel1_x + utangent_y * vel1_y;
+
+			float vel2_n = unormal_x * vel2_x + unormal_y * vel2_y;
+			float vel2_t = utangent_x * vel2_x + utangent_y * vel2_y;
+
+			// Find new tangential velocities (after collision)
+			// The tangential components of the vel do not change because there is no force
+			// between the vehicles in the tangential direction during collision.
+			float new_vel1_t = vel1_t;
+			float new_vel2_t = vel2_t;
+
+			// Find the new normal velocities. 1-D collision formulas.
+			float m1 = GetCompareVal() * 0.75f;
+			float m2 = ptr_veh->GetCompareVal() * 0.75f;
+			float mass_sum = (m1 + m2);
+
+			float new_vel1_n = (vel1_n * (m1 - m2) + 2 * m2 * vel2_n) / mass_sum;
+			float new_vel2_n = (vel2_n * (m2 - m1) + 2 * m1 * vel1_n) / mass_sum;
+
+			// Convert the scalar normal and tangential velocities into vectors
+			float new_vel1_nx = new_vel1_n * unormal_x;
+			float new_vel1_ny = new_vel1_n * unormal_y;
+			float new_vel1_tx = new_vel1_t * utangent_x;
+			float new_vel1_ty = new_vel1_t * utangent_y;
+
+			float new_vel2_nx = new_vel2_n * unormal_x;
+			float new_vel2_ny = new_vel2_n * unormal_y;
+			float new_vel2_tx = new_vel2_t * utangent_x;
+			float new_vel2_ty = new_vel2_t * utangent_y;
+
+			// Find the final velocity vectors by adding the normal and tangential components
+			float new_vel1_x = new_vel1_nx + new_vel1_tx;
+			float new_vel1_y = new_vel1_ny + new_vel1_ty;
+			float new_vel2_x = new_vel2_nx + new_vel2_tx;
+			float new_vel2_y = new_vel2_ny + new_vel2_ty;
+
+			DBG("new_vel1_x = " << new_vel1_x << " new_vel1_y = " << new_vel1_y);
+			DBG("new_vel2_x = " << new_vel2_x << " new_vel2_y = " << new_vel2_y);
 
 //			DBG("my_angle = " << dir_angle << " my_velx = " << my_velx << " my_vely = " << my_vely);
 //			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << " enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
 
-			// Get final velocity vectors after collision
-			float my_mass = GetCompareVal();
-			float enemy_mass = ptr_veh->GetCompareVal();
-			float mass_sum = (my_mass + enemy_mass);
-
-			float my_fx = (my_velx * (my_mass - enemy_mass) + 2 * enemy_mass * enemy_velx) / mass_sum;
-			float my_fy = my_vely;
-
-			float enemy_fx = (enemy_velx * (enemy_mass - my_mass) + 2 * my_mass * my_velx) / mass_sum;
-			float enemy_fy = enemy_vely;
-
 			// convert vectors to normal Cartesian coordinate system
 
-			float vel1_x = cosf(collision_angle) * my_fx + cosf(collision_angle + PI_2) * my_fy;
-			float vel1_y = sinf(collision_angle) * my_fx + sinf(collision_angle + PI_2) * my_fy;
-			float vel2_x = cosf(collision_angle) * enemy_fx + cosf(collision_angle + PI_2) * enemy_fy;
-			float vel2_y = sinf(collision_angle) * enemy_fx + sinf(collision_angle + PI_2) * enemy_fy;
+			float new_vel1 = sqrtf(new_vel1_x * new_vel1_x + new_vel1_y * new_vel1_y);
+			float new_vel2 = sqrtf(new_vel2_x * new_vel2_x + new_vel2_y * new_vel2_y);
+			float aa = atan2f(new_vel1_y, new_vel1_x);
+			float bb = atan2f(new_vel2_y, new_vel2_x);
+			float new_dir1 = acosf(new_vel1_x / new_vel1);
+			float new_dir2 = acosf(new_vel2_x / new_vel2);
 
-			float new_my_vel = sqrtf(vel1_x * vel1_x + vel1_y * vel1_y);
-			float new_enemy_vel = sqrtf(vel2_x * vel2_x + vel2_y * vel2_y);
-			float new_my_dir = atan2f(vel1_y, vel1_x);
-			float new_enemy_dir = atan2f(vel2_y, vel2_x);
+			// vx = v * cos(a)
+			// a = arccos(vx / v);
 
 //			float new_my_vel = sqrtf(my_fx * my_fx + my_fy * my_fy);
 //			float new_enemy_vel = sqrtf(enemy_fx * enemy_fx + enemy_fy * enemy_fy);
@@ -755,22 +793,16 @@ void CVehicle::DoMotion()
 //
 //			new_my_dir = FixRad(new_my_dir);
 //			new_enemy_dir = FixRad(new_enemy_dir);
-
-			FixAngle(&new_my_dir);
-			FixAngle(&new_enemy_dir);
+//
+//			new_dir1 += PI;
+//			new_dir2 += PI;
+//
+//			FixAngle(&new_dir1);
+//			FixAngle(&new_dir2);
 
 			// Final
-
-			float newvx1 = new_my_vel * cosf(new_my_dir);
-			float newvy1 = new_my_vel * sinf(new_my_dir);
-
-			float newvx2 = new_enemy_vel * cosf(new_enemy_dir);
-			float newvy2 = new_enemy_vel * sinf(new_enemy_dir);
-
-			DBG("new_my_dir = " << new_my_dir << " vel1_x= " << vel1_x << "  vel1_y = " << vel1_y);
-			DBG("new_enemy_dir = " << new_enemy_dir << " vel2_x=" << vel2_x << "  vel2_y = " << vel2_y );
-			DBG( " newvx1= " << newvx1 << "  newvy1 = " << newvy1);
-			DBG( " newvx2=" << newvx2 << "  newvy2 = " << newvy2 );
+			DBG("new_dir1 = " << new_dir1 << " aa = " << aa << " new_vel1= " << new_vel1);
+			DBG("new_dir2 = " << new_dir2 << " bb = " << bb << " new_vel2=" << new_vel2 );
 			DBG("---------------------------------------------");
 
 			x = tmp_x;
@@ -778,11 +810,11 @@ void CVehicle::DoMotion()
 //			display_frame = tmp_df;
 //			motion_frame = tmp_mf;
 //			motion_frame = new_my_dir *  57.2957795f; //rad2deg
-			SetDirectionAngle(new_my_dir);
-			SetVelocity(new_my_vel);
+			SetDirectionAngle(new_dir1);
+			SetVelocity(new_vel1);
 
-			ptr_veh->SetDirectionAngle(new_enemy_dir);
-			ptr_veh->SetVelocity(new_enemy_vel);
+			ptr_veh->SetDirectionAngle(new_dir2);
+			ptr_veh->SetVelocity(new_vel2);
 
 			if ( control == VC_AI )
 			{
