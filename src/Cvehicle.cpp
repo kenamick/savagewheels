@@ -683,7 +683,7 @@ void CVehicle::DoMotion()
 	SDL_Rect rMine;
 
 	GetFrameRect( &rMine );
-    CVehicle *ptr_veh = _game->Auto;
+	CVehicle *ptr_veh = _game->Auto;
 
 	for ( int j = 0; j < _game->game_num_cars; j++, ptr_veh++ )
 	{
@@ -710,11 +710,11 @@ void CVehicle::DoMotion()
 			float enemy_vel = ptr_veh->GetVelocity();
 
 			// Get velocity vectors in (new) rotated coordinate system
-			float my_ea = (dir_angle - collision_angle);
+			float my_ea = (dir_angle + collision_angle);
 			float my_velx = my_vel * cosf(my_ea);
 			float my_vely = my_vel * sinf(my_ea);
 
-			float ea = (ptr_veh->GetDirectionAngle()- collision_angle);
+			float ea = (ptr_veh->GetDirectionAngle() + collision_angle);
 			float enemy_velx = enemy_vel * cosf(ea);
 			float enemy_vely = enemy_vel * sinf(ea);
 
