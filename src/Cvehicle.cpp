@@ -93,7 +93,7 @@ void CVehicle::Release()
 
 	LOG("Closing CVehicle() class " << vehicle_name << " ...");
 
-	for ( int cn = 0; cn < MAX_ROTATION_FRAMES * tire_frames; cn++ )
+	for ( int cn = 0; cn < MAX_ROTATION_FRAMES * max_tire_frames; cn++ )
 	{
 		RELEASE_SURF( sprite_norm[cn] );
 		RELEASE_SURF( sprite_crash[cn] );
@@ -142,7 +142,7 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 	frames = swv->animation_frames;
 
 	// get tire frames
-	tire_frames = frames / MAX_ROTATION_FRAMES;
+	max_tire_frames = frames / MAX_ROTATION_FRAMES;
 	frags = 0; // reset fragovete
 	anger = 0; // reset anger-a
 
@@ -362,22 +362,20 @@ void CVehicle::Create()
 
 	//if ( do_not_warp ) return;
 
-	x_acc = 0.0f;
-	y_acc = 0.0f;
 //	hit_vel = 0.0f;
-	landmines = 0;
+	landmines_count = 0;
 	vmove = VM_NONE;
 	vrot = VR_NONE;
 
 	// point the current animations to the array of non-crashed vehicle animations
 	sprite = sprite_norm;
 	mask = mask_norm;
-	bcrashlook = false;
+	crashed_look = false;
 
 	// reset vars
 	x = pos_warp[warpPos].x;
 	y = pos_warp[warpPos].y;
-	speed_bonus = 0;
+	velocity_bonus = 0;
  
 	if ( warpPos == 2 || warpPos == 3 )
 	{
@@ -587,7 +585,7 @@ void CVehicle::DoMotion()
 	 * Acceleration
 	 */
 
-	float fmaxvel_p = (float)(max_vel + speed_bonus);
+	float fmaxvel_p = (float)(max_vel + velocity_bonus);
 	float fmaxvel_n = -fmaxvel_p * 0.75f;
 
 	if ( vmove == VM_FORWARD )
@@ -622,10 +620,10 @@ void CVehicle::DoMotion()
 	}
 
 	// Rotate vehicle tires (if moving)
-	if (tire_frames > 1 && abs_vel > 0.0f)
+	if (max_tire_frames > 1 && abs_vel > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
-		if ( tire_frame >= tire_frames ) 
+		if ( tire_frame >= max_tire_frames ) 
 			tire_frame = 0;
 	}
 
@@ -799,8 +797,8 @@ void CVehicle::DoMotion()
 				x += cosf(new_dir1) * new_vel1 * _game->getMpf();
 				y -= sinf(new_dir1) * new_vel1 * _game->getMpf();
 
-				ptr_veh->x += cosf(new_dir2) * new_vel2 * _game->getMpf();
-				ptr_veh->y -= sinf(new_dir2) * new_vel2 * _game->getMpf();
+				ptr_veh->SetX(ptr_veh->GetX() + cosf(new_dir2) * new_vel2 * _game->getMpf());
+				ptr_veh->SetY(ptr_veh->GetY() - sinf(new_dir2) * new_vel2 * _game->getMpf());
 			}
 
 			// Final
@@ -1020,8 +1018,8 @@ void CVehicle::DoMotion()
 
 				   case DT_BEARSPEED:
 
-					speed_bonus = max_vel / 3;
-					speed_time = _game->Timer.Time() + SPEEDEXPIRE_TIME;
+					velocity_bonus = max_vel / 3;
+					velocity_bonus_time = _game->Timer.Time() + SPEEDEXPIRE_TIME;
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
 					tire_trails = VTT_BLOOD;
@@ -1039,11 +1037,11 @@ void CVehicle::DoMotion()
 
 					hit_points += _game->Dtoys.GetToyValue( i );
 					
-					if ( hit_points >= hit_points_crash && bcrashlook )
+					if ( hit_points >= hit_points_crash && crashed_look )
 					{
 						sprite = sprite_norm;
 						mask = mask_norm;
-						bcrashlook = false;
+						crashed_look = false;
 					}
 					if ( hit_points > max_hitpoints ) 
 						hit_points = max_hitpoints;
@@ -1081,7 +1079,7 @@ void CVehicle::DoMotion()
 				   break;
 
 				   case DT_BEARLANDMINE:
-					landmines += _game->Dtoys.GetToyValue( i );
+					landmines_count += _game->Dtoys.GetToyValue( i );
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
 				    tire_trails = VTT_BLOOD;
@@ -1283,12 +1281,12 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex )
 			has_the_goal = false;
 		}
 
-	} else if (hit_points <= hit_points_crash && !bcrashlook)
+	} else if (hit_points <= hit_points_crash && !crashed_look)
 	{
 		// show smashed vehicle sprites
 		sprite = sprite_crash;
 		mask = mask_crash;
-		bcrashlook = true;
+		crashed_look = true;
 
 		// PLAYSOUND
 		_game->Snd.Play(SND_CRASHBRAKE, (int) x);
@@ -1318,9 +1316,9 @@ void CVehicle::Update()
 		anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
 	}
 	// kill speed_bonus
-	if (speed_time < _game->Timer.Time() && speed_bonus != 0)
+	if (velocity_bonus_time < _game->Timer.Time() && velocity_bonus != 0)
 	{
-		speed_bonus = 0;
+		velocity_bonus = 0;
 	}
 
 	// goal time expired?
@@ -1475,8 +1473,8 @@ void CVehicle::Update()
 	if (bputminekey)
 	{
 		bputmine = true;
-		if (landmines > 0) {
-			landmines--;
+		if (landmines_count > 0) {
+			landmines_count--;
 			_game->Mines.Create(GetCX(), GetCY(), myIndex);
 		}
 
