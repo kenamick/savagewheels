@@ -510,7 +510,6 @@ void CVehicle::DoMotion()
 //	float tmp_mf		= motion_frame;
 	float tmp_x			= x;
 	float tmp_y			= y;
-	float tmp_maxvel	= (float)max_vel;
 	float tmp_vel 		= vel;
 	float abs_vel		= fabsf(vel);
 
@@ -569,9 +568,10 @@ void CVehicle::DoMotion()
 		if ( control == VC_AI && display_frame > ai_final_frame )
 			display_frame = ai_final_frame;
 
-	    motion_angle += (rot_speed * (2*PI / 36.0f)* _game->getMpf());
+	    motion_angle += (rot_speed * (2*PI / 36.0f) * _game->getMpf());
 //	    motion_angle += PI;
-	    motion_angle = FixRad(motion_angle);
+//	    motion_angle = FixRad(motion_angle);
+	    FixAngle(&motion_angle);
 	}
 	else if ( vrot == VR_RIGHT && vel != 0 )
 	{
@@ -587,7 +587,8 @@ void CVehicle::DoMotion()
 
 		motion_angle -= (rot_speed * (2*PI / 36.0f) * _game->getMpf());
 //		motion_angle += PI;
-		motion_angle = FixRad(motion_angle);
+//		motion_angle = FixRad(motion_angle);
+		FixAngle(&motion_angle);
 	}
 
 	vrot = VR_NONE;
@@ -597,8 +598,8 @@ void CVehicle::DoMotion()
 	 * Acceleration
 	 */
 
-	float fmaxvel_p = tmp_maxvel + speed_bonus;
-	float fmaxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
+	float fmaxvel_p = (float)(max_vel + speed_bonus);
+	float fmaxvel_n = -fmaxvel_p;// / 2;
 
 	if ( vmove == VM_FORWARD )
 	{
@@ -694,8 +695,8 @@ void CVehicle::DoMotion()
 
 		if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
 		{
-			// if (_game->Timer.Time() < skip_hit_timer)
-			// 	continue;
+			 if (_game->Timer.Time() < skip_hit_timer)
+			 	continue;
 
 			DBG( "[COLLIDE] ----- New Collision [" << carname << "] [" << j << "] -----" );
 
@@ -706,51 +707,70 @@ void CVehicle::DoMotion()
 
 			DBG("col_angle = " << collision_angle);
 
-			float my_vel = sqrtf(vel * vel);
-			float enemy_vel = sqrtf(ptr_veh->GetVelocity() * ptr_veh->GetVelocity());
+			float my_magnitude = sqrtf(vel * vel);
+			float enemy_magnitude = sqrtf(ptr_veh->GetVelocity() * ptr_veh->GetVelocity());
 
 			// Get velocity vectors in (new) rotated coordinate system
-			float my_ea = (dir_angle + collision_angle);
-			float my_velx = my_vel * cosf(my_ea);
-			float my_vely = my_vel * sinf(my_ea);
+			float my_ea = (dir_angle - collision_angle);
+			float my_velx = my_magnitude * cosf(my_ea);
+			float my_vely = my_magnitude * sinf(my_ea);
 
-			float ea = (ptr_veh->GetDirectionAngle() + collision_angle);
-			float enemy_velx = enemy_vel * cosf(ea);
-			float enemy_vely = enemy_vel * sinf(ea);
+			float ea = (ptr_veh->GetDirectionAngle() - collision_angle);
+			float enemy_velx = enemy_magnitude * cosf(ea);
+			float enemy_vely = enemy_magnitude * sinf(ea);
 
-			DBG("my_angle = " << dir_angle << " my_velx = " << my_velx << " my_vely = " << my_vely);
-			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << " enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
+//			DBG("my_angle = " << dir_angle << " my_velx = " << my_velx << " my_vely = " << my_vely);
+//			DBG("enemy_angle = " << ptr_veh->GetDirectionAngle() << " enemy_velx = " << enemy_velx << " enemy_vely = " << enemy_vely);
 
 			// Get final velocity vectors after collision
 			float my_mass = GetCompareVal();
 			float enemy_mass = ptr_veh->GetCompareVal();
+			float mass_sum = (my_mass + enemy_mass);
 
-			float my_fx = (my_velx * (my_mass - enemy_mass) + 2 * enemy_mass * enemy_velx)
-					/ (my_mass + enemy_mass);
-
-			float enemy_fx = (enemy_velx * (enemy_mass - my_mass) + 2 * my_mass * my_velx)
-					/ (my_mass + enemy_mass);
-
+			float my_fx = (my_velx * (my_mass - enemy_mass) + 2 * enemy_mass * enemy_velx) / mass_sum;
 			float my_fy = my_vely;
+
+			float enemy_fx = (enemy_velx * (enemy_mass - my_mass) + 2 * my_mass * my_velx) / mass_sum;
 			float enemy_fy = enemy_vely;
 
 			// convert vectors to normal Cartesian coordinate system
 
-			float new_my_vel = sqrtf(my_fx * my_fx + my_fy * my_fy);
-			float new_enemy_vel = sqrtf(enemy_fx * enemy_fx + enemy_fy * enemy_fy);
+			float vel1_x = cosf(collision_angle) * my_fx + cosf(collision_angle + PI_2) * my_fy;
+			float vel1_y = sinf(collision_angle) * my_fx + sinf(collision_angle + PI_2) * my_fy;
+			float vel2_x = cosf(collision_angle) * enemy_fx + cosf(collision_angle + PI_2) * enemy_fy;
+			float vel2_y = sinf(collision_angle) * enemy_fx + sinf(collision_angle + PI_2) * enemy_fy;
 
-			float aa = atan2f(my_fy, my_fx);
-			float bb = atan2f(enemy_fy, enemy_fx);
-			float new_my_dir = aa + collision_angle;
-			float new_enemy_dir = bb + collision_angle;
+			float new_my_vel = sqrtf(vel1_x * vel1_x + vel1_y * vel1_y);
+			float new_enemy_vel = sqrtf(vel2_x * vel2_x + vel2_y * vel2_y);
+			float new_my_dir = atan2f(vel1_y, vel1_x);
+			float new_enemy_dir = atan2f(vel2_y, vel2_x);
+
+//			float new_my_vel = sqrtf(my_fx * my_fx + my_fy * my_fy);
+//			float new_enemy_vel = sqrtf(enemy_fx * enemy_fx + enemy_fy * enemy_fy);
 //
-			new_my_dir = FixRad(new_my_dir);
-			new_enemy_dir = FixRad(new_enemy_dir);
+//			float aa = atan2f(my_fy, my_fx);
+//			float bb = atan2f(enemy_fy, enemy_fx);
+//			float new_my_dir = aa + collision_angle;
+//			float new_enemy_dir = bb + collision_angle;
+//
+//			new_my_dir = FixRad(new_my_dir);
+//			new_enemy_dir = FixRad(new_enemy_dir);
+
+			FixAngle(&new_my_dir);
+			FixAngle(&new_enemy_dir);
 
 			// Final
 
-			DBG("new_my_dir = " << new_my_dir << " my_fx= " << my_fx << "  my_fy = " << my_fy);
-			DBG("new_enemy_dir = " << new_enemy_dir << " enemy_fx=" << enemy_fx << "  enemy_fy = " << enemy_fy );
+			float newvx1 = new_my_vel * cosf(new_my_dir);
+			float newvy1 = new_my_vel * sinf(new_my_dir);
+
+			float newvx2 = new_enemy_vel * cosf(new_enemy_dir);
+			float newvy2 = new_enemy_vel * sinf(new_enemy_dir);
+
+			DBG("new_my_dir = " << new_my_dir << " vel1_x= " << vel1_x << "  vel1_y = " << vel1_y);
+			DBG("new_enemy_dir = " << new_enemy_dir << " vel2_x=" << vel2_x << "  vel2_y = " << vel2_y );
+			DBG( " newvx1= " << newvx1 << "  newvy1 = " << newvy1);
+			DBG( " newvx2=" << newvx2 << "  newvy2 = " << newvy2 );
 			DBG("---------------------------------------------");
 
 			x = tmp_x;
@@ -1229,7 +1249,7 @@ void CVehicle::SetDirectionAngle(float rad)
 	{
 		motion_angle = rad;
 //		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
-		DBG(" new motion_frame = " << rad);
+		DBG(" new motion_frame = " << (Rad2Deg(rad) / 10.0f));
 	}
 
 	skip_hit_timer = _game->Timer.Time() + 800;
@@ -1307,7 +1327,7 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Update()
-// Desc: obnovqva classa i parametrite na unit-a
+// Desc: Refresh status, animations and motion
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
@@ -1671,8 +1691,10 @@ void CVehicle::AI_GenerateWaypoint()
 	
 	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint16) );
 
-	if ( avt == AVT_WARRIOR )				 // TYPE _WARRIOR
+	if ( avt == AVT_WARRIOR )
 	{
+		// TYPE _WARRIOR
+
 		if ( intGetRnd( 0, 1000 ) > 500 )
 			action = ACTION_ATTACK;
 		else if ( intGetRnd( 0, 1000 ) < 250 )
@@ -1681,7 +1703,7 @@ void CVehicle::AI_GenerateWaypoint()
 		{
 			action = ACTION_TAKEBONUS;
 
-			// proveri za bonusi i systavi spisyk
+			// check for available bonuses (on map) and create options list
 			for( i = 0; i < DT_MAX_CHILDS; i++ )
 			{
 				if ( _game->Dtoys.GetToyVisible( i ) )
@@ -1692,14 +1714,16 @@ void CVehicle::AI_GenerateWaypoint()
 				}
 			}
 
-			// v sluchai che nqma vidimi bonusi
-			if ( !bonus_found ) action = ACTION_ATTACK;
+			// in case no bonuses are available on the map
+			if ( !bonus_found )
+				action = ACTION_ATTACK;
 		}
 
 
 	}
-	else if ( avt == AVT_EXPLORER )			 // TYPE _EXPLORER
+	else if ( avt == AVT_EXPLORER )
 	{
+		// TYPE _EXPLORER
 
 		if ( intGetRnd( 0, 1000 ) < 250 )
 			action = ACTION_ATTACK;
@@ -1724,12 +1748,11 @@ void CVehicle::AI_GenerateWaypoint()
 	}
 
 
-	// izvyrshi izbranoto deistvie
 	switch( action )
 	{
 	case ACTION_ATTACK:
 		
-		// vzemi razstoqnieto do 1viq avtomobil
+		// get distance to closest enemy vehicle
 		i = car_index = 0;
 		distance = UINT_MAX;
 		
@@ -1755,7 +1778,7 @@ void CVehicle::AI_GenerateWaypoint()
 			i++;
 		}
 		
-		// zapylni info-to za waypoint-a
+		// create waypoint info
 		ptr_veh = &_game->Auto[car_index];
 		
 		waypoint.x				 = ptr_veh->GetX();
@@ -1777,7 +1800,7 @@ void CVehicle::AI_GenerateWaypoint()
 
 	case ACTION_TAKEBONUS:
 		
-		// vzemi "proizvolen" bonus ot spisyka
+		// get random bonus from options list
 		Uint16 bonus_action;
 
 		bonus_action = AI_doFSM( bonus_list, DT_MAX_DEADTOYS );
@@ -1810,7 +1833,7 @@ void CVehicle::AI_GenerateWaypoint()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: AI_ProcessWaypoint()
-// Desc: adjust sprite direction based on the direction of movement
+// Desc: Adjust sprite direction based on the direction of movement
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
