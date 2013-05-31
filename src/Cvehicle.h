@@ -164,7 +164,7 @@ private:
 	SDL_Rect     rCollide;		// kvadrat na zasichane
 	Uint32		 center_x, center_y;
 	//SDL_Rect	 rFrame;
-	float	     x,y;			// poziciq
+//	float	     x,y;			// poziciq
 	float		 x_acc, y_acc;  // ugly na uskorenie pri udar
 	float		 rep_frame;		// kadyr na udrqshtiqt ni avtomobil
 	float 	     display_frame;	// kadyr za rendirane
@@ -199,11 +199,9 @@ private:
 	SDL_Surface  **sprite_norm; 
 	SDL_Surface  **sprite_crash;
 	Uint32 	     **mask, **mask_norm, **mask_crash;
-	SDL_Surface  *driver_name;
-	char		 carname[255];
-	//SDL_Surface	 ***sprite_norm; //*sprite_norm[36];  // car faces
-	//SDL_Surface  ***sprite_crash; //*sprite_crash[36]; // car crashed-faces
-	
+	SDL_Surface  *sprite_driver;
+
+	char		 vehicle_name[8];
 	//CONST_VEHICLE_TYPE		me;
 	CONST_VEHICLE_CONTROL   control;
 	CONST_VEHICLE_MOVEMENT  vmove;
@@ -241,7 +239,9 @@ private:
 
 public:
 	CVehicle();  
-    ~CVehicle();
+    ~CVehicle() {};
+
+    float	     x,y;			// poziciq
 	
 //	void Repulse( int, float );
 	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
@@ -255,13 +255,13 @@ public:
 	SDL_Surface*	GetCurrentFrame();
 	Uint32*			GetCurrentFrameMask();
 	void 			GetFrameRect( SDL_Rect *rect );
-	SDL_Surface*	GetDriverNameSurface() { return driver_name; };
+	SDL_Surface*	GetDriverNameSurface() { return sprite_driver; };
 	float			GetDirectionAngle();
 	void			SetDirectionAngle(float rad);
 
-	float GetX();
+	float GetCX();
 	void SetX(float newX) { x = newX; };
-	float GetY();
+	float GetCY();
 	void SetY(float newY) { y = newY; };
 
 	bool	GetVisible() { return visible; };
