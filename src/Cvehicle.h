@@ -162,7 +162,7 @@ private:
 	int			 lbs;			// kolko teji 
 	int			 rot_speed;		// rotation speed
 	SDL_Rect     rCollide;		// kvadrat na zasichane
-//	Uint32		 center_x, center_y;
+	Uint32		 center_x, center_y;
 	//SDL_Rect	 rFrame;
 	float	     x,y;			// poziciq
 	float		 x_acc, y_acc;  // ugly na uskorenie pri udar

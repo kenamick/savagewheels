@@ -71,16 +71,15 @@ static float g_diry[] = { 0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f,
 ///////////////////////////////////////////////////////////////////////
 CVehicle::CVehicle()
 : _game( NULL ),
-   released(true),
-   honk_status(0),
-   reset_frame(false)
+visible(false),
+released(true),
+honk_status(0),
+reset_frame(false),
+skip_hit_timer(0U)
 {
-
 	driver_name = (SDL_Surface *)NULL;
 	sprite = sprite_norm = sprite_crash = (SDL_Surface **)NULL;
-
 	mask = mask_crash = mask_norm = NULL;
-
 }
 
 
@@ -334,10 +333,12 @@ void CVehicle::Create()
 	Uint32 		dist = 0UL;
 	CVehicle 	*ptr_veh = NULL;
 	bool 		do_not_warp = true;
-	int 		i = 0, warpPos = 0;
+	int 		warpPos = 0;
 
 	// get a safe vehicle spawn point
 	// j - one of 4 possible warp points
+
+	DBG("Creating vehicle idx=" << myIndex);
 
 	while (do_not_warp)
 	{
@@ -346,7 +347,7 @@ void CVehicle::Create()
 
 		ptr_veh = _game->Auto;
 
-		for (i = 0; i < _game->game_num_cars; i++)
+		for (Uint16 i = 0; i < _game->game_num_cars; i++)
 		{
 			if (i != myIndex)
 			{
@@ -1231,7 +1232,7 @@ void CVehicle::SetDirectionAngle(float rad)
 		DBG(" new motion_frame = " << rad);
 	}
 
-	skip_hit_timer = _game->Timer.Time() + 2800;
+	skip_hit_timer = _game->Timer.Time() + 800;
 	reset_frame = true;
 }
 
