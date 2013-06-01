@@ -124,7 +124,8 @@ public:
 		  reached(false),
 		  do_precalculate(false),
 		  do_reverse(false),
-		  do_reverseTime(0)
+		  do_reverseTime(0),
+		  do_forward(false)
 	{};
 
 	~CWaypoint() {};
@@ -137,6 +138,7 @@ public:
 	bool	do_precalculate;// if vehicle is off target calculate target coordinates again
 	bool	do_reverse;		// reverse movement (for given time) if vehicle has hit another vehicle
 	Sint32	do_reverseTime;
+	bool	do_forward;
 	//CONST_DEADTOYS  toy_kind;
 };
 

@@ -508,7 +508,7 @@ void CVehicle::DoMotion()
 	 * AI-steering
 	 */
 
-	if ( !ai_stuck && control == VC_AI )
+	if (control == VC_AI)
 	{
 		rot_m = 2.0f;  // double rotation speed for AI controlled vehicles
 
@@ -593,14 +593,12 @@ void CVehicle::DoMotion()
 
 	if ( vmove == VM_FORWARD )
 	{
-		is_hit_wall = false;
 		vel += (float)acc * _game->getMpf();
 		if ( vel > fmaxvel_p )
 			vel = fmaxvel_p;
 	}
 	else if ( vmove == VM_BACKWARD )
 	{
-		is_hit_wall = false;
 		vel -= (float)acc * _game->getMpf();
 		if ( vel < fmaxvel_n )
 			vel = fmaxvel_n;
@@ -681,6 +679,8 @@ void CVehicle::DoMotion()
 	bool high_speed = abs_vel > 50.0f;
 	bool play_sound = false;
 
+	is_hit_wall = false;
+
     if ( rMine.x < 24 )
 	{
 		x = 25;
@@ -710,9 +710,9 @@ void CVehicle::DoMotion()
 		is_hit_wall = true;
 	}
 
-    if (is_hit_wall && control == VC_AI) {
-    	waypoint.do_precalculate = true;
-    }
+//    if (is_hit_wall && control == VC_AI) {
+//    	waypoint.do_precalculate = true;
+//    }
 
 	if (play_sound && high_speed) {
 		// PLAY SOUND
@@ -743,8 +743,8 @@ void CVehicle::DoMotion()
 				&rCollide) )
 //		if ( _game->Sdl.Collide(&rCollide, &rMine, &rPrey) )
 		{
-//			if (_game->Timer.Time() < skip_hit_timer)
-//				continue;
+			if (_game->Timer.Time() < skip_hit_timer)
+				continue;
 
 			DBG( "[COLLIDE] ----- New Collision [" << vehicle_name << "] [" << j << "] -----" );
 			DBG( "x1 = " << x << " y1 = " << y << " vel1 = " << vel );
@@ -1158,7 +1158,7 @@ void CVehicle::SetDirectionAngle(float rad)
 //		DBG(" new motion_frame = " << (Rad2Deg(rad) / 10.0f));
 	}
 
-	skip_hit_timer = _game->Timer.Time() + 800;
+	skip_hit_timer = _game->Timer.Time() + 1200;
 	reset_frame = true;
 }
 
@@ -1512,10 +1512,15 @@ void CVehicle::AI_Update()
 	// go 'back' if hit an enemy vehicle
 	if ( waypoint.do_reverse )
 	{
-		SDL_Rect rect;
-		GetFrameRect(&rect);
+		if (is_hit_wall)
+			waypoint.do_forward = true;
 
-		Move( VM_BACKWARD );
+		if (waypoint.do_forward) {
+			Move(VM_FORWARD);
+		}
+		else {
+			Move(VM_BACKWARD);
+		}
 
 		// 25% chance to put a mine when moving backwards
 		if ( intGetRnd( 0, 100 ) < 25 )
