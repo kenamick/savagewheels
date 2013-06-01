@@ -223,6 +223,7 @@ private:
 
 	Uint16					team;				// vehicle Team
 
+
 	Uint32					skip_hit_timer;
 
 private:
@@ -237,6 +238,9 @@ private:
 	//void AI_AddWaypoint();
 
 public:
+	bool					collided;
+	bool					is_hit_wall;
+
 	CVehicle();  
     ~CVehicle() {};
 

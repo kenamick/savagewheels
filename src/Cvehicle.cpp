@@ -75,7 +75,9 @@ visible(false),
 released(true),
 honk_status(0),
 reset_frame(false),
-skip_hit_timer(0U)
+skip_hit_timer(0U),
+collided(false),
+is_hit_wall(false)
 {
 	sprite_driver = (SDL_Surface *)NULL;
 	sprite = sprite_norm = sprite_crash = (SDL_Surface **)NULL;
@@ -493,20 +495,20 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 void CVehicle::DoMotion()
 {
 	// Init defaults
-	float tmp_df 		= display_frame;
-//	float tmp_mf		= motion_frame;
-	float tmp_x			= x;
-	float tmp_y			= y;
-	float tmp_vel 		= vel;
-	float abs_vel		= fabsf(vel);
+	float tmp_df 	= display_frame;
+//	float tmp_mf	= motion_frame;
+	float tmp_x		= x;
+	float tmp_y		= y;
+	float tmp_vel 	= vel;
+	float abs_vel	= fabsf(vel);
 
-	float rot_m 		= 1.0f;
+	float rot_m 	= 1.0f;
 
 	/*
 	 * AI-steering
 	 */
 
-	if ( control == VC_AI )
+	if ( !ai_stuck && control == VC_AI )
 	{
 		rot_m = 2.0f;  // double rotation speed for AI controlled vehicles
 
@@ -543,7 +545,7 @@ void CVehicle::DoMotion()
 	 * Rotation
 	 */
 	
-	if ( vrot == VR_LEFT && abs_vel > 0 )
+	if ( !collided && (vrot == VR_LEFT && abs_vel > 0) )
     {
 		float step = (rot_speed * rot_m * _game->getMpf());
 	    display_frame += step;
@@ -559,7 +561,7 @@ void CVehicle::DoMotion()
 //	    motion_angle = FixRad(motion_angle);
 	    FixAngle(&motion_angle);
 	}
-	else if ( vrot == VR_RIGHT && abs_vel > 0 )
+	else if ( !collided && (vrot == VR_RIGHT && abs_vel > 0) )
 	{
 		float step = (rot_speed * rot_m * _game->getMpf());
 	    display_frame -= step;
@@ -577,6 +579,8 @@ void CVehicle::DoMotion()
 		FixAngle(&motion_angle);
 	}
 
+	collided = false;
+
 	vrot = VR_NONE;
 //	motion_frame = display_frame;
 
@@ -589,12 +593,14 @@ void CVehicle::DoMotion()
 
 	if ( vmove == VM_FORWARD )
 	{
+		is_hit_wall = false;
 		vel += (float)acc * _game->getMpf();
 		if ( vel > fmaxvel_p )
 			vel = fmaxvel_p;
 	}
 	else if ( vmove == VM_BACKWARD )
 	{
+		is_hit_wall = false;
 		vel -= (float)acc * _game->getMpf();
 		if ( vel < fmaxvel_n )
 			vel = fmaxvel_n;
@@ -617,6 +623,9 @@ void CVehicle::DoMotion()
 				vel = 0.0f;
 		}
 	}
+
+	// reset move var
+	vmove = VM_NONE;
 
 	// Rotate vehicle tires (if moving)
 	if (max_tire_frames > 1 && abs_vel > 0.0f)
@@ -662,15 +671,63 @@ void CVehicle::DoMotion()
 	y -= vel_y * _game->getMpf();
 
 
+	SDL_Rect rMine;
+	GetFrameRect( &rMine );
+
+	/*
+	 *  Game arena bounds check
+	 */
+
+	bool high_speed = abs_vel > 50.0f;
+	bool play_sound = false;
+
+    if ( rMine.x < 24 )
+	{
+		x = 25;
+		vel = 0;
+		play_sound = true;
+		is_hit_wall = true;
+	}
+    else if ( rMine.w > 614 )
+	{
+		x = 613 - (rMine.w - x);
+		vel = 0;
+		play_sound = true;
+		is_hit_wall = true;
+	}
+    else if ( y < 19)
+	{
+		y = 20;
+		vel = 0;
+		play_sound = true;
+		is_hit_wall = true;
+	}
+    else if ( rMine.h > 400 )
+	{
+		y = 399 - (rMine.h - y);
+		vel = 0;
+		play_sound = true;
+		is_hit_wall = true;
+	}
+
+    if (is_hit_wall && control == VC_AI) {
+    	waypoint.do_precalculate = true;
+    }
+
+	if (play_sound && high_speed) {
+		// PLAY SOUND
+		if (high_speed)
+			_game->Sdl.PlaySound( intGetRnd( 0, 50 ) > 25 ? SND_TIRES1 : SND_TIRES2,
+					rMine.x );
+	}
+
 	/*
 	 * Collisions Check
 	 */
 
 	SDL_Rect rPrey;
-	SDL_Rect rMine;
 	SDL_Rect rCollide;
 
-	GetFrameRect( &rMine );
 	CVehicle *ptr_veh = _game->Auto;
 
 	for ( int j = 0; j < _game->game_num_cars; j++, ptr_veh++ )
@@ -690,56 +747,23 @@ void CVehicle::DoMotion()
 //				continue;
 
 			DBG( "[COLLIDE] ----- New Collision [" << vehicle_name << "] [" << j << "] -----" );
-
-			// Get Normal vector (We use the difference between the centers of the vehicles)
-			// We assume that the center of mass is in the center of each vehicle [image]
-			float normal_x = rCollide.x - rCollide.w;
-			float normal_y = rCollide.y - rCollide.h;
-//			float normal_x = GetX() - ptr_veh->GetX();
-//			float normal_y = GetY() - ptr_veh->GetY();
-
-			// Normal vector as Unit vector (unit normal)
-			float normal_len = sqrtf(normal_x * normal_x + normal_y * normal_y);
-			float unormal_x = normal_x / normal_len;
-			float unormal_y = normal_y / normal_len;
-
-			DBG("rect_x=" << rCollide.x << " rect_y=" << rCollide.y << " rect_w=" << rCollide.w << " rect_h=" << rCollide.h);
-			DBG("normal_x=" << normal_x << " normal_y= " << normal_y);
-
-			// Get Tangent vector (perpendicular to the normal)
-			// This is the vector along which the vehicles collide
-			float utangent_x = -unormal_y;
-			float utangent_y = unormal_x;
-
-			DBG("utangent_x=" << utangent_x << " utangent_y=" << utangent_y);
+			DBG( "x1 = " << x << " y1 = " << y << " vel1 = " << vel );
+			DBG( "x2 = " << ptr_veh->GetX() << " y2 = " << ptr_veh->GetY() << " vel2 = " << ptr_veh->GetVelocity() );
 
 			// Get velocity magnitudes for both vehicles
 			float magnitude1 = sqrtf(vel * vel);
 			float magnitude2 = sqrtf(ptr_veh->GetVelocity() * ptr_veh->GetVelocity());
+
 			// Get velocity vectors (before collision)
-			float vel1_x = magnitude1 * cosf(dir_angle);
-			float vel1_y = magnitude1 * sinf(dir_angle);
-			float vel2_x = magnitude2 * cosf(ptr_veh->GetDirectionAngle());
-			float vel2_y = magnitude2 * sinf(ptr_veh->GetDirectionAngle());
+			float vel1_x = vel * cosf(dir_angle);
+			float vel1_y = vel * sinf(dir_angle);
+			float vel2_x = ptr_veh->GetVelocity() * cosf(ptr_veh->GetDirectionAngle());
+			float vel2_y = ptr_veh->GetVelocity() * sinf(ptr_veh->GetDirectionAngle());
 
 			DBG("magnitude1=" << magnitude1 << " magnitude2=" << magnitude2);
 			DBG("vel1_x=" << vel1_x << " vel1_y=" << vel1_y);
 			DBG("vel2_x=" << vel2_x << " vel2_y=" << vel2_y);
 			DBG("my_angle= " << Rad2Deg(dir_angle) << " enemy_angle= " << Rad2Deg(ptr_veh->GetDirectionAngle()));
-
-			// Projection of velocity onto unit normal and unit tangent vectors
-			// Vector1 (x1, y1) and Vector2 (x2, y2). DotProduct = (x1*x2 + y1*y2)
-			float vel1_n = unormal_x * vel1_x + unormal_y * vel1_y;
-			float vel1_t = utangent_x * vel1_x + utangent_y * vel1_y;
-
-			float vel2_n = unormal_x * vel2_x + unormal_y * vel2_y;
-			float vel2_t = utangent_x * vel2_x + utangent_y * vel2_y;
-
-			// Find new tangential velocities (after collision)
-			// The tangential components of the vel do not change because there is no force
-			// between the vehicles in the tangential direction during collision.
-			float new_vel1_t = vel1_t;
-			float new_vel2_t = vel2_t;
 
 			// Find the new normal velocities. 1-D collision formulas.
 			float m1 = GetCompareVal() * 0.75f;
@@ -748,103 +772,69 @@ void CVehicle::DoMotion()
 
 //			float new_vel1_n = (vel1_n * (m1 - m2) + 2 * m2 * vel2_n) / mass_sum;
 //			float new_vel2_n = (vel2_n * (m2 - m1) + 2 * m1 * vel1_n) / mass_sum;
+//			float cr = 0.5f;
 
-			float cr = 0.5f;
+			float velcm_x = m1 * vel1_x + m2 * vel2_x;
+			velcm_x /= mass_sum;
 
-			float new_vel1_n = cr * m2 * (vel2_n - vel1_n) + m1 * vel1_n + m2 * vel2_n;
-			new_vel1_n /= mass_sum;
+			float velcm_y = m1 * vel1_y + m2 * vel2_y;
+			velcm_y /= mass_sum;
 
-			float new_vel2_n = cr * m1 * (vel1_n - vel2_n) + m1 * vel1_n + m2 * vel2_n;
-			new_vel2_n /= mass_sum;
+			// Get new velocity after collision
+			float velcm = sqrtf(velcm_x * velcm_x + velcm_y * velcm_y);
 
+			// Get common angle of movement (sorry, for the var name :)))
+			float kurt_angle = atan2f(velcm_y, velcm_x);
+			FixAngle(&kurt_angle);
 
-			DBG("m1 = " << m1 << " m2=" << m2 << " mass_sum=" << mass_sum);
-			DBG("new_vel1_n = " << new_vel1_n);
-			DBG("new_vel2_n = " << new_vel2_n);
-			DBG("new_vel1_t = " << new_vel1_t);
-			DBG("new_vel2_t = " << new_vel2_t);
+			DBG("velcm_x=" << velcm_x << " velcm_y=" << velcm_y);
+			DBG("dir_angle=" << Rad2Deg(kurt_angle) << " / velcm = " << velcm);
 
-			// Convert the scalar normal and tangential velocities into vectors
-			float new_vel1_nx = new_vel1_n * unormal_x;
-			float new_vel1_ny = new_vel1_n * unormal_y;
-			float new_vel1_tx = new_vel1_t * utangent_x;
-			float new_vel1_ty = new_vel1_t * utangent_y;
+			// Set flags
 
-			float new_vel2_nx = new_vel2_n * unormal_x;
-			float new_vel2_ny = new_vel2_n * unormal_y;
-			float new_vel2_tx = new_vel2_t * utangent_x;
-			float new_vel2_ty = new_vel2_t * utangent_y;
-
-			// Find the final velocity vectors by adding the normal and tangential components
-			float final_vel1_x = new_vel1_nx + new_vel1_tx;
-			float final_vel1_y = new_vel1_ny + new_vel1_ty;
-			float final_vel2_x = new_vel2_nx + new_vel2_tx;
-			float final_vel2_y = new_vel2_ny + new_vel2_ty;
-
-			DBG("final_vel1_x = " << final_vel1_x << " final_vel1_y = " << final_vel1_y);
-			DBG("final_vel2_x = " << final_vel2_x << " final_vel2_y = " << final_vel2_y);
-
-			// Get velocity magnitudes (Polar)
-			float final_vel1 = sqrtf(final_vel1_x * final_vel1_x + final_vel1_y * final_vel1_y);
-			float final_vel2 = sqrtf(final_vel2_x * final_vel2_x + final_vel2_y * final_vel2_y);
-
-			// Get new vehicle direction angles (Polar)
-			float new_dir1 = atan2f(final_vel1_y, final_vel1_x);
-			float new_dir2 = atan2f(final_vel2_y, final_vel2_x);
-
-			// We will get the vector of direction by predicting the next position of each vehicle
-//			float pos1_x = GetX() + new_vel1_x * _game->getMpf();
-//			float pos1_y = GetY() + new_vel1_y * _game->getMpf();
-//			float new_dir1 = atan2f(GetY() - pos1_y, GetX() - pos1_x);
-//
-//			float pos2_x = ptr_veh->GetX() + new_vel2_x;
-//			float pos2_y = ptr_veh->GetY() + new_vel2_y;
-//			float new_dir2 = atan2f(ptr_veh->GetY() - pos2_y, ptr_veh->GetX() - pos2_x);
-
-			// vx = v * cos(a)
-			// a = arccos(vx / v);
-//			float new_dir1 = acosf(new_vel1_x / new_vel1);
-//			float new_dir2 = acosf(new_vel2_x / new_vel2);
-//
-//			new_my_dir = FixRad(new_my_dir);
-//			new_enemy_dir = FixRad(new_enemy_dir);
-//
-//			new_dir1 += PI;
-//			new_dir2 += PI;
-//
-//			FixAngle(&new_dir1);
-//			FixAngle(&new_dir2);
+//			collided = true;
+//			ptr_veh->collided = true;
 
 			x = tmp_x;
 			y = tmp_y;
+			display_frame = tmp_df;
 
-//			for (int k =0; k < 5; k++) {
-//				x += cosf(new_dir1) * final_vel1 * _game->getMpf();
-//				y -= sinf(new_dir1) * final_vel1 * _game->getMpf();
-//
-//				ptr_veh->SetX(ptr_veh->GetX() + cosf(new_dir2) * final_vel2 * _game->getMpf());
-//				ptr_veh->SetY(ptr_veh->GetY() - sinf(new_dir2) * final_vel2 * _game->getMpf());
-//			}
+			// Predict if enemy will hit a wall
+			SDL_Rect eRect;
+			ptr_veh->GetFrameRect(&eRect);
+			float ex = eRect.x;
+			float ey = eRect.y;
+			float ew = eRect.w;
+			float eh = eRect.h;
+			for (int k = 0; k < 4; k++) {
+				ex+= velcm * cosf(kurt_angle) * _game->getMpf();
+				ey -= velcm * sinf(kurt_angle)  * _game->getMpf();
+				ew += velcm * cosf(kurt_angle) * _game->getMpf();
+				eh -= velcm * sinf(kurt_angle) * _game->getMpf();
+//				char buf[256];
+//				sprintf(buf, "x=%d, y=%d, w=%d, h=%d", eRect.x, eRect.y, eRect.w, eRect.h);
+//				DBG(buf);
+				if (ex < 24 || ew > 614  || ey < 19 || eh > 400)
+				{
+					DBG("Enemy goes out of scene!");
+					velcm = 0.0f;
+					break;
+				}
+			}
 
-			// Final
-			DBG("new_dir1 = " << new_dir1 << " deg1=" << Rad2Deg(new_dir1) << " new_vel1= " << final_vel1);
-			DBG("new_dir2 = " << new_dir2 << " deg2=" << Rad2Deg(new_dir2) << " new_vel2=" << final_vel2 );
-			DBG("---------------------------------------------");
+			// Set final velocities and reflection angles
 
-//			display_frame = tmp_df;
-//			motion_frame = tmp_mf;
-//			motion_frame = new_my_dir *  57.2957795f; //rad2deg
-			SetDirectionAngle(new_dir1);
-			SetVelocity(final_vel1);
+			SetDirectionAngle(kurt_angle);
+			SetVelocity(velcm);
 
-			ptr_veh->SetDirectionAngle(new_dir2);
-			ptr_veh->SetVelocity(final_vel2);
+			ptr_veh->SetDirectionAngle(kurt_angle);
+			ptr_veh->SetVelocity(velcm);
 
 			if ( control == VC_AI )
 			{
 				DBG( "[COLLIDE] Step #8" );
 				waypoint.do_reverse = true;
-				waypoint.do_reverseTime = _game->Timer.Time() + 500;
+				waypoint.do_reverseTime = _game->Timer.Time() + 1500;
 //					waypoint.do_precalculate = true;
 			}
 
@@ -852,21 +842,12 @@ void CVehicle::DoMotion()
 
 			// ----------------------------------
 
-			bool no_damage = false;
-			x = tmp_x;
-			y = tmp_y;
-//			motion_frame = tmp_mf;
-//			display_frame = tmp_mf;
+			// Damage calculations
 
-			if ( abs_vel <= MIN_DAMAGE_VELOCITY )
+			if ( abs_vel > MIN_DAMAGE_VELOCITY )
 			{
-				no_damage = true;
 				DBG( "[COLLIDE] Step #6" );
-			}
 
-			// enemy vehicle damage calculations
-			if ( !no_damage )
-			{
 				float perc = ( (float)abs_vel / (float)max_vel ) * 100.0f;
 				Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
 
@@ -890,31 +871,6 @@ void CVehicle::DoMotion()
 				else
 					_game->Snd.Play( SND_CRASHLIGHT2, (int)x );
 					
-			}
-
-			/*
-			 * FIXME:
-			 * This is a problem right here! Both vehicles will collide thus none
-			 * will move. This is the main reason for the nasty physics bug.
-			 */
-//				this->set_stop = true; //remove this 12.nov
-//				vel = vel * -0.6f;
-
-			if ( control == VC_AI )
-			{
-				DBG( "[COLLIDE] Step #8" );
-				waypoint.do_reverse = true;
-				waypoint.do_reverseTime = _game->Timer.Time() + 500;
-
-//					vel = vel * 0.5f;
-
-//					waypoint.do_precalculate = true;
-//
-//					if ( waypoint.goal_type == WAYPOINT_VEHICLE  )
-//					{
-//						waypoint.do_reverse = true;
-//						DBG( "[COLLIDE] Step #9" );
-//					}
 			}
 
 		}
@@ -951,48 +907,6 @@ void CVehicle::DoMotion()
  		tire_trails = VTT_NONE;
 	}
 	
-	// reset move var
-	vmove = VM_NONE;
-	
-	/*
-	 *  Game arena bounds check
-	 */
-	bool high_speed = fabsf(vel) > 50;
-	bool play_sound = false;
-
-    if ( rMine.x < 24 )
-	{
-		x = 25;
-		vel = 0;
-		play_sound = true;
-	}
-    else if ( rMine.w > 614 ) 
-	{
-		x = 613 - (rMine.w - x);
-		vel = 0;
-		play_sound = true;
-	}
-    
-	if ( y < 19) 
-	{
-		y = 20;
-		vel = 0;
-		play_sound = true;
-	}
-    else if ( rMine.h > 400 ) 
-	{
-		y = 399 - (rMine.h - y);
-		vel = 0;
-		play_sound = true;
-	}
-
-	if (play_sound && high_speed) {
-		// PLAY SOUND
-		if (high_speed)
-			_game->Sdl.PlaySound( intGetRnd( 0, 50 ) > 25 ? SND_TIRES1 : SND_TIRES2,
-					rMine.x );
-	}
-
 	/*
 	 * Test for bonuses & items hits (Deadtoys)
 	 */
@@ -1178,8 +1092,8 @@ void CVehicle::GetFrameRect( SDL_Rect *rect )
 {
 	SDL_Surface *currentSurf = GetCurrentFrame();
 
-	rect->x = (Uint32)x;
-	rect->y = (Uint32)y;
+	rect->x = x;
+	rect->y = y;
 	rect->w = rect->x + currentSurf->w;
 	rect->h = rect->y + currentSurf->h;
 }
@@ -1241,7 +1155,7 @@ void CVehicle::SetDirectionAngle(float rad)
 	{
 		motion_angle = rad;
 //		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
-		DBG(" new motion_frame = " << (Rad2Deg(rad) / 10.0f));
+//		DBG(" new motion_frame = " << (Rad2Deg(rad) / 10.0f));
 	}
 
 	skip_hit_timer = _game->Timer.Time() + 800;
@@ -1595,12 +1509,15 @@ void CVehicle::AI_Update()
 	}
 */
 
-	// ako e udaril avtomobil to vyrni go nazad za 'n' kadyra 
+	// go 'back' if hit an enemy vehicle
 	if ( waypoint.do_reverse )
 	{
+		SDL_Rect rect;
+		GetFrameRect(&rect);
+
 		Move( VM_BACKWARD );
 
-		// 25% chance da pusni mina pri zaden hod
+		// 25% chance to put a mine when moving backwards
 		if ( intGetRnd( 0, 100 ) < 25 )
 			ai_putmine = false;
 		
@@ -1666,7 +1583,6 @@ void CVehicle::AI_Update()
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_GenerateWaypoint()
 {
-
 	Uint16    action		= 0U;
 	Uint32	  bonus_index	= 0U, 
   			  car_index		= 0U;
@@ -1739,6 +1655,7 @@ void CVehicle::AI_GenerateWaypoint()
 		}
 	}
 
+	Uint16 bonus_action;
 
 	switch( action )
 	{
@@ -1793,8 +1710,6 @@ void CVehicle::AI_GenerateWaypoint()
 	case ACTION_TAKEBONUS:
 		
 		// get random bonus from options list
-		Uint16 bonus_action;
-
 		bonus_action = AI_doFSM( bonus_list, DT_MAX_DEADTOYS );
 		bonus_index = bonus_list_index[bonus_action];
 
@@ -1831,7 +1746,6 @@ void CVehicle::AI_ProcessWaypoint()
 {
 
 	float x_dist, y_dist;
-	float la;
 	float tmp_dest, tmp_cur;
 
 	// get angle to the next waypoint
@@ -1852,8 +1766,11 @@ void CVehicle::AI_ProcessWaypoint()
 		ai_dest_angle = atanf( x_dist /y_dist ) - PI_2;
 	}
 
+//	ai_dest_angle = atan2f(y_dist, x_dist);
+//	FixAngle(&ai_dest_angle);
+
 	// check if display frame must be recalculated
-	if ( ai_dest_angle == ai_cur_angle ) 
+	if ( fabsf(ai_dest_angle - ai_cur_angle) < 0.001f )
 	{
 		ai_turning = VR_NONE;
 		return;
@@ -1886,19 +1803,18 @@ void CVehicle::AI_ProcessWaypoint()
 
 	
 	//-------display _frame
-	la = (float)(ai_dest_angle * 180 / PI); 
+	float la = (float)(ai_dest_angle * RAD1);
 	if ( la < 0 ) 
 	{
-		la += 360;
+		la += 360.0f;
 	}
 	
-	if ( la > 360 ) la -= 90;
+	if ( la > 360.0f )
+		la -= 90.0f;
 	
 	ai_final_frame = la * 0.1f; //la / 10;
-
 	//display_frame = la/10;
 	//motion_frame = display_frame;*/
-
 }
 
 
