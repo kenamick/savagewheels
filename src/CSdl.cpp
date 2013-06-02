@@ -1904,7 +1904,7 @@ void CSdl::ChangeSoundVolume( int s_vol )
 #ifdef WITH_FMOD
 	SetSoundVolume( volume_sound + s_vol ); 
 #endif
-};
+}
 
  ///////////////////////////////////////////////////////////////////////
 // Name: ChangeMusicVolume()
@@ -1913,9 +1913,9 @@ void CSdl::ChangeSoundVolume( int s_vol )
 void CSdl::ChangeMusicVolume( int m_vol ) 
 { 
 #ifdef WITH_FMOD
-	SetMusicVolume( volume_music + m_vol ); 
+	SetMusicVolume( volume_music + (float)m_vol * 1.5f );
 #endif
-};
+}
 
 
 /*///////////////////////////////////////////////////////////////////////
