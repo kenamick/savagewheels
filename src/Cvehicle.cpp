@@ -1681,12 +1681,9 @@ void CVehicle::AI_GenerateWaypoint()
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
-	float tmp_dest, tmp_cur;
-
 	// get angle to the next waypoint
 	float x_dist = (waypoint.x - x);
 	float y_dist = (waypoint.y - y);
-		
 		
 	if ( y_dist > 0 ) 
 	{
@@ -1703,15 +1700,15 @@ void CVehicle::AI_ProcessWaypoint()
 	}
 
 	// check if display frame must be recalculated
-	if ( ai_dest_angle == ai_cur_angle ) 
+	if ( fabsf(ai_dest_angle - ai_cur_angle) < 0.1f )
 	{
 		ai_turning = VR_NONE;
 		return;
 	}
 
-	// get sensible turning
-	tmp_dest	= ai_dest_angle;
-	tmp_cur		= ai_cur_angle;
+	// check where to rotate to
+	float tmp_dest = ai_dest_angle;
+	float tmp_cur = ai_cur_angle;
 	FixAngle( &tmp_dest );
 	FixAngle( &tmp_cur );
 
