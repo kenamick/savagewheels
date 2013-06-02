@@ -1827,7 +1827,7 @@ bool CSdl::IsMusicPlaying()
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetMusicVolume( int new_vol )
 {
-#ifdef WITH_FMOD  
+#ifdef WITH_FMOD
 	if ( new_vol > 256 )
 		new_vol = 256;
 	else if ( new_vol < 0 ) 

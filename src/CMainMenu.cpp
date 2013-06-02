@@ -924,14 +924,16 @@ void CMainMenu::Update()
 					dx = (int)_game->Gamediff;
 					dx -= 1;
 					_game->Gamediff = (CONST_DIFFICULTY)dx;
-					if ( _game->Gamediff < DIFF_EASY ) _game->Gamediff = DIFF_HARD;
+					if ( _game->Gamediff < DIFF_EASY )
+						_game->Gamediff = DIFF_HARD;
 					break;
 
 				case 1:
 					dx = (int)_game->Gamediff;
 					dx += 1;
 					_game->Gamediff = (CONST_DIFFICULTY)dx;
-					if ( _game->Gamediff > DIFF_HARD ) _game->Gamediff = DIFF_EASY;
+					if ( _game->Gamediff > DIFF_HARD )
+						_game->Gamediff = DIFF_EASY;
 					break;
 
 				case 6:
@@ -979,7 +981,8 @@ void CMainMenu::Update()
 					if ( gametime_press < _game->Timer.Time() )
 					{
 						_game->game_time -= 30;
-						if ( _game->game_time <= 0 ) _game->game_time = 1800;
+						if ( _game->game_time <= 0 )
+							_game->game_time = 1800;
 						gametime_press = _game->Timer.Time() + 110;
 					}
 					break;
@@ -989,7 +992,8 @@ void CMainMenu::Update()
 					if ( gametime_press < _game->Timer.Time() )
 					{
 						_game->game_time += 30;
-						if ( _game->game_time > 1800 ) _game->game_time = 30;
+						if ( _game->game_time > 1800 )
+							_game->game_time = 30;
 						gametime_press = _game->Timer.Time() + 110;
 					}
 					break;
@@ -997,7 +1001,8 @@ void CMainMenu::Update()
 				case 4:
 					if ( frag_time < _game->Timer.Time() )
 					{
-						if ( --_game->game_frags < 1  ) _game->game_frags = 999;
+						if ( --_game->game_frags < 1  )
+							_game->game_frags = 999;
 						frag_time = _game->Timer.Time() + 85;
 					}
 					break;
@@ -1005,7 +1010,8 @@ void CMainMenu::Update()
 				case 5:
 					if ( frag_time < _game->Timer.Time() )
 					{
-						if ( ++_game->game_frags > 999  ) _game->game_frags = 1;
+						if ( ++_game->game_frags > 999  )
+							_game->game_frags = 1;
 						frag_time = _game->Timer.Time() + 85;
 					}
 					break;
@@ -1294,20 +1300,22 @@ void CMainMenu::LoadSettings()
 
 	if ( ! success )
 	{
+		// Default settings
 		_game->Gamediff = DIFF_NORMAL;
 		_game->game_shadows = true;
 		_game->game_bots = true;
 		_game->game_frags = 50;
 		_game->game_time = 180;
-		_game->Sdl.SetSoundVolume( 100 );
-		_game->Sdl.SetMusicVolume( 80 );
+		_game->Sdl.SetSoundVolume( 85 );
+		_game->Sdl.SetMusicVolume( 75 );
 		_game->game_hitmode = false;
 	}
 	else
 	{
 	
 		fread( &tmp_int, sizeof(tmp_int), 1, fp );
-		if ( tmp_int < 6 || tmp_int > 8 ) tmp_int = 6;	
+		if ( tmp_int < 6 || tmp_int > 8 )
+			tmp_int = 6;
 		_game->Gamediff = (CONST_DIFFICULTY)tmp_int;
 	
 		fread( &_game->game_shadows, sizeof(_game->game_shadows), 1, fp );

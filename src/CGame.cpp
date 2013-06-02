@@ -497,7 +497,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		show_fps = !show_fps;
 
 	// check music sequence
-	if ( Gamestate != GS_MENU )
+	//if ( Gamestate != GS_MENU )
 		Snd.CheckMusic();
 
 
