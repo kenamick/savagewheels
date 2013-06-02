@@ -42,6 +42,7 @@ class CVehicle;
 #define GOALEXPIRE_TIME			5000
 #define NO_ATTACKER				10
 
+#define LANDMINE_DAMAGE      	35U
 #define MIN_DAMAGE_VELOCITY		45
 #define SAFE_WARP_DISTANCE		6400 // 80 pixels
 #define WAYPOINT_RADIUS			900  //30pixels
@@ -229,10 +230,10 @@ private:
 	void Move( CONST_VEHICLE_MOVEMENT mvt );
     void Rotate( CONST_VEHICLE_ROTATION rot );
 	
-	void   AI_Update();
-	void   AI_GenerateWaypoint();
-	void   AI_ProcessWaypoint();
-	Uint16 AI_doFSM( Uint16 *proActions, Uint16 max_actions );
+	void AI_Update();
+	void AI_GenerateWaypoint();
+	void AI_ProcessWaypoint();
+	int AI_doFSM( Uint32 *proActions, Uint32 max_actions );
 	//void AI_AddWaypoint();
 
 public:

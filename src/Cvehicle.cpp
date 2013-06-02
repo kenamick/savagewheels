@@ -215,23 +215,27 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 // Name: SetAttirbs()
 // Desc: car-attribs based on game difficulty
 ///////////////////////////////////////////////////////////////////////
-void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
+void CVehicle::SetAttirbs( CONST_DIFFICULTY difficulty )
 {
-	float diff_perc;
+	float diff_perc = 1.0f;
 
-	switch( diff )
+	switch( difficulty )
 	{
-	case DIFF_EASY: diff_perc	= 0.75f; 
+	case DIFF_EASY:
+		diff_perc	= 0.75f;
 		break;
 
-	case DIFF_NORMAL: diff_perc = 1.0f; 
+	case DIFF_NORMAL:
+		diff_perc = 1.0f;
 		return; 
 		break;
 
-	case DIFF_HARD: diff_perc	= 1.3f; 
+	case DIFF_HARD:
+		diff_perc	= 1.3f;
 		break;
 	
 	default: 
+		LOG("Invalid difficulty attribute!");
 		return;
 	}
 	
@@ -870,9 +874,7 @@ void CVehicle::DoMotion()
 
 	GetFrameRect( &rMe );
 
-	Uint32 i = 0;
-
-	for( i = 0; i < DT_MAX_CHILDS; i++ )
+	for(int i = 0; i < DT_MAX_CHILDS; i++ )
 	{
 		if ( _game->Dtoys.GetToyVisible( i ) )
 		{
@@ -881,9 +883,8 @@ void CVehicle::DoMotion()
 
 		 if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) )
 		 {
-			 if ( 1 ) // abs(vel) >= max_vel / 2 ) // do not hit if speed less than half the max
-			 {
-		 
+//			 if ( abs(vel) >= max_vel / 2 ) // do not hit if speed less than half the max
+//			 {
 				// PLAY SOUND
 				_game->Sdl.PlaySound( SND_SPLAT1, rMe.x );
 				
@@ -989,32 +990,31 @@ void CVehicle::DoMotion()
 
 				// kill toy index
 				_game->Dtoys.KillToy( i );
-			 }
-			 else
-			 {
-				// speed is not high enough to smash this bonus
-				vel = 0;
-				x = tmp_x;
-				y = tmp_y;
-			 }
+//			 }
+//			 else
+//			 {
+//				// speed is not high enough to smash this bonus
+//				vel = 0;
+//				x = tmp_x;
+//				y = tmp_y;
+//			 }
 			 
 		 }
 		} // vis_check...
 	} 
 
-
-	// Hit_Test landmines...
-	for ( i = 0; i < LANDMINE_CHILDS; i++ )
+	/*
+	 * Landmines hit test
+	 */
+	for ( int i = 0; i < LANDMINE_CHILDS; i++ )
 	{
 		if ( _game->Mines.GetMineVisible( i ) && _game->Mines.GetMineIndex( i ) != myIndex)
 		{
 			_game->Mines.GetMineRect( i, &rToy );
-			
-			// {!}
-			if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) ) //_game->Sdl.Collide( &rMe, GetCurrentFrame(), &rToy, _game->Mines.GetMineCurrentFrame( i ) ) )
+			if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) )
 			{
-				DoDamage( 35U, _game->Mines.GetMineIndex( i ) );
-				// ...do car damage
+				// do vehicle damage
+				DoDamage( LANDMINE_DAMAGE, _game->Mines.GetMineIndex( i ) );
 				_game->Mines.KillMine( i );
 				_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 			}
@@ -1153,30 +1153,23 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
-	float perc = 0.0f;
-	Uint32 width = 0U;
-	Uint32 height = 0U;
-	SDL_Rect rect;
-
-	SDL_Surface *surf = NULL;
-	Uint32 *cur_mask = NULL;
-
-	cur_mask = GetCurrentFrameMask();
-	surf = sprite[(int) display_frame + MAX_ROTATION_FRAMES * (int) tire_frame];
-
 	// respawn vehicle (if not visible, e.g., destroyed)
 	if (!visible) {
 		Create();
 		//return;
 	}
 
-	// preizchisli center koordinati na avtomobila i kvadrat na kadyra
-	width = surf->w;
-	height = surf->h;
+	// recalculate vehicle center pos given current surface frame
+
+	Uint32 *cur_mask = GetCurrentFrameMask();
+	SDL_Surface *surf = sprite[(int) display_frame + MAX_ROTATION_FRAMES * (int) tire_frame];
+
+	Uint32 width = surf->w;
+	Uint32 height = surf->h;
 	center_x = x + (width >> 1);
 	center_y = y + (height >> 1);
 
-	// pridviji MPS-to $p.petrov - comented
+	// Physics calculations
 	DoMotion();
 	//if ( control != VC_AI ) DoMotion();
 
@@ -1184,9 +1177,12 @@ void CVehicle::Update()
 	height = surf->h;
 	center_x = x + (width >> 1);
 	center_y = y + (height >> 1);
-	rect.x = rect.y = 0;
-	rect.w = width;
-	rect.h = height;
+
+	SDL_Rect rect = {0, 0, width, height};
+
+	/*
+	 * Update bonuses states
+	 */
 
 	// expire 1 anger point
 	if (anger_time < _game->Timer.Time() && anger > 0) {
@@ -1205,18 +1201,21 @@ void CVehicle::Update()
 		frags += 1;
 	}
 
-	// blit shadow and vehicle
+	/*
+	 * Display vehicle
+	 */
+
+	// shadow & sprite
 	//_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
 	_game->Sdl.BlitShadow(x + 1.0f, y + 4.0f, cur_mask, &rect);
 	_game->Sdl.AddToBlit(x, y, surf);
 
-// DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
-
-	// blit status
+	// status, hp, frags, etc.
 	char buf[8];
 	sprintf(buf, "%d", frags);
+	float perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
+
 	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
-	perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
 	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
 	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
 	_game->scales[1]->w = anger;
@@ -1531,12 +1530,13 @@ void CVehicle::AI_GenerateWaypoint()
 	bool	  bonus_found	= false;
 	SDL_Rect  rtoy;
 	Uint32	  bonus_list_index[DT_MAX_CHILDS];
-	Uint16	  bonus_list[DT_MAX_DEADTOYS];
-	Uint16	  bonus_list_warrior[DT_MAX_DEADTOYS]	= { 30, 25, 15, 10, 20 };
-	Uint16	  bonus_list_explorer[DT_MAX_DEADTOYS]	= { 45, 15, 25, 12, 8 };
-	CVehicle  *ptr_veh = _game->Auto;
+	Uint32	  bonus_list[DT_MAX_DEADTOYS];
+	Uint32	  bonus_list_warrior[DT_MAX_DEADTOYS]	= { 30, 25, 15, 10, 20 };
+	Uint32	  bonus_list_explorer[DT_MAX_DEADTOYS]	= { 45, 15, 25, 12, 8 };
+	CVehicle  *ptr_veh = NULL;
 	
-	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint16) );
+	memset( bonus_list_index, 0U, DT_MAX_CHILDS * sizeof(Uint32) );
+	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint32) );
 
 	if ( avt == AVT_WARRIOR )				 // TYPE _WARRIOR
 	{
@@ -1599,6 +1599,8 @@ void CVehicle::AI_GenerateWaypoint()
 		i = car_index = 0;
 		distance = UINT_MAX;
 		
+		ptr_veh = _game->Auto;
+
 		while( i < _game->game_num_cars )
 		{
 			if ( i != myIndex )
@@ -1679,14 +1681,11 @@ void CVehicle::AI_GenerateWaypoint()
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
-
-	float x_dist, y_dist;
-	float la;
 	float tmp_dest, tmp_cur;
 
 	// get angle to the next waypoint
-	x_dist = (waypoint.x - x);
-	y_dist = (waypoint.y - y);
+	float x_dist = (waypoint.x - x);
+	float y_dist = (waypoint.y - y);
 		
 		
 	if ( y_dist > 0 ) 
@@ -1726,24 +1725,20 @@ void CVehicle::AI_ProcessWaypoint()
 	}
 
 
-	/*// izchisli max skorost pri zavoi
+	/*// calculate radial speed
 	distance = fGetDistance( (float)GetX(), (float)GetY(), waypoint.x, waypoint.y );
 	ai_maxvel = sqrt( acc * distance );  // a = (v*v)/R
 	*/
 
-	/*char buf[64];
-	sprintf( buf, "da: %f ca: %f  max_vel: %d ", ai_dest_angle, ai_cur_angle, ai_maxvel );
-	AppendToLog( buf );*/
-
-	
 	//-------display _frame
-	la = (float)(ai_dest_angle * 180 / PI); 
-	if ( la < 0 ) 
+	float la = ai_dest_angle * RAD1;
+	if ( la < 0.0f )
 	{
-		la += 360;
+		la += 360.0f;
 	}
 	
-	if ( la > 360 ) la -= 90;
+	if ( la > 360.0f )
+		la -= 90.0f;
 	
 	ai_final_frame = la * 0.1f; //la / 10;
 
@@ -1753,38 +1748,33 @@ void CVehicle::AI_ProcessWaypoint()
 }
 
 
-
-
-
 ///////////////////////////////////////////////////////////////////////
 // Name: AI_doFSM()
-// Desc: izberi dadeno deistvie sys (F)inite-(S)tate-(M)achines AI
+// Desc: Use (F)inite-(S)tate-(M)achines to choose an action
 ///////////////////////////////////////////////////////////////////////
-Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
+int CVehicle::AI_doFSM( Uint32 *proActions, Uint32 max_actions )
 {
-
-	Uint16 index	= 0U, 
-		   i		= 0U, 
-		   j		= 0U;
-	int	   val		= 0, 
-		   tmp_val  = 0;
-	bool   proa_ok  = false;
+	int index = 0U;
+	int i = 0U;
+	int j = 0U;
+	int val = 0;
+	int tmp_val = 0;
+	bool found  = false;
 
 	// get a rnd num
-	while ( val == 0 || val < 10 || !proa_ok )
+	while ( val == 0 || val < 10 || !found )
 	{
-		val = rand()%100;
+		val = rand() % 100;
 		
 		// at least one value that is higher than rnd
 		for ( i = 0; i < max_actions; i++ )
 		{
 			if ( val > proActions[i] && proActions[i] != 0 )
 			{
-				proa_ok = true;
+				found = true;
 				break;
 			}
 		}
-
 	}
 
 	// find action with positive subs difference
