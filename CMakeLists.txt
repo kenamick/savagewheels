@@ -20,9 +20,9 @@ set(
 	src/Bindings.cpp 
 	src/CDeadToy.cpp 
 	src/CKdf.cpp 
-	src/Csdl.cpp 
-	src/Cswv_module.cpp 
-	src/Cvehicle.cpp 
+	src/CSdl.cpp 
+	src/CSwv_module.cpp 
+	src/CVehicle.cpp 
 	src/Utils.cpp 
 	src/CAnimation.cpp 
 	src/CGame.cpp 
