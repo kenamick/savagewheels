@@ -259,6 +259,7 @@ public:
 	void ChangeMusicVolume( int );
 	
 private:
+	bool InitializeSound();
 	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
 	void BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf );

@@ -950,7 +950,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	AppendToLog("Initializing SDL ..." );
+	LOG("Initializing SDL ..." );
 
 	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
 	{
@@ -1057,9 +1057,19 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 
 	LOG("SDL initialized successfully.");
 
+	InitializeSound();
+
+	return true;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: InitializeSound()
+// Desc: Initialize sound support system
+///////////////////////////////////////////////////////////////////////
+bool CSdl::InitializeSound()
+{
 #ifdef WITH_FMOD
-	// inicializirai Sound-a
-	AppendToLog("Initializing FModEx ..." );
+	LOG("Initializing FModEx ..." );
 
 	FMOD_RESULT 	result;
 	unsigned int	version;
@@ -1093,7 +1103,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 #endif
 		int mixrate = getenv("SW_SND_22KHZ") && !strcmp( getenv("SW_SND_22KHZ"), "1" ) ? 22050 : 44100;
 		// mixrate ???
-		
+
 		result = FMOD_System_Init(fmod_system, 32, FMOD_INIT_NORMAL, NULL);
 		if(!IsFModOK(result))
 		{
@@ -1139,15 +1149,15 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	}
 #else
 
-  // Nothing else is supported for sound right now.
-  
-  AppendToLog( "No sound support. Game was compiled without sound support!" );
-  
-  bsound_initialized = false;
+	// Nothing else is supported for sound right now.
+
+	LOG("No sound support! Game was compiled without sound support.");
+
+	bsound_initialized = false;
 
 #endif
 
-	return true;
+	return bsound_initialized;
 }
 
 
