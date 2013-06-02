@@ -70,10 +70,10 @@ class CMainMenu;
 #define STRINGS_SURFACE_OPTIONS	1
 #define STRINGS_SURFACE_ONOFF	2
 
-// rejimi na menu-to
+// Menu screens
 enum CONST_MENUSTATE
 {
-	MS_STARTSCREEN,
+	MS_STARTSCREEN = 0,
 	MS_PLAY_SETUPCAR,
 	MS_PLAY_1PLAYER,
 	MS_PLAY_2PLAYER,
@@ -85,17 +85,15 @@ enum CONST_MENUSTATE
 	MS_CAMPAIGN_WIN
 };
 
-
 enum CONST_BUTTONTYPE
 {
-	BT_TEXT,
+	BT_TEXT = 0,
 	BT_NAVIGATION
 };
 
-
 enum CONST_BUTTONSTATE
 {
-	BS_NORMAL,
+	BS_NORMAL = 0,
 	BS_MOUSEOVER,
 	BS_DOWN,		
 	BS_UP
@@ -112,7 +110,6 @@ struct POINT
 {
 	Uint16 x, y;
 };
-
 
 // Button class
 class CButton
@@ -134,8 +131,8 @@ public:
 	void Update( CGame *game );
 	
 	CONST_BUTTONSTATE GetState() { return state; };
+	void Reset();
 };
-
 
 // Main menu class
 class CMainMenu
@@ -163,13 +160,14 @@ private:
 	SDL_Surface	      *credits;
 
 	CONST_MENUSTATE   Menustate;
+	CONST_MENUSTATE   prevMenustate;
 
 	CButton			  buttons_menu[NUM_BUTTONS_MENU];
 	CButton			  buttons_options[NUM_BUTTONS_OPTIONS + 1];
 	CButton			  buttons_select[NUM_BUTTONS_SELECT];
 
 	//CButton			  buttons_camp[2];
-	int m,d;
+//	int m,d;
 	//CButton			  buttons_play[NUM_BUTTONS_PLAY];
 	//CButton			  buttons_exit;
 

@@ -360,6 +360,7 @@ int CMainMenu::Initialize( CGame *game )
 
 	ReloadCarsAttribs();
 	Menustate = MS_STARTSCREEN;
+	prevMenustate = Menustate;
 
 	return true;
 }
@@ -371,23 +372,36 @@ int CMainMenu::Initialize( CGame *game )
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::Update()
 {
-	Uint32		   i		=0;
-	SDL_Rect	   rsrc = { 0, 0, 0, 0 };
-	int			   dx		= 0, 
-				   //dy, 
-				   dxx		= 0, 
-				   dxxx		= 0;
-	SDL_Rect	   rTemp = { 0, 0, 0, 0 }, rcursor = { 0, 0, 0, 0 };
-	char	 	   buf[32];
-	static float   cur_frame		= 0;
-	static int	   select_menu		= 0;
-	static Uint32  frag_time		= 0;
-	static Uint32  gametime_press	= 0;
-	static int	   gc				= 0;
+	int i		= 0;
+	int dx 		= 0;
+	int dxx 	= 0;
+	int dxxx 	= 0;
+	SDL_Rect rsrc 	= { 0, 0, 0, 0 };
+	SDL_Rect rTemp 	= { 0, 0, 0, 0 };
+	SDL_Rect rcursor = { 0, 0, 0, 0 };
+	char buf[32];
+
+	static float cur_frame = 0;
+	static int select_menu = 0;
+	static Uint32 frag_time = 0;
+	static Uint32 gametime_press = 0;
+	static int gc = 0;
 	
+	// Bugfix: Reset buttons pressed states whenever the menu screen changes
+	if (Menustate != prevMenustate)
+	{
+		for ( i = 0; i <= NUM_BUTTONS_OPTIONS; i++)
+			buttons_options[i].Reset();
+		for ( i = 0; i < NUM_BUTTONS_MENU; i++)
+			buttons_menu[i].Reset();
+		for ( i = 0; i < NUM_BUTTONS_SELECT; i++)
+			buttons_select[i].Reset();
+
+		prevMenustate = Menustate;
+	}
+
 	switch( Menustate )
 	{
-
 	case MS_STARTSCREEN:
 		
 		ScrollScreen();
@@ -1099,125 +1113,9 @@ void CMainMenu::Update()
 }
 
 
-
-//---------------------------- Class Button ----------------
-
-
-
-//////////////////////////////////////////////////////////////////////
-// Name: Initialize()
-// Desc: init nav_button
-//////////////////////////////////////////////////////////////////////
-void CButton::Initialize( POINT *pos, Uint32 picture_index )
-{
-	x = pos->x;
-	y = pos->y;
-	pic_index = picture_index;
-	type = BT_NAVIGATION;
-
-	width = ssButtons[pic_index]->w;
-	height = ssButtons[pic_index]->h;
-}
-
-
-//////////////////////////////////////////////////////////////////////
-// Name: Initialize()
-// Desc: init button with text
-//////////////////////////////////////////////////////////////////////
-void CButton::Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Uint32 txtpicture_index )
-{
-	x = pos->x;
-	y = pos->y;
-	tx = x + 10;
-	ty = y + 10;
-	pic_index = picture_index;
-	text_pic_index = txtpicture_index;
-	text_index = txt_index;
-	type = BT_TEXT;
-
-	width = ssButtons[pic_index]->w;
-	height = ssButtons[pic_index]->h;
-
-}
-
-
-//////////////////////////////////////////////////////////////////////
-// Name: Update()
-// Desc:
-//////////////////////////////////////////////////////////////////////
-void CButton::Update( CGame *game )
-{
-
-	Uint32		pIndex = pic_index;
-	SDL_Rect	rcursor, rbutton, rsrc;
-
-	rcursor.x = game->Sdl.GetMouseX();
-	rcursor.y = game->Sdl.GetMouseY();
-	rcursor.w = rcursor.x + 8;
-	rcursor.h = rcursor.y + 8;
-
-	rbutton.x = x;
-	rbutton.y = y;
-	rbutton.w = x + width;
-	rbutton.h = y + height;
-
-	// highlight if needed (mouseover)
-	if ( game->Sdl.Collide( NULL, &rcursor, &rbutton ) )
-	{
-		pIndex += 1;
-		state = BS_MOUSEOVER;
-
-		// check mickey
-		if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_DOWN )
-			state = BS_DOWN;
-		
-		if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_UP )
-		{
-			state = BS_UP;
-			// PLAY SOUND
-			game->Snd.Play( SND_MENU_CLICK );
-			//over_sound = false;
-		}
-		//else
-		//{
-		//	state = BS_MOUSEOVER;
-		//	// PLAYSOUND
-		//	/*if ( !over_sound )
-		//	{		
-		//		_game->Snd.Play( SND_MENU_OVERBUTTON );
-		//		over_sound = true;
-		//	}*/
-		//}
-
-	}
-	else
-	{
-		// button lost focus
-		if ( state == BS_DOWN )
-			state = BS_NORMAL;
-		
-		over_sound = false;
-	}
-
-	// blit button
-	game->Sdl.BlitNow( x, y, ssButtons[pIndex] );
-
-	if ( type == BT_TEXT )
-	{
-		// blit text
-		rsrc.x = 0;
-		rsrc.y = text_index * MENU_TEXTHEIGHT;
-		rsrc.w = MENU_TEXTWIDTH;
-		rsrc.h = MENU_TEXTHEIGHT;
-
-		//sdl->BlitNow( tx, ty, ssStrings[text_pic_index], &rsrc );
-	}
-}
-
-
 //////////////////////////////////////////////////////////////////////
 // Name: SaveSettings()
-// Desc: save game options
+// Desc: Save game options
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::SaveSettings()
 {
@@ -1256,7 +1154,7 @@ void CMainMenu::SaveSettings()
 
 //////////////////////////////////////////////////////////////////////
 // Name: LoadSettings()
-// Desc: loag game options
+// Desc: Load saved game options
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::LoadSettings()
 {
@@ -1574,4 +1472,121 @@ void CMainMenu::UpdateCredits()
 
 		_game->Sdl.BlitNow( (int)x, 350, credits, &rect );	
 	}
+}
+
+
+//---------------------------- Class Button ----------------
+
+
+//////////////////////////////////////////////////////////////////////
+// Name: Initialize()
+// Desc: init nav_button
+//////////////////////////////////////////////////////////////////////
+void CButton::Initialize( POINT *pos, Uint32 picture_index )
+{
+	x = pos->x;
+	y = pos->y;
+	pic_index = picture_index;
+	type = BT_NAVIGATION;
+
+	width = ssButtons[pic_index]->w;
+	height = ssButtons[pic_index]->h;
+}
+
+
+//////////////////////////////////////////////////////////////////////
+// Name: Initialize()
+// Desc: init button with text
+//////////////////////////////////////////////////////////////////////
+void CButton::Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Uint32 txtpicture_index )
+{
+	x = pos->x;
+	y = pos->y;
+	tx = x + 10;
+	ty = y + 10;
+	pic_index = picture_index;
+	text_pic_index = txtpicture_index;
+	text_index = txt_index;
+	type = BT_TEXT;
+
+	width = ssButtons[pic_index]->w;
+	height = ssButtons[pic_index]->h;
+}
+
+
+//////////////////////////////////////////////////////////////////////
+// Name: Update()
+// Desc:
+//////////////////////////////////////////////////////////////////////
+void CButton::Update( CGame *game )
+{
+	Uint32		pIndex = pic_index;
+	SDL_Rect	rcursor, rbutton, rsrc;
+
+	rcursor.x = game->Sdl.GetMouseX();
+	rcursor.y = game->Sdl.GetMouseY();
+	rcursor.w = rcursor.x + 8;
+	rcursor.h = rcursor.y + 8;
+
+	rbutton.x = x;
+	rbutton.y = y;
+	rbutton.w = x + width;
+	rbutton.h = y + height;
+
+	// highlight if needed (mouseover)
+	if ( game->Sdl.Collide( NULL, &rcursor, &rbutton ) )
+	{
+		pIndex += 1;
+		state = BS_MOUSEOVER;
+
+		// check mickey
+		if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_DOWN )
+			state = BS_DOWN;
+
+		if ( game->Sdl.GetMouseLButton() == MOUSE_BUTTON_UP )
+		{
+			state = BS_UP;
+			// PLAY SOUND
+			game->Snd.Play( SND_MENU_CLICK );
+			//over_sound = false;
+		}
+		//else
+		//{
+		//	state = BS_MOUSEOVER;
+		//	// PLAYSOUND
+		//	/*if ( !over_sound )
+		//	{
+		//		_game->Snd.Play( SND_MENU_OVERBUTTON );
+		//		over_sound = true;
+		//	}*/
+		//}
+
+	}
+	else
+	{
+		// button lost focus
+		if ( state == BS_DOWN )
+			state = BS_NORMAL;
+
+		over_sound = false;
+	}
+
+	// blit button
+	game->Sdl.BlitNow( x, y, ssButtons[pIndex] );
+
+	if ( type == BT_TEXT )
+	{
+		// blit text
+		rsrc.x = 0;
+		rsrc.y = text_index * MENU_TEXTHEIGHT;
+		rsrc.w = MENU_TEXTWIDTH;
+		rsrc.h = MENU_TEXTHEIGHT;
+
+		//sdl->BlitNow( tx, ty, ssStrings[text_pic_index], &rsrc );
+	}
+}
+
+void CButton::Reset()
+{
+	state = BS_NORMAL;
 }
