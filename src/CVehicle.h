@@ -62,7 +62,6 @@ enum CONST_DIFFICULTY
 	DIFF_HARD = 8
 };
 
-
 // enum CONST_VEHICLE_TYPE 
 // {
 //   VT_KAMION = 0,
@@ -71,7 +70,6 @@ enum CONST_DIFFICULTY
 //   VT_BUGGY
 // };
 
-
 enum CONST_VEHICLE_MOVEMENT 
 {
   VM_NONE = 0,
@@ -79,14 +77,12 @@ enum CONST_VEHICLE_MOVEMENT
   VM_BACKWARD
 };
 
-
 enum CONST_VEHICLE_ROTATION 
 {
   VR_NONE = 0,
   VR_LEFT,
   VR_RIGHT
 };
-
 
 enum CONST_VEHICLE_CONTROL 
 {
@@ -97,7 +93,6 @@ enum CONST_VEHICLE_CONTROL
   VC_NONE
 };
 
-
 enum CONST_TIRETRAILS 
 {
   VTT_NONE,
@@ -105,13 +100,11 @@ enum CONST_TIRETRAILS
   VTT_BLOOD
 };
 
-
 enum CONST_AI_VEHICLE_TYPE 
 {
 	AVT_WARRIOR,
 	AVT_EXPLORER
 };
-
 
 
 class CWaypoint 
@@ -126,7 +119,6 @@ public:
 		  do_reverse(false),
 		  do_reverseTime(0)
 	{};
-
 	~CWaypoint() {};
 
 	float	x,y;
@@ -144,6 +136,18 @@ public:
 class CVehicle
 {
 private:
+	struct COLLISION_CHECK
+	{
+		float last_x;
+		float last_y;
+		bool check;
+		Sint32 last_check_time;
+		bool disabled;
+		Sint32 disabled_time;
+	};
+
+	COLLISION_CHECK	collisions;
+
 	CGame		 *_game;
 
 	Uint32		 myIndex;		// class index

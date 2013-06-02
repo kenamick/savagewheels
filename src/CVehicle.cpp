@@ -405,17 +405,12 @@ void CVehicle::Create()
 	
 	hit_points = max_hitpoints;
 
-	 // TEMP
-	 /*acc = 160;
-	 max_vel = 180;
-	 dec_acc = acc - 50;
-	 rot_speed = 15;
-	 lbs = 1;
-	 damage = 3;
-	 max_hitpoints = 100;
-	 hit_points = max_hitpoints;
-	 hit_points_crash = 50;
-	*/
+	honk_status = 0;
+
+	// reset clipping check
+	collisions.check = true;
+	collisions.last_check_time = 0;
+	collisions.disabled = false;
 }
 
 
@@ -441,7 +436,6 @@ void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 		}
 	}
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -575,7 +569,7 @@ void CVehicle::DoMotion()
 	}
 	else
 	{
-		// winagi skorostta da kloni kym 0 (toest kolata kym spirane)
+		// imitate friction (Newton's first law)
 		if ( vel > 0.0f )
 		{
 			vel -= (float)dec_acc * _game->getMpf();
@@ -651,10 +645,9 @@ void CVehicle::DoMotion()
 	{
 		if ( j != myIndex )
 		{
-//			DBG("me vel:" << this->vel);
-//			DBG("him vel:" << ptr_veh->GetVelocity());
-//			if ( abs(this->vel) < 1.5f && abs(ptr_veh->GetVelocity()) < 1.5f ) //remove this - 12.nov
-//				continue;
+			if (collisions.check && collisions.disabled) {
+				break;
+			}
 
 			// setup rectangles
 			ptr_veh->GetFrameRect( &rPrey );
@@ -714,8 +707,8 @@ void CVehicle::DoMotion()
 				// enemy vehicle damage calculations
 				if ( !no_damage )
 				{
-					float perc = ( (float)tmp_vel / (float)max_vel ) * 100.0f;
-					Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
+					float perc = (float)tmp_vel / (float)max_vel * 100.0f;
+					int tmp_anger = ((float)anger / 100.0f ) * perc;
 
 					anger -= tmp_anger;
 					anger = anger < 0 ? 0 : anger;
@@ -732,10 +725,8 @@ void CVehicle::DoMotion()
 					ptr_veh->DoDamage( fulldmg, myIndex );
 				
 					// PLAY CRASH SOUND
-					if ( intGetRnd( 0, 50 ) < 25 )
-						_game->Snd.Play( SND_CRASHLIGHT1, (int)x ); 
-					else
-						_game->Snd.Play( SND_CRASHLIGHT2, (int)x ); 
+					_game->Snd.Play( intGetRnd( 0, 50 ) % 2 ?
+							SND_CRASHLIGHT1 : SND_CRASHLIGHT2, (int)x );
 						
 				}
 
@@ -864,13 +855,15 @@ void CVehicle::DoMotion()
 
 		vel = 0;
 	}
-
 	
-	// HitTestToys...
+	/*
+	 * Bonuses hit tests
+	 */
+
 	SDL_Rect rMe;
 	SDL_Rect rToy;
-	Uint32   dx = 0U, 
-			 dy = 0U;
+	Uint32 dx = 0U;
+	Uint32 dy = 0U;
 
 	GetFrameRect( &rMe );
 
@@ -1338,15 +1331,22 @@ void CVehicle::Update()
 		bputminekey = false;
 	}
 
+	// beep
+	if (honk_status == 2)
+	{
+		_game->Snd.Play(SND_MENU_HONK1, (int) x);
+		honk_status = 0;
+	}
+
 	// self-distruct if vehicle has 'stuck'
 	// XXX This is a nasty hack due to existing collision physics issue :(
 	if (vel == 0 && !self_destruct)
 	{
-		if (!ai_stuck)
-		{
-			ai_stuck = true;
-			ai_stucktime = _game->Timer.Time() + 4000 + (rand() % 2000);
-		}
+//		if (!ai_stuck)
+//		{
+//			ai_stuck = true;
+//			ai_stucktime = _game->Timer.Time() + 4000 + (rand() % 2000);
+//		}
 	}
 	else
 	{
@@ -1362,7 +1362,7 @@ void CVehicle::Update()
 		}
 	}
 
-	// proveri "_game->self_destruct" mechanizm
+	// check if self-destruct is on
 	if (self_destruct && !self_destruction)
 	{
 		self_destruction = true;
@@ -1387,20 +1387,56 @@ void CVehicle::Update()
 		}
 		else
 		{
-			DoDamage(1000U, myIndex);
-			self_destruction = false;  // clear local var
+			// destroy vehicle and clear flag
+			DoDamage(9999U, myIndex);
+			self_destruction = false;
 		}
 	}
 
-	if (honk_status == 2)
+	// XXX
+	// This is a hack to prevent vehicles from sticking (for too long)
+	// If position does not change for several seconds, then just disable collisions check
+	// for this vehicle. Let it pass through enemies.
+	if (collisions.check)
 	{
-		_game->Snd.Play(SND_MENU_HONK1, (int) x);
-		honk_status = 0;
+		if (collisions.disabled)
+		{
+			if (collisions.disabled_time < _game->Timer.Time())
+			{
+				collisions.disabled = false;
+				collisions.last_check_time = 0;
+			}
+		}
+		else if (collisions.last_check_time < _game->Timer.Time())
+		{
+			float dist = fGetDistanceNSR(x, y, collisions.last_x, collisions.last_y);
+			if (dist < 4.0f)
+			{
+				DBG(" clipping DISABLED");
+				collisions.disabled = true;
+				collisions.disabled_time = _game->Timer.Time() + 2500;
+
+				// XXX either this or leave to go to the waypoint selected
+				if (control == VC_AI)
+				{
+					waypoint.do_reverse = true;
+					waypoint.do_reverseTime = _game->Timer.Time() + 500;
+				}
+			}
+			else
+			{
+				// reset check
+				collisions.last_x = x;
+				collisions.last_y = y;
+				collisions.last_check_time = _game->Timer.Time() + 2000;
+			}
+		}
 	}
+
 
 } 
 
-
+// TODO: Remove
 void CVehicle::UpdateStops()
 {
 	if ( set_stop )
