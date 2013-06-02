@@ -85,7 +85,7 @@ CVehicle::CVehicle()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Release()
-// Desc: osvobodi sprite-ovete
+// Desc: Release allocated objects
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Release()
 {
@@ -126,7 +126,7 @@ void CVehicle::Release()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Initialize()
-// Desc: create vehicle from module
+// Desc: Create vehicle from data module
 ///////////////////////////////////////////////////////////////////////
 int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
@@ -365,7 +365,7 @@ void CVehicle::Create()
 	// point the current animations to the array of non-crashed vehicle animations
 	sprite = sprite_norm;
 	mask = mask_norm;
-	hit_points_crash = false;
+	crashed_look = false;
 
 	// reset vars
 	x = pos_warp[warpPos].x;
@@ -459,11 +459,10 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 	motion_frame = display_frame;
 }
 
- 
 
 ///////////////////////////////////////////////////////////////////////
 // Name: DoMotion()
-// Desc: do vehicle motion
+// Desc: Do vehicle motion and collisions tests
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::DoMotion()
 {
@@ -473,9 +472,7 @@ void CVehicle::DoMotion()
 	float tmp_maxvel 	= (float) max_vel;
 	float tmp_vel 		= vel;
 	float abs_vel 		= fabsf(vel);
-
-	float rot_m     = 1.0f;
-
+	float rot_m			= 1.0f;
 
 	/*
 	 * AI steering
@@ -715,7 +712,7 @@ void CVehicle::DoMotion()
 					anger = anger > 110 ? 110 : anger;
 					
 					float speed_damage = (float)damage + 0.10f * (float)tmp_vel;
-					float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
+					float armour_absorb = (0.12f * (float)ptr_veh->GetHitPoints());
 					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
 					int fulldmg = speed_damage - armour_absorb + tmp_anger;
 					fulldmg = fulldmg < 0 ? 0 : fulldmg;
@@ -923,11 +920,11 @@ void CVehicle::DoMotion()
 
 					hit_points += _game->Dtoys.GetToyValue( i );
 					
-					if ( hit_points >= hit_points_crash && hit_points_crash )
+					if ( hit_points >= hit_points_crash && crashed_look )
 					{
 						sprite = sprite_norm;
 						mask = mask_norm;
-						hit_points_crash = false;
+						crashed_look = false;
 					}
 					if ( hit_points > max_hitpoints ) 
 						hit_points = max_hitpoints;
@@ -1127,12 +1124,12 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 			has_the_goal = false;
 		}
 	}
-	else if ( hit_points <= hit_points_crash && !hit_points_crash )
+	else if ( hit_points <= hit_points_crash && !crashed_look )
 	{
 		// show smashed vehicle sprites
 		sprite = sprite_crash;
 		mask = mask_crash;
-		hit_points_crash = true;
+		crashed_look = true;
 
 		// PLAYSOUND
 		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
@@ -1451,7 +1448,7 @@ void CVehicle::UpdateStops()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: AI_Update()
-// Desc: obnovi informaciqta za waypointa i cqloto AI
+// Desc: Update waypoints and general AI decision taking process
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_Update()
 {
@@ -1531,7 +1528,6 @@ void CVehicle::AI_GenerateWaypoint()
 	Uint32	  distance		= 0L, 
 			  tmp_dist		= 0L;
 	bool	  bonus_found	= false;
-	SDL_Rect  rtoy;
 	Uint32	  bonus_list_index[DT_MAX_CHILDS];
 	Uint32	  bonus_list[DT_MAX_DEADTOYS];
 	Uint32	  bonus_list_warrior[DT_MAX_DEADTOYS]	= { 30, 25, 15, 10, 20 };
@@ -1551,7 +1547,7 @@ void CVehicle::AI_GenerateWaypoint()
 		{
 			action = ACTION_TAKEBONUS;
 
-			// proveri za bonusi i systavi spisyk
+			// check for available bonuses on map and create a list
 			for( i = 0; i < DT_MAX_CHILDS; i++ )
 			{
 				if ( _game->Dtoys.GetToyVisible( i ) )
@@ -1562,8 +1558,9 @@ void CVehicle::AI_GenerateWaypoint()
 				}
 			}
 
-			// v sluchai che nqma vidimi bonusi
-			if ( !bonus_found ) action = ACTION_ATTACK;
+			// in case no bonuses are available
+			if ( !bonus_found )
+				action = ACTION_ATTACK;
 		}
 
 
@@ -1593,6 +1590,8 @@ void CVehicle::AI_GenerateWaypoint()
 		}
 	}
 
+
+	SDL_Rect  rBonus;
 
 	switch( action )
 	{
@@ -1651,10 +1650,10 @@ void CVehicle::AI_GenerateWaypoint()
 		// take random bonus from the list
 		bonus_index = bonus_list_index[AI_doFSM( bonus_list, DT_MAX_DEADTOYS )];
 
-		_game->Dtoys.GetToyRect( bonus_index, &rtoy );
+		_game->Dtoys.GetToyRect( bonus_index, &rBonus );
 		
-		waypoint.x = rtoy.x;
-		waypoint.y = rtoy.y;
+		waypoint.x = rBonus.x;
+		waypoint.y = rBonus.y;
 		waypoint.reached = false;
 		waypoint.static_pos = true;
 		waypoint.index = bonus_index;
@@ -1671,16 +1670,14 @@ void CVehicle::AI_GenerateWaypoint()
 	
 	}
 
-	// vzemi koordinatite kym tochkata
+	// Adjust waypoint coordinates
 	AI_ProcessWaypoint();
-
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////
 // Name: AI_ProcessWaypoint()
-// Desc: vzemi ygyla kym waypoint-a i sloji pravilniq motion_frame
+// Desc: Get angle to waypoint destination and adjust turning
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
@@ -1724,7 +1721,6 @@ void CVehicle::AI_ProcessWaypoint()
 		ai_turning = VR_LEFT;
 	}
 
-
 	/*// calculate radial speed
 	distance = fGetDistance( (float)GetX(), (float)GetY(), waypoint.x, waypoint.y );
 	ai_maxvel = sqrt( acc * distance );  // a = (v*v)/R
@@ -1744,7 +1740,6 @@ void CVehicle::AI_ProcessWaypoint()
 
 	//display_frame = la/10;
 	//motion_frame = display_frame;*/
-
 }
 
 
