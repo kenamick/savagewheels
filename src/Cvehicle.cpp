@@ -469,23 +469,20 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::DoMotion()
 {
-	
-	float		tmp_x, tmp_y, tmp_mf;
-	int			tmp_vel;
-	int			tmp_maxvel;
-	float		rot_m = 1;
-	SDL_Rect	rPrey, rMine; //, rdest;
-	bool		bHit			= false, 
-				no_damage		= false;
-	CVehicle    *ptr_veh		= NULL;
+	float tmp_mf 		= motion_frame;
+	float tmp_x 		= x;
+	float tmp_y 		= y;
+	float tmp_maxvel 	= (float) max_vel;
+	float tmp_vel 		= vel;
+	float abs_vel 		= fabsf(vel);
 
-	tmp_x		= x;
-	tmp_y		= y;
-	tmp_mf		= motion_frame;
-	tmp_vel		= (int)fabsf(vel);
-	tmp_maxvel	= max_vel;
+	float rot_m     = 1.0f;
 
-	// AI-steering ...
+
+	/*
+	 * AI steering
+	 */
+
 	if ( control == VC_AI )
 	{
 		rot_m = 2.0f;  // double rotation speed for AIs
@@ -499,10 +496,6 @@ void CVehicle::DoMotion()
 		else
 			vrot = VR_NONE;
 
-		/*sprintf( buf, "df: %d  ff: %d", (int)display_frame, (int)ai_final_frame );
-		AppendToLog( buf );*/
-
-		
 		if ( ai_turning == VR_LEFT )
 		{
 			ai_cur_angle += ((rot_speed/2) * _game->getMpf());
@@ -512,8 +505,6 @@ void CVehicle::DoMotion()
 				ai_turning = VR_NONE;
 				tmp_maxvel = max_vel;
 			}
-
-			//vrot = VR_LEFT;
 		}
 		else if ( ai_turning == VR_RIGHT )
 		{
@@ -525,10 +516,12 @@ void CVehicle::DoMotion()
 				tmp_maxvel = max_vel;
 			}
 		}
-
 	}
 
-	// .........rotate
+	/*
+	 * Rotation
+	 */
+
 	if ( vrot == VR_LEFT && vel != 0 )
     {
 	    display_frame += (rot_speed * rot_m * _game->getMpf());
@@ -557,41 +550,46 @@ void CVehicle::DoMotion()
 	vrot = VR_NONE;
 	motion_frame = display_frame;
 
-	// Accelerate... 
-	int maxvel_p = tmp_maxvel + speed_bonus;
-	int maxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
+	/*
+	 * Acceleration
+	 */
+
+	float maxvel_p = tmp_maxvel + speed_bonus;
+	float maxvel_n = -maxvel_p; // / 2;
 
 	if ( vmove == VM_FORWARD )
 	{
 		vel += (float)acc * _game->getMpf();
-		if ( vel > (float)maxvel_p )
-			vel = (float)maxvel_p;
+		if ( vel > maxvel_p )
+			vel = maxvel_p;
 	}
 	else if ( vmove == VM_BACKWARD )
 	{
-		vel -= acc * _game->getMpf();
-		if ( vel < (float)maxvel_n )
-			vel = (float)maxvel_n;
+		vel -= (float)acc * _game->getMpf();
+		if ( vel < maxvel_n )
+			vel = maxvel_n;
 	}
 	else
 	{
 		// winagi skorostta da kloni kym 0 (toest kolata kym spirane)
-		if ( vel > 0 ) 
+		if ( vel > 0.0f )
 		{
-			vel -= dec_acc * _game->getMpf();
-			if ( vel < 0 )
-				vel = 0;
+			vel -= (float)dec_acc * _game->getMpf();
+			if ( vel < 0.0f )
+				vel = 0.0f;
 		}
 
-		if ( vel < 0 ) 
+		if ( vel < 0.0f )
 		{
-			vel += dec_acc * _game->getMpf();
-			if ( vel > 0 )
-				vel = 0;
+			vel += (float)dec_acc * _game->getMpf();
+			if ( vel > 0.0f )
+				vel = 0.0f;
 		}
 	}
 
-	// impact speed friction
+	/*
+	 * Impact friction
+	 */
 	if ( hit_vel > 0.0f )
 	{
 		hit_vel -= _game->getMpf() * (float)dec_acc;
@@ -606,7 +604,7 @@ void CVehicle::DoMotion()
 	}
 
 	// rotate vehicle tires (if moving)
-	if (tire_frames > 1 && fabsf(vel) > 0.0f)
+	if (tire_frames > 1 && abs_vel > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
 		
@@ -614,27 +612,35 @@ void CVehicle::DoMotion()
 			tire_frame = 0;
 	}
 
+	/*
+	 * Position translation
+	 */
+
 	float mpf_vel = _game->getMpf() * vel;
 	float mpf_hitvel = _game->getMpf() * hit_vel;
 
-	// translate position
 	if ( control == VC_AI )
 	{
-		x += ((float)cos(ai_cur_angle) * mpf_vel + x_acc * mpf_hitvel );
-		y -= ((float)sin(ai_cur_angle) * mpf_vel + y_acc * mpf_hitvel );
+		x += cosf(ai_cur_angle) * mpf_vel + x_acc * mpf_hitvel;
+		y -= sinf(ai_cur_angle) * mpf_vel + y_acc * mpf_hitvel;
 	}
 	else
 	{
-		x += (g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel );
-		y -= (g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel );
+		x += g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel;
+		y -= g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel;
 		//x += (g_dirx[(int)motion_frame] * vel + x_acc * hit_vel ) * _game->getMpf(); 
 		//y -= (g_diry[(int)motion_frame] * vel + y_acc * hit_vel ) * _game->getMpf();
 	}
 
 
-	// HitTest...
+	/*
+	 * Collision Test
+	 */
 
-	ptr_veh = _game->Auto;
+	SDL_Rect rPrey;
+	SDL_Rect rMine;
+	CVehicle *ptr_veh = _game->Auto;
+
     GetFrameRect( &rMine );
 	
 	for ( Uint32 j = 0; j < _game->game_num_cars; j++ )
@@ -655,7 +661,6 @@ void CVehicle::DoMotion()
 				DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
 				DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel << " vmove=" << vmove);
 
-				bHit = true;  // we have impact
 				x = tmp_x;
 				y = tmp_y;
 				motion_frame = tmp_mf;
@@ -692,6 +697,8 @@ void CVehicle::DoMotion()
 					}
 				}
 
+
+				bool no_damage = false;
 
 				// TODO: fix this because it disbalances the game!
 				if ( tmp_vel <= MIN_DAMAGE_VELOCITY ) 
