@@ -108,6 +108,10 @@ enum CONST_BUTTONTEXT
 	BTXT_ONOFF = 2
 };
 
+struct POINT
+{
+	Uint16 x, y;
+};
 
 
 // Button class
@@ -125,8 +129,8 @@ private:
 	bool				over_sound;
 
 public:
-	void Initialize( POINT *pos, Uint32 picture_index );					// button - navigaciq
-	void Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Uint32 txtpicture_index );	// button - text
+	void Initialize( POINT *pos, Uint32 picture_index );
+	void Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Uint32 txtpicture_index );
 	void Update( CGame *game );
 	
 	CONST_BUTTONSTATE GetState() { return state; };

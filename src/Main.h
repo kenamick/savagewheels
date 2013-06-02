@@ -97,11 +97,6 @@
 #define FM_OK(x)
 #endif
 
-struct POINT 
-{
-	Uint16 x, y;
-};
-
 typedef std::string			String;
 typedef std::ostringstream	OutputSStream;
 
