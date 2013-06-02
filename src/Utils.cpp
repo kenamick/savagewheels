@@ -130,7 +130,7 @@ float fGetRnd ( float min_val, float max_val )
 
 /////////////////////////////////////////////////////////////////////////
 //// Name: GetDistance()
-//// Desc: Vryshta razstoqnieto m/u 2 tochki
+//// Desc: (Uint)
 /////////////////////////////////////////////////////////////////////////
 //Uint16  GetDistance( int x1, int y1, int x2, int y2 )
 //{
@@ -143,7 +143,7 @@ float fGetRnd ( float min_val, float max_val )
 
 /////////////////////////////////////////////////////////////////////////
 //// Name: fGetDistance()
-//// Desc: Vryshta razstoqnieto m/u 2 tochki (FLOAT)
+//// Desc: (FLOAT)
 /////////////////////////////////////////////////////////////////////////
 //float  fGetDistance( float x1, float y1, float x2, float y2 )
 //{
@@ -155,26 +155,26 @@ float fGetRnd ( float min_val, float max_val )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetDistanceNSR()
-// Desc: (INT)
+// Desc: Get unsquared dance (int)
 ///////////////////////////////////////////////////////////////////////
-Uint32  GetDistanceNSR ( int x1, int y1, int x2, int y2 )
+Uint32 GetDistanceNSR ( int x1, int y1, int x2, int y2 )
 {
     int dx = x2 - x1;
     int dy = y2 - y1;
 
-    return ( Uint32 ) ( dx*dx + dy*dy );
+    return (Uint32)(dx*dx + dy*dy);
 }
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetDistanceNSR()
-// Desc: (FLOAT)
+// Desc: Get unsquared dance (float)
 ///////////////////////////////////////////////////////////////////////
-float  fGetDistanceNSR ( float x1, float y1, float x2, float y2 )
+float fGetDistanceNSR ( float x1, float y1, float x2, float y2 )
 {
     float dx = x2 - x1;
     float dy = y2 - y1;
 
-    return ( dx*dx + dy*dy );
+    return (dx*dx + dy*dy);
 }
 
 ///////////////////////////////////////////////////////////////////////
