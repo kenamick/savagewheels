@@ -550,7 +550,8 @@ void CVehicle::DoMotion()
 	 */
 
 	float maxvel_p = tmp_maxvel + velocity_bonus;
-	float maxvel_n = -maxvel_p; // / 2;
+	// 80% of total acc when going backwards
+	float maxvel_n = -maxvel_p * 0.8;
 
 	if ( vmove == VM_FORWARD )
 	{
