@@ -32,70 +32,140 @@
  anger 	     x:5 y:460    x:165 y:460   x:325 y:460   x:485 y:460 
 */
 
-static POINT  pos_frag[4]	= { 105, 428, 265, 428, 425, 428, 585, 428 };
-static POINT  pos_hp[4]	= { 5, 445, 165, 445, 325, 445, 485, 445 };
-static POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
-static POINT  pos_warp[4]	= { 30, 30, 30, 360, 535, 30, 535, 360 };
+POINT  pos_frag[4]	= { 105, 428, 265, 428, 425, 428, 585, 428 };
+POINT  pos_hp[4]	= { 5, 445, 165, 445, 325, 445, 485, 445 };
+POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
+POINT  pos_warp[4]	= { 30, 30, 30, 360, 535, 30, 535, 360 };
 
-/*
- * Vehicle components (Extern)
- */
-int attribACC[3]		= { 160, 220, 320 };
-int	attribSPEED[5]	= { 180, 220, 260, 310, 340 };
-int attribROT[3]		= { 15, 20, 25 };
-int attribDAMAGE[4]	= { 40, 60, 70, 100 };
-int attribARMOUR[4]	= { 210, 260, 300, 400 };
+// vehicle components
+int	   attribACC[3]		= { 160, 220, 320 };
+int	   attribSPEED[5]	= { 180, 220, 260, 310, 340 };
+int    attribROT[3]		= { 15, 20, 25 }; 
+int    attribDAMAGE[4]	= { 40, 60, 70, 100 };
+int    attribARMOUR[4]	= { 210, 260, 300, 400 };
 
-/*
- * 36 precalculated sin/cos values for each vehicle animation frame
- *
- * done by LordCIH using Matlab ;]
- */
-static float g_dirx[] = { 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f, 0.6428f,
-		0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f, -0.5000f,
-		-0.6428f, -0.7660f, -0.8660f, -0.9397f, -0.9848f, -1.0000f, -0.9848f,
-		-0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f, -0.1736f,
-		0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f, 0.8660f, 0.9397f,
-		0.9848f };
+float g_dirx[] = {
+	1.0000f, 
+	0.9848f, 
+	0.9397f,
+    0.8660f,
+    0.7660f,
+    0.6428f,
+    0.5000f,
+    0.3420f,
+    0.1736f,
+    0.0000f,
+   -0.1736f,
+   -0.3420f,
+   -0.5000f,
+   -0.6428f,
+   -0.7660f,
+   -0.8660f,
+   -0.9397f,
+   -0.9848f,
+   -1.0000f,
+   -0.9848f,
+   -0.9397f,
+   -0.8660f,
+   -0.7660f,
+   -0.6428f,
+   -0.5000f,
+   -0.3420f,
+   -0.1736f,
+    0.0000f,
+    0.1736f,
+    0.3420f,
+    0.5000f,
+    0.6428f,
+    0.7660f,
+    0.8660f,
+    0.9397f,
+    0.9848f
+};
 
-static float g_diry[] = { 0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f,
-		0.8660f, 0.9397f, 0.9848f, 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f,
-		0.6428f, 0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f,
-		-0.5000f, -0.6428f, -0.7660f, -0.8660f, -0.9397f, -0.9848f, -1.0000f,
-		-0.9848f, -0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f,
-		-0.1736f };
+float g_diry[] = {
+    0.0000f,
+    0.1736f,
+    0.3420f,
+    0.5000f,
+    0.6428f,
+    0.7660f,
+    0.8660f,
+    0.9397f,
+    0.9848f,
+    1.0000f,
+    0.9848f,
+    0.9397f,
+    0.8660f,
+    0.7660f,
+    0.6428f,
+    0.5000f,
+    0.3420f,
+    0.1736f,
+    0.0000f,
+   -0.1736f,
+   -0.3420f,
+   -0.5000f,
+   -0.6428f,
+   -0.7660f,
+   -0.8660f,
+   -0.9397f,
+   -0.9848f,
+   -1.0000f,
+   -0.9848f,
+   -0.9397f,
+   -0.8660f,
+   -0.7660f,
+   -0.6428f,
+   -0.5000f,
+   -0.3420f,
+   -0.1736f
+};
+
+					
+// Gosho s MatLab-a go izchisli t'va po-gore ;]
+
 
 ///////////////////////////////////////////////////////////////////////
-// Name: CVehicle()
-// Desc: konstructor
+// Ime: CVehicle()
+// Opisanie: konstructor
 ///////////////////////////////////////////////////////////////////////
 CVehicle::CVehicle()
 : _game( NULL ),
-visible(false),
-released(true),
-honk_status(0),
-reset_frame(false),
-skip_hit_timer(0U),
-collided(false),
-is_hit_wall(false)
+   released(true),
+   honk_status(0)
 {
-	sprite_driver = (SDL_Surface *)NULL;
+
+	driver_name = (SDL_Surface *)NULL;
 	sprite = sprite_norm = sprite_crash = (SDL_Surface **)NULL;
+
 	mask = mask_crash = mask_norm = NULL;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Ime: ~CVehicle()
+// Opisanie: destructor
+///////////////////////////////////////////////////////////////////////
+CVehicle::~CVehicle()
+{
+	
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Name: Release()
-// Desc: osvobodi sprite-ovete
+// Ime: Release()
+// Opisanie: osvobodi sprite-ovete
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Release()
 {
+
 	if ( released ) 
 		return;
 
-	LOG("Closing CVehicle() class " << vehicle_name << " ...");
+	AppendToLog( "Closing CVehicle() class..." );
 
-	for ( int cn = 0; cn < MAX_ROTATION_FRAMES * max_tire_frames; cn++ )
+	for ( int cn = 0; cn < MAX_ROTATION_FRAMES * tire_frames; cn++ )
 	{
 		RELEASE_SURF( sprite_norm[cn] );
 		RELEASE_SURF( sprite_crash[cn] );
@@ -107,7 +177,7 @@ void CVehicle::Release()
 			delete mask_crash[cn];
 	}
 
-	RELEASE_SURF( sprite_driver );
+	RELEASE_SURF( driver_name );
 
 	if ( sprite_norm )
 		delete[] sprite_norm;
@@ -126,11 +196,12 @@ void CVehicle::Release()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Name: Initialize()
-// Desc: create vehicle from module
+// Ime: Initialize()
+// Opisanie: create vehicle from module
 ///////////////////////////////////////////////////////////////////////
-bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
+int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
+
 	int cn = 0;
 	int frames = 0;
 	int index = 0;
@@ -144,7 +215,7 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 	frames = swv->animation_frames;
 
 	// get tire frames
-	max_tire_frames = frames / MAX_ROTATION_FRAMES;
+	tire_frames = frames / MAX_ROTATION_FRAMES;
 	frags = 0; // reset fragovete
 	anger = 0; // reset anger-a
 
@@ -163,7 +234,7 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 		if ((sprite_norm[cn] = _game->Sdl.LoadBitmap(vehicle_filename,
 				swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA,
 				NO_ALPHA)) == NULL) {
-			return false;
+			return 0;
 		}
 
 		// create a mask for this sprite
@@ -175,7 +246,7 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 		if ((sprite_crash[cn] = _game->Sdl.LoadBitmap(vehicle_filename,
 				swv->pfiles[index].pos, swv->pfiles[index].length, MAGENTA,
 				NO_ALPHA)) == NULL) {
-			return false;
+			return 0;
 		}
 
 		// create a mask for this sprite
@@ -183,10 +254,10 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 	}
 
 	// load driver_name surface
-	if ((sprite_driver = _game->Sdl.LoadBitmap(vehicle_filename,
+	if ((driver_name = _game->Sdl.LoadBitmap(vehicle_filename,
 			swv->pfiles[2].pos, swv->pfiles[2].length, BLACK, NO_ALPHA))
 			== NULL) {
-		return false;
+		return 0;
 	}
 
 	display_frame = tire_frame = 0;
@@ -205,17 +276,15 @@ bool CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 	team = carIndex;
 
 	released = false;
+	set_stop = false;
 
-	// set name
-	strncpy(vehicle_name, swv->vehiclename, 8);
-
-	return true;
+	return 1;
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Name: SetAttirbs()
-// Desc: car-attribs based on game difficulty
+// Ime: SetAttirbs()
+// Opisanie: car-attribs based on game difficulty
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 {
@@ -223,21 +292,17 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 
 	switch( diff )
 	{
-	case DIFF_EASY:
-		diff_perc	= 0.75f;
+	case DIFF_EASY: diff_perc	= 0.75f; 
 		break;
 
-	case DIFF_NORMAL:
-		diff_perc = 1.0f;
+	case DIFF_NORMAL: diff_perc = 1.0f; 
 		return; 
 		break;
 
-	case DIFF_HARD:
-		diff_perc	= 1.3f;
+	case DIFF_HARD: diff_perc	= 1.3f; 
 		break;
 	
 	default: 
-		LOG("Invalid difficulty attribute!");
 		return;
 	}
 	
@@ -252,8 +317,8 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 
 
 /*///////////////////////////////////////////////////////////////////////
-// Name: Initialize()
-// Desc: inicializira avtomobil
+// Ime: Initialize()
+// Opisanie: inicializira avtomobil
 ///////////////////////////////////////////////////////////////////////
 int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 {
@@ -316,38 +381,28 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 */
 
 ///////////////////////////////////////////////////////////////////////
-// Name: Initialize()
-// Desc: inicializira avtomobil
+// Ime: Initialize()
+// Opisanie: inicializira avtomobil
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Create()
 {
-	Uint32 		dist = 0UL;
-	CVehicle 	*ptr_veh = NULL;
+	Uint32 		dist;
+	CVehicle 	*ptr_veh;
 	bool 		do_not_warp = true;
-	int 		warpPos = 0;
+	int 		i = 0, j = 0;
 
-	// get a safe vehicle spawn point
-	// j - one of 4 possible warp points
-
-	DBG("Creating vehicle idx=" << myIndex);
-
-	while (do_not_warp)
-	{
-		warpPos = (int) (rand() % 4);
+	// proveri dali ima avotmobil do izhodqshtata tochka za warp-vane
+	while (do_not_warp) {
+		j = (int) (rand() % 4);
 		do_not_warp = false;
 
 		ptr_veh = _game->Auto;
 
-		for (Uint16 i = 0; i < _game->game_num_cars; i++)
-		{
-			if (i != myIndex)
-			{
-				if (ptr_veh->GetVisible())
-				{
-					dist = GetDistanceNSR(ptr_veh->GetCX(),
-							ptr_veh->GetCY(),
-							pos_warp[warpPos].x,
-							pos_warp[warpPos].y);
+		for (i = 0; i < _game->game_num_cars; i++) {
+			if (i != myIndex) {
+				if (ptr_veh->GetVisible()) {
+					dist = GetDistanceNSR(ptr_veh->GetCX(), ptr_veh->GetCY(),
+							pos_warp[j].x, pos_warp[j].y);
 
 					if (dist < SAFE_WARP_DISTANCE) {
 						do_not_warp = true;
@@ -364,41 +419,40 @@ void CVehicle::Create()
 
 	//if ( do_not_warp ) return;
 
-//	hit_vel = 0.0f;
-	landmines_count = 0;
+	x_acc = 0.0f;
+	y_acc = 0.0f;
+	hit_vel = 0.0f;
+	landmines = 0;
 	vmove = VM_NONE;
 	vrot = VR_NONE;
 
-	// point the current animations to the array of non-crashed vehicle animations
+	// sprite_pointer sochi kym normal pix
 	sprite = sprite_norm;
 	mask = mask_norm;
-	crashed_look = false;
+	bcrashlook = false;
 
 	// reset vars
-	x = pos_warp[warpPos].x;
-	y = pos_warp[warpPos].y;
-	velocity_bonus = 0;
+	x = pos_warp[j].x;
+	y = pos_warp[j].y;
+	speed_bonus = 0;
  
-	if ( warpPos == 2 || warpPos == 3 )
+	if ( j == 2 || j == 3 )
 	{
-//		motion_frame = 18;
-//		display_frame = motion_frame;
-		motion_angle = PI;
-		display_frame = 18;
+		motion_frame = 18;
+		display_frame = motion_frame;
 	}
 	else
 	{
-//		motion_frame = 0;
-		motion_angle = 0.0f;
+		motion_frame = 0;
 		display_frame = 0;
 	}
 
-//	center_x = (Uint32)x + (sprite[(int)motion_frame]->w / 2);
-//	center_y = (Uint32)y + (sprite[(int)motion_frame]->h / 2);
+	center_x = (Uint32)x + (sprite[(int)motion_frame]->w / 2);
+	center_y = (Uint32)y + (sprite[(int)motion_frame]->h / 2);
 
 	// check for memory access violation
-	ASSERT(sprite_norm[(int)display_frame]->w < 500);
-	ASSERT(sprite_norm[(int)display_frame]->h < 500);
+	ASSERT(sprite_norm[(int)motion_frame]->w < 500);
+	ASSERT(sprite_norm[(int)motion_frame]->h < 500);
 
 	tire_frame = 0;
 	vel = 0.0f;
@@ -406,7 +460,7 @@ void CVehicle::Create()
 	trails_time = 0;
 
 	// ai_facing
-	ai_cur_angle = motion_angle;
+	ai_cur_angle = motion_frame * 10;
 	ai_stuck = false;
 
 	visible = true;
@@ -430,11 +484,12 @@ void CVehicle::Create()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Name: SetControl()
-// Desc: Set Vehicle control operator
+// Ime: SetControl()
+// Opisanie: set identifikaciq na upravlenie na avtomobila
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 {
+
 	control = vcontrol;
 	
 	// AI_setup
@@ -456,61 +511,58 @@ void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 }
 
 
+
 ///////////////////////////////////////////////////////////////////////
-// Name: Move()
-// Desc: Mradni napred/nazad
+// Ime: Move()
+// Opisanie: Mradni napred/nazad
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 {
 	vmove = mvt;
-//	motion_frame = display_frame;
-
-	if (reset_frame) {
-		motion_angle = Deg2Rad(display_frame * 10.0f);
-		motion_angle = FixRad(motion_angle);
-	}
+	motion_frame = display_frame;
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Name: Rotate()
-// Desc: Varti kolata
+// Ime: Rotate()
+// Opisanie: Varti kolata 
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 {
 	vrot = rot;
-//	motion_frame = display_frame;
-	if (reset_frame) {
-		motion_angle = Deg2Rad(display_frame * 10.0f);
-		motion_angle = FixRad(motion_angle);
-	}
+	motion_frame = display_frame;
 }
 
  
 
 ///////////////////////////////////////////////////////////////////////
-// Name: DoMotion()
-// Desc: do vehicle motion
+// Ime: DoMotion()
+// Opisanie: do vehicle motion
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::DoMotion()
 {
-	// Init defaults
-	float tmp_df 	= display_frame;
-//	float tmp_mf	= motion_frame;
-	float tmp_x		= x;
-	float tmp_y		= y;
-	float tmp_vel 	= vel;
-	float abs_vel	= fabsf(vel);
+	
+	float		tmp_x, tmp_y, tmp_mf;
+	int			tmp_vel;
+	int			tmp_maxvel;
+	float		rot_m = 1;
+	SDL_Rect	rPrey, rMine; //, rdest;
+	bool		bHit			= false, 
+				no_damage		= false;
+	CVehicle    *ptr_veh		= NULL;
 
-	float rot_m 	= 1.0f;
+	tmp_x		= x;
+	tmp_y		= y;
+	tmp_mf		= motion_frame;
+	tmp_vel		= (int)fabsf(vel);
+	tmp_maxvel	= max_vel;
 
-	/*
-	 * AI-steering
-	 */
-
-	if (control == VC_AI)
+	// AI-steering ...
+	if ( control == VC_AI )
 	{
-		rot_m = 2.0f;  // double rotation speed for AI controlled vehicles
+		rot_m = 2.0f;  // double rotation speed for AIs
+
+		tmp_maxvel = max_vel; //ai_maxvel;
 
 		if ( ai_final_frame > display_frame ) 
 			vrot = VR_LEFT;
@@ -519,6 +571,10 @@ void CVehicle::DoMotion()
 		else
 			vrot = VR_NONE;
 
+		/*sprintf( buf, "df: %d  ff: %d", (int)display_frame, (int)ai_final_frame );
+		AppendToLog( buf );*/
+
+		
 		if ( ai_turning == VR_LEFT )
 		{
 			ai_cur_angle += ((rot_speed/2) * _game->getMpf());
@@ -526,6 +582,7 @@ void CVehicle::DoMotion()
 			{
 				ai_cur_angle = ai_dest_angle;
 				ai_turning = VR_NONE;
+				tmp_maxvel = max_vel;
 			}
 
 			//vrot = VR_LEFT;
@@ -537,343 +594,246 @@ void CVehicle::DoMotion()
 			{
 				ai_cur_angle = ai_dest_angle;
 				ai_turning = VR_NONE;
+				tmp_maxvel = max_vel;
 			}
 		}
+
 	}
 
-	/*
-	 * Rotation
-	 */
-	
-	if ( !collided && (vrot == VR_LEFT && abs_vel > 0) )
+	// .........rotate
+	if ( vrot == VR_LEFT && vel != 0 )
     {
-		float step = (rot_speed * rot_m * _game->getMpf());
-	    display_frame += step;
+	    display_frame += (rot_speed * rot_m * _game->getMpf());
+
 		if ( display_frame > MAX_ROTATION_FRAMES - 1 )
 			display_frame = 0;
 
-		// AI case
-		if ( control == VC_AI && display_frame > ai_final_frame )
-			display_frame = ai_final_frame;
+		if ( control == VC_AI ) // ai_case
+		  if ( display_frame > ai_final_frame )
+			  display_frame = ai_final_frame;
 
-	    motion_angle += (rot_speed * (2*PI / 36.0f) * _game->getMpf());
-//	    motion_angle += PI;
-//	    motion_angle = FixRad(motion_angle);
-	    FixAngle(&motion_angle);
 	}
-	else if ( !collided && (vrot == VR_RIGHT && abs_vel > 0) )
+	else if ( vrot == VR_RIGHT && vel != 0 )
 	{
-		float step = (rot_speed * rot_m * _game->getMpf());
-	    display_frame -= step;
+		display_frame -= (rot_speed * rot_m * _game->getMpf());
 
 		if ( display_frame < 0 )
 			display_frame = MAX_ROTATION_FRAMES - 1;
 
-		// AI case
-		if ( control == VC_AI && display_frame < ai_final_frame )
-			display_frame = ai_final_frame;
+		if ( control == VC_AI ) // ai_case
+		  if ( display_frame < ai_final_frame )
+			  display_frame = ai_final_frame;
 
-		motion_angle -= (rot_speed * (2*PI / 36.0f) * _game->getMpf());
-//		motion_angle += PI;
-//		motion_angle = FixRad(motion_angle);
-		FixAngle(&motion_angle);
 	}
 
-	collided = false;
-
 	vrot = VR_NONE;
-//	motion_frame = display_frame;
+	motion_frame = display_frame;
 
-	/*
-	 * Acceleration
-	 */
-
-	float fmaxvel_p = (float)(max_vel + velocity_bonus);
-	float fmaxvel_n = -fmaxvel_p * 0.75f;
+	// Accelerate... 
+	int maxvel_p = tmp_maxvel + speed_bonus;
+	int maxvel_n = -(tmp_maxvel + speed_bonus);// / 2;
 
 	if ( vmove == VM_FORWARD )
 	{
 		vel += (float)acc * _game->getMpf();
-		if ( vel > fmaxvel_p )
-			vel = fmaxvel_p;
+		if ( vel > (float)maxvel_p )
+			vel = (float)maxvel_p;
 	}
 	else if ( vmove == VM_BACKWARD )
 	{
-		vel -= (float)acc * _game->getMpf();
-		if ( vel < fmaxvel_n )
-			vel = fmaxvel_n;
+		vel -= acc * _game->getMpf();
+		if ( vel < (float)maxvel_n )
+			vel = (float)maxvel_n;
 	}
 	else
 	{
-		// (Newton's First law)
-		// Speed always closes 0 due to friction defined by 'dec_acc'
-		if ( vel > 0.0f ) 
+		// winagi skorostta da kloni kym 0 (toest kolata kym spirane)
+		if ( vel > 0 ) 
 		{
-			vel -= (float)dec_acc * _game->getMpf();
-			if ( vel < 0.0f )
-				vel = 0.0f;
+			vel -= dec_acc * _game->getMpf();
+			if ( vel < 0 )
+				vel = 0;
 		}
 
-		if ( vel < 0.0f ) 
+		if ( vel < 0 ) 
 		{
-			vel += (float)dec_acc * _game->getMpf();
-			if ( vel > 0.0f )
-				vel = 0.0f;
+			vel += dec_acc * _game->getMpf();
+			if ( vel > 0 )
+				vel = 0;
 		}
 	}
 
-	// reset move var
-	vmove = VM_NONE;
+	// impact speed friction
+	if ( hit_vel > 0.0f )
+	{
+		hit_vel -= _game->getMpf() * (float)dec_acc;
+		if ( hit_vel < 0.0f )
+			hit_vel = 0.0f;
+	}
+	else if ( hit_vel < 0.0f )
+	{
+		hit_vel += _game->getMpf() * (float)dec_acc;
+		if ( hit_vel > 0.0f )
+			hit_vel = 0.0f;
+	}
 
-	// Rotate vehicle tires (if moving)
-	if (max_tire_frames > 1 && abs_vel > 0.0f)
+	// rotate vehicle tires (if moving)
+	if (tire_frames > 1 && fabsf(vel) > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
-		if ( tire_frame >= max_tire_frames ) 
+		
+		if ( tire_frame >= tire_frames ) 
 			tire_frame = 0;
 	}
 
-//	float mpf_vel = _game->getMpf() * vel;
-//	float mpf_hitvel = _game->getMpf() * hit_vel;
+	float mpf_vel = _game->getMpf() * vel;
+	float mpf_hitvel = _game->getMpf() * hit_vel;
 
-	float vel_x, vel_y;
-	float dir_angle;
-
-	// position translation
+	// translate position
 	if ( control == VC_AI )
 	{
-//		x += (cosf(ai_cur_angle) * mpf_vel + x_acc * mpf_hitvel );
-//		y -= (sinf(ai_cur_angle) * mpf_vel + y_acc * mpf_hitvel );
-		vel_x = cosf(ai_cur_angle) * vel;
-		vel_y = sinf(ai_cur_angle) * vel;
-
-		dir_angle = ai_cur_angle;
+		x += ((float)cos(ai_cur_angle) * mpf_vel + x_acc * mpf_hitvel );
+		y -= ((float)sin(ai_cur_angle) * mpf_vel + y_acc * mpf_hitvel );
 	}
 	else
 	{
-//		x += (g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel );
-//		y -= (g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel );
-//		vel_x = g_dirx[(int)motion_frame] * vel;
-//		vel_y = g_diry[(int)motion_frame] * vel;
-
-//		float rrd = Deg2Rad(motion_frame * 10.0f);
-
-		vel_x = cosf(motion_angle) * vel;
-		vel_y = sinf(motion_angle) * vel;
-
-		dir_angle = motion_angle; //acosf(g_dirx[(int)motion_frame]);
-//		DBG(carname << " speed is " << vel << " motion_angle=" << motion_angle);// << " my_rad = " << rrd);
+		x += (g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel );
+		y -= (g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel );
+		//x += (g_dirx[(int)motion_frame] * vel + x_acc * hit_vel ) * _game->getMpf(); 
+		//y -= (g_diry[(int)motion_frame] * vel + y_acc * hit_vel ) * _game->getMpf();
 	}
 
-	x += vel_x * _game->getMpf();
-	y -= vel_y * _game->getMpf();
 
+	// HitTest...
 
-	SDL_Rect rMine;
-	GetFrameRect( &rMine );
-
-	/*
-	 *  Game arena bounds check
-	 */
-
-	bool high_speed = abs_vel > 50.0f;
-	bool play_sound = false;
-
-	is_hit_wall = false;
-
-    if ( rMine.x < 24 )
+	ptr_veh = _game->Auto;
+    GetFrameRect( &rMine );
+	
+	for ( Uint32 j = 0; j < _game->game_num_cars; j++ )
 	{
-		x = 25;
-		vel = 0;
-		play_sound = true;
-		is_hit_wall = true;
-	}
-    else if ( rMine.w > 614 )
-	{
-		x = 613 - (rMine.w - x);
-		vel = 0;
-		play_sound = true;
-		is_hit_wall = true;
-	}
-    else if ( y < 19)
-	{
-		y = 20;
-		vel = 0;
-		play_sound = true;
-		is_hit_wall = true;
-	}
-    else if ( rMine.h > 400 )
-	{
-		y = 399 - (rMine.h - y);
-		vel = 0;
-		play_sound = true;
-		is_hit_wall = true;
-	}
-
-//    if (is_hit_wall && control == VC_AI) {
-//    	waypoint.do_precalculate = true;
-//    }
-
-	if (play_sound && high_speed) {
-		// PLAY SOUND
-		if (high_speed)
-			_game->Sdl.PlaySound( intGetRnd( 0, 50 ) > 25 ? SND_TIRES1 : SND_TIRES2,
-					rMine.x );
-	}
-
-	/*
-	 * Collisions Check
-	 */
-
-	SDL_Rect rPrey;
-	SDL_Rect rCollide;
-
-	CVehicle *ptr_veh = _game->Auto;
-
-	for ( int j = 0; j < _game->game_num_cars; j++, ptr_veh++ )
-	{
-		if (j == myIndex)
-			continue;
-
-		ptr_veh->GetFrameRect( &rPrey );
-
-		if ( _game->Sdl.Collide(
-				&rMine, GetCurrentFrameMask(),
-				&rPrey, ptr_veh->GetCurrentFrameMask(),
-				&rCollide) )
-//		if ( _game->Sdl.Collide(&rCollide, &rMine, &rPrey) )
+		if ( j != myIndex )
 		{
-			if (_game->Timer.Time() < skip_hit_timer)
-				continue;
+//			DBG("me vel:" << this->vel);
+//			DBG("him vel:" << ptr_veh->GetVelocity());
+//			if ( abs(this->vel) < 1.5f && abs(ptr_veh->GetVelocity()) < 1.5f ) //remove this - 12.nov
+//				continue;
 
-			DBG( "[COLLIDE] ----- New Collision [" << vehicle_name << "] [" << j << "] -----" );
-			DBG( "x1 = " << x << " y1 = " << y << " vel1 = " << vel );
-			DBG( "x2 = " << ptr_veh->GetX() << " y2 = " << ptr_veh->GetY() << " vel2 = " << ptr_veh->GetVelocity() );
+			// setup rectangles
+			ptr_veh->GetFrameRect( &rPrey );
+	
+			//if ( _game->Sdl.Collide( NULL, &rMine, &rPrey ) )
+			if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
+			{
+				DBG( "[COLLIDE] ----- New Collision [" << j << "] -----" );
+				DBG("mpf_vel = " << mpf_vel << " mpf_hitvel = " << mpf_hitvel << " vmove=" << vmove);
 
-			// Get velocity magnitudes for both vehicles
-			float magnitude1 = sqrtf(vel * vel);
-			float magnitude2 = sqrtf(ptr_veh->GetVelocity() * ptr_veh->GetVelocity());
+				bHit = true;  // we have impact
+				x = tmp_x;
+				y = tmp_y;
+				motion_frame = tmp_mf;
+				display_frame = tmp_mf;
 
-			// Get velocity vectors (before collision)
-			float vel1_x = vel * cosf(dir_angle);
-			float vel1_y = vel * sinf(dir_angle);
-			float vel2_x = ptr_veh->GetVelocity() * cosf(ptr_veh->GetDirectionAngle());
-			float vel2_y = ptr_veh->GetVelocity() * sinf(ptr_veh->GetDirectionAngle());
-
-			DBG("magnitude1=" << magnitude1 << " magnitude2=" << magnitude2);
-			DBG("vel1_x=" << vel1_x << " vel1_y=" << vel1_y);
-			DBG("vel2_x=" << vel2_x << " vel2_y=" << vel2_y);
-			DBG("my_angle= " << Rad2Deg(dir_angle) << " enemy_angle= " << Rad2Deg(ptr_veh->GetDirectionAngle()));
-
-			// Find the new normal velocities. 1-D collision formulas.
-			float m1 = GetCompareVal() * 0.75f;
-			float m2 = ptr_veh->GetCompareVal() * 0.75f;
-			float mass_sum = (m1 + m2);
-
-//			float new_vel1_n = (vel1_n * (m1 - m2) + 2 * m2 * vel2_n) / mass_sum;
-//			float new_vel2_n = (vel2_n * (m2 - m1) + 2 * m1 * vel1_n) / mass_sum;
-//			float cr = 0.5f;
-
-			float velcm_x = m1 * vel1_x + m2 * vel2_x;
-			velcm_x /= mass_sum;
-
-			float velcm_y = m1 * vel1_y + m2 * vel2_y;
-			velcm_y /= mass_sum;
-
-			// Get new velocity after collision
-			float velcm = sqrtf(velcm_x * velcm_x + velcm_y * velcm_y);
-
-			// Get common angle of movement (sorry, for the var name :)))
-			float kurt_angle = atan2f(velcm_y, velcm_x);
-			FixAngle(&kurt_angle);
-
-			DBG("velcm_x=" << velcm_x << " velcm_y=" << velcm_y);
-			DBG("dir_angle=" << Rad2Deg(kurt_angle) << " / velcm = " << velcm);
-
-			// Set flags
-
-//			collided = true;
-//			ptr_veh->collided = true;
-
-			x = tmp_x;
-			y = tmp_y;
-			display_frame = tmp_df;
-
-			// Predict if enemy will hit a wall
-			SDL_Rect eRect;
-			ptr_veh->GetFrameRect(&eRect);
-			float ex = eRect.x;
-			float ey = eRect.y;
-			float ew = eRect.w;
-			float eh = eRect.h;
-			for (int k = 0; k < 4; k++) {
-				ex+= velcm * cosf(kurt_angle) * _game->getMpf();
-				ey -= velcm * sinf(kurt_angle)  * _game->getMpf();
-				ew += velcm * cosf(kurt_angle) * _game->getMpf();
-				eh -= velcm * sinf(kurt_angle) * _game->getMpf();
-//				char buf[256];
-//				sprintf(buf, "x=%d, y=%d, w=%d, h=%d", eRect.x, eRect.y, eRect.w, eRect.h);
-//				DBG(buf);
-				if (ex < 24 || ew > 614  || ey < 19 || eh > 400)
+				if ( !fIsZero(hit_vel) )
 				{
-					DBG("Enemy goes out of scene!");
-					velcm = 0.0f;
-					break;
+					DBG( "[COLLIDE] Step #2| hit_vel = " << hit_vel );
+					ptr_veh->Repulse( (int)rep_frame, hit_vel / (float)ptr_veh->GetCompareVal() );
 				}
-			}
-
-			// Set final velocities and reflection angles
-
-			SetDirectionAngle(kurt_angle);
-			SetVelocity(velcm);
-
-			ptr_veh->SetDirectionAngle(kurt_angle);
-			ptr_veh->SetVelocity(velcm);
-
-			if ( control == VC_AI )
-			{
-				DBG( "[COLLIDE] Step #8" );
-				waypoint.do_reverse = true;
-				waypoint.do_reverseTime = _game->Timer.Time() + 1500;
-//					waypoint.do_precalculate = true;
-			}
-
-			break;
-
-			// ----------------------------------
-
-			// Damage calculations
-
-			if ( abs_vel > MIN_DAMAGE_VELOCITY )
-			{
-				DBG( "[COLLIDE] Step #6" );
-
-				float perc = ( (float)abs_vel / (float)max_vel ) * 100.0f;
-				Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
-
-				anger -= tmp_anger;
-				anger = anger < 0 ? 0 : anger;
-				anger = anger > 110 ? 110 : anger;
-
-				float speed_damage = (float)damage + 0.10f * (float)abs_vel;
-				float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
-				DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
-				int fulldmg = speed_damage - armour_absorb + tmp_anger;
-				fulldmg = fulldmg < 0 ? 0 : fulldmg;
-
-				DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " abs_vel=" << abs_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
-
-				ptr_veh->DoDamage( fulldmg, myIndex );
-
-				// PLAY CRASH SOUND
-				if ( intGetRnd( 0, 50 ) < 25 )
-					_game->Snd.Play( SND_CRASHLIGHT1, (int)x );
 				else
-					_game->Snd.Play( SND_CRASHLIGHT2, (int)x );
-					
-			}
+				{
+					DBG( "[COLLIDE] Step #3" );
 
-		}
+					// is velocity 0 ?
+					if ( !fIsZero(vel) )
+					{
+						DBG( "[COLLIDE] Step #4| vel = " << vel );
+						ptr_veh->Repulse( (int)motion_frame, vel / (float)ptr_veh->GetCompareVal() );
+					}
+					else
+					{
+						DBG( "[COLLIDE] Step #5" );
+						/*if ( control == VC_AI || ptr_veh->GetControl() == VC_AI )
+						{
+							//Repulse( (int)GetMotionFrameMirror(), 100 );
+							x = ptr_veh->GetX() + 50;
+							y = ptr_veh->GetY() + 50;
+							
+						}*/
+						//ptr_veh->Repulse( (int)motion_frame, 60 ); // !!!!!!!!! 
+						//ptr_veh->SetVelocity( 0 );
+						//no_damage = true;
+					}
+				}
+
+
+				// TODO: fix this because it disbalances the game!
+				if ( tmp_vel <= MIN_DAMAGE_VELOCITY ) 
+				{
+					no_damage = true;
+					DBG( "[COLLIDE] Step #6" );
+				}
+
+				// enemy vehicle damage calculations
+				if ( !no_damage )
+				{
+					float perc = ( (float)tmp_vel / (float)max_vel ) * 100.0f;
+					Uint16 tmp_anger = (int)(((float)anger / 100.0f ) * perc);
+
+					anger -= tmp_anger;
+					anger = anger < 0 ? 0 : anger;
+					anger = anger > 110 ? 110 : anger;
+					
+					float speed_damage = (float)damage + 0.10f * (float)tmp_vel;
+					float armour_absorb = (0.20f * (float)ptr_veh->GetHitPoints());
+					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
+					int fulldmg = speed_damage - armour_absorb + tmp_anger;
+					fulldmg = fulldmg < 0 ? 0 : fulldmg;
+					
+					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " tmp_vel=" << tmp_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
+
+					ptr_veh->DoDamage( fulldmg, myIndex );
+				
+					// PLAY CRASH SOUND
+					if ( intGetRnd( 0, 50 ) < 25 )
+						_game->Snd.Play( SND_CRASHLIGHT1, (int)x ); 
+					else
+						_game->Snd.Play( SND_CRASHLIGHT2, (int)x ); 
+						
+				}
+
+				/*
+				 * FIXME:
+				 * This is a problem right here! Both vehicles will collide thus none
+				 * will move. This is the main reason for the nasty physics bug.
+				 */
+//				this->set_stop = true; //remove this 12.nov
+//				vel = vel * -0.6f;
+
+				if ( control == VC_AI )
+				{
+					DBG( "[COLLIDE] Step #8" );
+					waypoint.do_reverse = true;
+					waypoint.do_reverseTime = _game->Timer.Time() + 500;
+
+					vel = vel * 0.5f;
+
+//					waypoint.do_precalculate = true;
+//
+//					if ( waypoint.goal_type == WAYPOINT_VEHICLE  )
+//					{
+//						waypoint.do_reverse = true;
+//						DBG( "[COLLIDE] Step #9" );
+//					}
+				}
+				else
+				{
+					vel = vel * -0.6f;
+				}
+
+				DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
+			}
+		} 
+
+		ptr_veh++;
 	}
 
 	// should we leave trails
@@ -907,10 +867,67 @@ void CVehicle::DoMotion()
  		tire_trails = VTT_NONE;
 	}
 	
-	/*
-	 * Test for bonuses & items hits (Deadtoys)
-	 */
+	// reset move var
+	vmove = VM_NONE;
+	
+	// Game arena bounding
 
+    if ( rMine.x < 24 )
+	{
+		x = 25;
+		if ( abs(vel) > 50 ) 
+		{
+			if ( intGetRnd( 0, 50 ) > 25 ) 
+				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
+			else
+				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
+		}
+
+		vel = 0;
+	}
+    else if ( rMine.w > 614 ) 
+	{
+		x = 613 - (rMine.w - x);
+		if ( abs(vel) > 50 ) 
+		{
+			if ( intGetRnd( 0, 50 ) > 25 ) 
+				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
+			else
+				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
+		}
+
+		vel = 0;
+	}
+    
+	if ( y < 19) 
+	{
+		y = 20;
+		if ( abs(vel) > 50 ) 
+		{
+			if ( intGetRnd( 0, 50 ) > 25 ) 
+				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
+			else
+				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
+		}
+
+		vel = 0;
+	}
+    else if ( rMine.h > 400 ) 
+	{
+		y = 399 - (rMine.h - y);
+		if ( abs(vel) > 50 ) 
+		{
+			if ( intGetRnd( 0, 50 ) > 25 ) 
+				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
+			else
+				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
+		}
+
+		vel = 0;
+	}
+
+	
+	// HitTestToys...
 	SDL_Rect rMe;
 	SDL_Rect rToy;
 	Uint32   dx = 0U, 
@@ -918,7 +935,9 @@ void CVehicle::DoMotion()
 
 	GetFrameRect( &rMe );
 
-	for( int i = 0; i < DT_MAX_CHILDS; i++ )
+	Uint32 i = 0;
+
+	for( i = 0; i < DT_MAX_CHILDS; i++ )
 	{
 		if ( _game->Dtoys.GetToyVisible( i ) )
 		{
@@ -927,8 +946,9 @@ void CVehicle::DoMotion()
 
 		 if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) )
 		 {
-//			if ( abs(vel) >= max_vel / 2 ) // do not hit if speed less than half the max
-//			{
+			 if ( 1 ) // abs(vel) >= max_vel / 2 ) // do not hit if speed less than half the max
+			 {
+		 
 				// PLAY SOUND
 				_game->Sdl.PlaySound( SND_SPLAT1, rMe.x );
 				
@@ -955,8 +975,8 @@ void CVehicle::DoMotion()
 
 				   case DT_BEARSPEED:
 
-					velocity_bonus = max_vel / 3;
-					velocity_bonus_time = _game->Timer.Time() + SPEEDEXPIRE_TIME;
+					speed_bonus = max_vel / 3;
+					speed_time = _game->Timer.Time() + SPEEDEXPIRE_TIME;
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
 					tire_trails = VTT_BLOOD;
@@ -974,11 +994,11 @@ void CVehicle::DoMotion()
 
 					hit_points += _game->Dtoys.GetToyValue( i );
 					
-					if ( hit_points >= hit_points_crash && crashed_look )
+					if ( hit_points >= hit_points_crash && bcrashlook )
 					{
 						sprite = sprite_norm;
 						mask = mask_norm;
-						crashed_look = false;
+						bcrashlook = false;
 					}
 					if ( hit_points > max_hitpoints ) 
 						hit_points = max_hitpoints;
@@ -1016,7 +1036,7 @@ void CVehicle::DoMotion()
 				   break;
 
 				   case DT_BEARLANDMINE:
-					landmines_count += _game->Dtoys.GetToyValue( i );
+					landmines += _game->Dtoys.GetToyValue( i );
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
 				    tire_trails = VTT_BLOOD;
@@ -1034,30 +1054,32 @@ void CVehicle::DoMotion()
 
 				// kill toy index
 				_game->Dtoys.KillToy( i );
-			 //}
-			 // else
-			 // {
-				// // speed is not high enough to smash this bonus
-				// vel = 0;
-				// x = tmp_x;
-				// y = tmp_y;
-			 // }
-		 	}
+			 }
+			 else
+			 {
+				// speed is not high enough to smash this bonus
+				vel = 0;
+				x = tmp_x;
+				y = tmp_y;
+			 }
+			 
+		 }
 		} // vis_check...
 	} 
 
 
 	// Hit_Test landmines...
-	for ( int i = 0; i < LANDMINE_CHILDS; i++ )
+	for ( i = 0; i < LANDMINE_CHILDS; i++ )
 	{
 		if ( _game->Mines.GetMineVisible( i ) && _game->Mines.GetMineIndex( i ) != myIndex)
 		{
 			_game->Mines.GetMineRect( i, &rToy );
 			
+			// {!}
 			if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) ) //_game->Sdl.Collide( &rMe, GetCurrentFrame(), &rToy, _game->Mines.GetMineCurrentFrame( i ) ) )
 			{
-				// do vehicle damage
-				DoDamage( LANDMINE_DAMAGE, _game->Mines.GetMineIndex( i ) );
+				DoDamage( 35U, _game->Mines.GetMineIndex( i ) );
+				// ...do car damage
 				_game->Mines.KillMine( i );
 				_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 			}
@@ -1066,9 +1088,30 @@ void CVehicle::DoMotion()
 
 }
 
+
 ///////////////////////////////////////////////////////////////////////
-// Name: GetCurrentFrame()
-// Desc:
+// Ime: Repulse()
+// Opisanie: 
+///////////////////////////////////////////////////////////////////////
+void CVehicle::Repulse( int frame_angle, float speed )
+{
+
+//	motion_frame = (float)frame_angle;
+	rep_frame = (float)frame_angle;
+	hit_vel = speed;
+	x_acc = g_dirx[frame_angle];
+	y_acc = g_diry[frame_angle];
+	//vel = vel + (float)hit_vel;
+
+	if ( control == VC_AI ) 
+		waypoint.do_precalculate = true;
+
+
+}
+
+///////////////////////////////////////////////////////////////////////
+// Ime: GetCurrentFrame()
+// Opisanie:
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CVehicle::GetCurrentFrame()
 {
@@ -1076,8 +1119,8 @@ SDL_Surface* CVehicle::GetCurrentFrame()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Name: GetCurrentFrameMask()
-// Desc:
+// Ime: GetCurrentFrameMask()
+// Opisanie:
 ///////////////////////////////////////////////////////////////////////
 Uint32* CVehicle::GetCurrentFrameMask()
 {
@@ -1085,410 +1128,380 @@ Uint32* CVehicle::GetCurrentFrameMask()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Name: GetFrameRect()
-// Desc: kvadrat za stylknovenie
+// Ime: GetFrameRect()
+// Opisanie: kvadrat za stylknovenie
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::GetFrameRect( SDL_Rect *rect )
 {
 	SDL_Surface *currentSurf = GetCurrentFrame();
 
-	rect->x = x;
-	rect->y = y;
+	rect->x = (Uint32)x;
+	rect->y = (Uint32)y;
 	rect->w = rect->x + currentSurf->w;
 	rect->h = rect->y + currentSurf->h;
 }
 
-/////////////////////////////////////////////////////////////////////////
-//// Name: GetMotionFrame()
-//// Desc:
-/////////////////////////////////////////////////////////////////////////
-//float CVehicle::GetMotionFrame()
-//{
-//	return motion_frame;
-//};
-//
-/////////////////////////////////////////////////////////////////////////
-//// Name: GetMotionFrameMirror()
-//// Desc: Get an opposite (to the current) movement angle.
-/////////////////////////////////////////////////////////////////////////
-//float CVehicle::GetMotionFrameMirror()
-//{
-//	float tmp_frame = motion_frame;
-//
-//	tmp_frame += HALF_ROTATION_FRAMES;
-//	if ( tmp_frame > MAX_ROTATION_FRAMES )
-//		tmp_frame -= MAX_ROTATION_FRAMES;
-//
-//	//tmp_frame--;
-//
-//	return tmp_frame;
-//}
-
 
 ///////////////////////////////////////////////////////////////////////
-// Name: GetDirectionAngle()
-// Desc: Get angle of movement relative to local coord. system
+// Ime: GetMotionFrameMirror()
+// Opisanie: wryshta obratniq ygyl na dvijenie kato index v masiva
 ///////////////////////////////////////////////////////////////////////
-float CVehicle::GetDirectionAngle()
+float CVehicle::GetMotionFrameMirror()
 {
-	if ( control == VC_AI )
-	{
-		return ai_cur_angle;
-	}
+	float tmp_frame;
 
-	return motion_angle;
-//	return Deg2Rad(motion_frame * 10.0f); //(motion_frame ) * 10.0f * 0.0174532925f;
-//	return acosf(g_dirx[(int)motion_frame]);
+	tmp_frame = motion_frame;
+
+	tmp_frame += HALF_ROTATION_FRAMES;
+	if ( tmp_frame > MAX_ROTATION_FRAMES ) tmp_frame -= MAX_ROTATION_FRAMES;
+    //tmp_frame--;
+	
+	return tmp_frame;
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////
-// Name: SetDirectionAngle()
-// Desc:
+// Ime: DoDamage()
+// Opisanie: 
 ///////////////////////////////////////////////////////////////////////
-void CVehicle::SetDirectionAngle(float rad)
+void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
 {
-	if ( control == VC_AI )
+	hit_points -= car_damage;
+	if ( hit_points <= 0 )
 	{
-		ai_cur_angle = rad;
-	}
-	else
-	{
-		motion_angle = rad;
-//		motion_frame = (Rad2Deg(rad) / 10.0f) ; //- 1.0f;
-//		DBG(" new motion_frame = " << (Rad2Deg(rad) / 10.0f));
-	}
-
-	skip_hit_timer = _game->Timer.Time() + 1200;
-	reset_frame = true;
-}
-
-///////////////////////////////////////////////////////////////////////
-// Name: GetX()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-float CVehicle::GetCX()
-{
-	SDL_Surface *surf = GetCurrentFrame();
-	return x + surf->w * 0.5f;
-}
-
-///////////////////////////////////////////////////////////////////////
-// Name: GetY()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-float CVehicle::GetCY()
-{
-	SDL_Surface *surf = GetCurrentFrame();
-	return y + surf->h * 0.5f;
-}
-
-///////////////////////////////////////////////////////////////////////
-// Name: DoDamage()
-// Desc: Substract given damage from vehicle HP. Destroy vehicle if
-//       HP is too low.
-///////////////////////////////////////////////////////////////////////
-void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex )
-{
-	hit_points -= damageAmount;
-	if (hit_points <= 0)
-	{
+		_game->Anims.Create( GetCX(), GetCY(), ANIM_EXPLOSION );
+		_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 		visible = false;
-
-		_game->Anims.Create(GetCX(), GetCY(), ANIM_EXPLOSION);
-		// PLAYSOUND
-		_game->Snd.Play(SND_EXPLOSION1, (int) x);
-
-		// give or take a frag...
-		if (attackerIndex == myIndex) {
-			if (i_self_destruct) {
+		// give/lose a frag...
+		if ( car_attacker == myIndex )
+		{
+			if ( i_self_destruct )
+			{
 				i_self_destruct = false;
-
 				frags--;
-				if (frags < 0)
-					frags = 0;
+				if ( frags < 0 ) frags = 0;
 			}
 		}
-		else if (attackerIndex != NO_ATTACKER && _game->Auto[attackerIndex].GetTeam() != team) {
-			_game->Auto[attackerIndex].AddFrags(1);
-		}
+		else if ( car_attacker != NO_ATTACKER && _game->Auto[car_attacker].GetTeam() != team )
+			_game->Auto[car_attacker].AddFrags( 1 );
 
-		// in case this vehicle held 'the goal'
-		if (has_the_goal) {
-			_game->Dtoys.SetToyGoalState(DTG_ONTHEROAD);
+		// v sluchai che sme darjali goal-a
+		if ( has_the_goal )
+		{
+			_game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
 			has_the_goal = false;
 		}
-
-	} else if (hit_points <= hit_points_crash && !crashed_look)
+	}
+	else if ( hit_points <= hit_points_crash && !bcrashlook )
 	{
-		// show smashed vehicle sprites
+		// pokaji smachkanite kartinki i PLAY SOUND {!!!!!!}
+		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
 		sprite = sprite_crash;
 		mask = mask_crash;
-		crashed_look = true;
-
-		// PLAYSOUND
-		_game->Snd.Play(SND_CRASHBRAKE, (int) x);
+		bcrashlook = true;
 	}
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Name: Update()
-// Desc: Refresh status, animations and motion
+// Ime: Update()
+// Opisanie: obnovqva classa i parametrite na unit-a
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
-	// respawn vehicle (if not visible, e.g., destroyed)
-	if (!visible) {
-		Create();
-		//return;
-	}
-
-	DoMotion();
-//	if ( control != VC_AI ) DoMotion();
  
-	// expire 1 anger point
-	if (anger_time < _game->Timer.Time() && anger > 0)
-	{
-		anger--;
-		anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
-	}
-	// kill speed_bonus
-	if (velocity_bonus_time < _game->Timer.Time() && velocity_bonus != 0)
-	{
-		velocity_bonus = 0;
-	}
+ char		buf[64];
+ float		perc		= 0.0f;
+ Uint32		width		= 0U;
+ Uint32		height		= 0U;
+ SDL_Rect	rect;
 
-	// goal time expired?
-	if (goal_time < _game->Timer.Time() && has_the_goal)
-	{
-		// give 3 frags and set goal back
-		has_the_goal = false;
-		_game->Dtoys.SetToyGoalState(DTG_ONTHEROAD);
-		frags += 1;
-	}
-
-	Uint32 *cur_mask = GetCurrentFrameMask();
-	SDL_Surface *surf = GetCurrentFrame();
-	SDL_Rect rect = {0, 0, surf->w, surf->h};
-
-	// blit shadow and vehicle
-	_game->Sdl.BlitShadow(x + 1, y + 4, cur_mask, &rect);
-	_game->Sdl.AddToBlit(x, y, surf);
+ SDL_Surface	*surf		= NULL;
+ Uint32			*cur_mask	= NULL;
  
+ cur_mask = GetCurrentFrameMask();
+ surf = sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
+
+ // ne obnovqvai ako ne sme vidimi
+ if ( ! visible ) 
+ {
+	 Create();  
+	//return;
+ }
+
+ // preizchisli center koordinati na avtomobila i kvadrat na kadyra
+ width = surf->w;
+ height = surf->h;
+ center_x = x + (width >> 1);
+ center_y = y + (height >> 1); 
+
+ // pridviji MPS-to $p.petrov - comented
+ DoMotion();
+ //if ( control != VC_AI ) DoMotion();
+
+ width		= surf->w;
+ height		= surf->h;
+ center_x	= x + (width >> 1);
+ center_y	= y + (height >> 1); 
+ rect.x		= rect.y = 0;
+ rect.w		= width; 
+ rect.h		= height;
  
-	// blit status
-	char buf[8];
+ // expire 1 anger point
+ if ( anger_time < _game->Timer.Time() && anger > 0 )
+ {
+	 anger--;
+	 anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
+ }
+ // kill speed_bonus 
+ if ( speed_time < _game->Timer.Time() && speed_bonus != 0 )
+ {
+	 speed_bonus = 0;
+ }
+ // expire goal
+ if ( goal_time < _game->Timer.Time() && has_the_goal )
+ {
+	 // dai 3 fraga i varni goal-a otnovo na pytq
+	 has_the_goal = false;
+	 _game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
+	 frags += 1;
+ }
 
-	sprintf(buf, "%d", frags);
-	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
+ // blit shadow and vehicle
+ //_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
+ _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
+ _game->Sdl.AddToBlit( x, y, surf );
+ 
+// DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
+ 
+ // blit status
+ sprintf( buf, "%d", frags );
+ _game->Sdl.DrawNum( pos_frag[myIndex].x, pos_frag[myIndex].y, buf );
+ perc = ( (float)hit_points / (float)max_hitpoints ) * 100.0f;
+ _game->scales[0]->w = (Uint32)( /*(130.0f / 100.0f )*/ 1.3f * perc);
+ _game->Sdl.BlitNow( pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0] ); 
+ _game->scales[1]->w = anger;
+ _game->Sdl.BlitNow( pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1] ); 
 
-	float perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
-	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
-	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
-	_game->scales[1]->w = anger;
-	_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1]);
 
-	// update controls
-	switch (control)
+ // proveri controla na autoto
+ switch( control )
+ {
+  
+  case VC_PLAYER1:
+	
+	if ( _game->Sdl.keys[_game->Bindings.GetP1Key( CBindings::BK_LEFT ) ] )
+		Rotate( VR_LEFT );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_RIGHT ) ] ) 
+		Rotate( VR_RIGHT );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_ACC ) ] ) 
+		Move( VM_FORWARD );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BREAK ) ] ) 
+		Move( VM_BACKWARD );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_HONK ) ] )
 	{
-	case VC_PLAYER1:
+		honk_status = 1;
+	}
+	else {
+		honk_status = honk_status == 1 ? 2 : 0;
+	}
 
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_LEFT)])
-			Rotate(VR_LEFT);
+	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BLOWUP ) ] )
+	{
+		self_destruct	= true;
+		i_self_destruct = true;
+	}
 
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_RIGHT)])
-			Rotate(VR_RIGHT);
+	//{!}
+	if ( _game->Sdl.JoystickHatState == SDL_HAT_LEFT ) Rotate( VR_LEFT );
+	if ( _game->Sdl.JoystickHatState == SDL_HAT_RIGHT ) Rotate( VR_RIGHT );
+	if ( _game->Sdl.GetJoystickButtonPressed( 1 ) ) Move( VM_FORWARD );
+	if ( _game->Sdl.GetJoystickButtonPressed( 2 ) ) Move( VM_BACKWARD );
 
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_ACC)])
-			Move(VM_FORWARD);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_BREAK)])
-			Move(VM_BACKWARD);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_HONK)])
-		{
-			honk_status = 1;
-		}
-		else
-		{
-			honk_status = honk_status == 1 ? 2 : 0;
-		}
-
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_BLOWUP)]) {
-			self_destruct = true;
-			i_self_destruct = true;
-		}
-
-		//{!}
-		if (_game->Sdl.JoystickHatState == SDL_HAT_LEFT)
-			Rotate(VR_LEFT);
-		if (_game->Sdl.JoystickHatState == SDL_HAT_RIGHT)
-			Rotate(VR_RIGHT);
-		if (_game->Sdl.GetJoystickButtonPressed(1))
-			Move(VM_FORWARD);
-		if (_game->Sdl.GetJoystickButtonPressed(2))
-			Move(VM_BACKWARD);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_MINE)])
-		{
-			if (!bputmine)
-				bputminekey = true;
-		}
-		else if (!_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_MINE)])
-		{
-			bputminekey = false;
-			bputmine = false;
-		}
-
-		break;
-
-	case VC_PLAYER2:
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_LEFT)])
-			Rotate(VR_LEFT);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_RIGHT)])
-			Rotate(VR_RIGHT);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_ACC)])
-			Move(VM_FORWARD);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_BREAK)])
-			Move(VM_BACKWARD);
-
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_BLOWUP)])
-		{
-			self_destruct = true;
-			i_self_destruct = true;
-		}
-
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_HONK)])
-		{
-			honk_status = 1;
-		}
-		else
-		{
-			honk_status = honk_status == 1 ? 2 : 0;
-		}
-
-		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_MINE)])
-		{
-			if (!bputmine)
-				bputminekey = true;
-		}
-		else if (!_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_MINE)])
-		{
-			bputminekey = false;
-			bputmine = false;
-		}
-
-		break;
-
-		// case VC_PLAYER3:
-		// 	if ( _game->Sdl.keys[SDLK_j] ) Rotate( VR_LEFT );
-		//if ( _game->Sdl.keys[SDLK_l] ) Rotate( VR_RIGHT );
-		//if ( _game->Sdl.keys[SDLK_i] ) Move( VM_FORWARD );
-		//if ( _game->Sdl.keys[SDLK_k] ) Move( VM_BACKWARD );
-		// break;
-
-	case VC_AI:
-		AI_Update();
-
-		if (ai_putmine)
-		{
-			ai_putmine = false;
+	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_MINE ) ] )
+	{
+		if ( !bputmine )
 			bputminekey = true;
-		}
-
-		break;
-
-	default:
-		break;
-
 	}
-
-	// put down a landmine?
-	if (bputminekey)
+	else if ( ! _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_MINE ) ] )
 	{
-		bputmine = true;
-		if (landmines_count > 0) {
-			landmines_count--;
-			_game->Mines.Create(GetCX(), GetCY(), myIndex);
-		}
-
 		bputminekey = false;
+		bputmine = false;
+	}
+  
+	break;
+
+  case VC_PLAYER2:
+
+	if ( _game->Sdl.keys[_game->Bindings.GetP2Key( CBindings::BK_LEFT ) ] )
+		Rotate( VR_LEFT );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_RIGHT ) ] ) 
+		Rotate( VR_RIGHT );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_ACC ) ] ) 
+		Move( VM_FORWARD );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BREAK ) ] ) 
+		Move( VM_BACKWARD );
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BLOWUP ) ] )
+	{
+		self_destruct	= true;
+		i_self_destruct = true;
 	}
 
-	// if vehicle is stuck run automated destruction timer
-	if (fIsZero(vel) && !self_destruct)
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_HONK ) ] )
 	{
-		if (!ai_stuck) {
-			ai_stuck = true;
-			ai_stucktime = _game->Timer.Time() + 4000 + (rand() % 2000);
-		}
+		honk_status = 1;
 	}
-	else
+	else {
+		honk_status = honk_status == 1 ? 2 : 0;
+	}
+
+	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
 	{
+		if ( !bputmine )
+			bputminekey = true;
+	}
+	else if ( ! _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
+	{
+		bputminekey = false;
+		bputmine = false;
+	}
+
+
+  break;
+  
+ // case VC_PLAYER3:
+ // 	if ( _game->Sdl.keys[SDLK_j] ) Rotate( VR_LEFT );
+	//if ( _game->Sdl.keys[SDLK_l] ) Rotate( VR_RIGHT );
+	//if ( _game->Sdl.keys[SDLK_i] ) Move( VM_FORWARD );
+	//if ( _game->Sdl.keys[SDLK_k] ) Move( VM_BACKWARD );
+ // break;
+    
+  case VC_AI:
+	  AI_Update();
+
+	  if ( ai_putmine )
+	  {
+		  ai_putmine = false;
+		  bputminekey = true;
+	  }
+  
+  break;
+
+  default: 
+	  break;
+  
+ }
+
+ // trqbwa li da ostavim mina
+ if ( bputminekey ) 
+ {
+	 bputmine = true;
+	 if ( landmines > 0 ) 
+	 {
+		 landmines--;
+		 _game->Mines.Create( GetCX(), GetCY(), myIndex );
+	 }
+
+	 bputminekey = false;
+ }
+
+ // proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
+ if ( vel == 0 && ! self_destruct )
+ {
+	 if ( !ai_stuck )
+	 {
+		ai_stuck = true;
+		ai_stucktime = _game->Timer.Time() + 4000 + (rand()%2000);
+	 }
+ }
+ else
+ {
+	 ai_stuck = false;
+ }
+
+ if ( ai_stuck )
+ {
+	if ( ai_stucktime < _game->Timer.Time() )
+	{
+		self_destruct = true;
 		ai_stuck = false;
 	}
+ }
 
-	if (ai_stuck)
-	{
-		if (ai_stucktime < _game->Timer.Time())
-		{
-//			self_destruct = true;
-//			ai_stuck = false;
-		}
-	}
+ // proveri "_game->self_destruct" mechanizm
+ if ( self_destruct && ! self_destruction ) 
+ {
+	 self_destruction = true;
+	 self_destruct = false;
+	 destruct_time = _game->Timer.Time() + 3000;
+ }
 
-	// check self-destruct flags
-	if (self_destruct && !self_destruction)
-	{
-		self_destruction = true;
-		self_destruct = false;
-		destruct_time = _game->Timer.Time() + 3000;
-	}
+ if ( self_destruction )
+ {
 
-	if (self_destruction)
-	{
-		if (destruct_time > _game->Timer.Time())
-		{
-			//_game->Sdl.DrawNum( (int)x, (int)y, "1" );
-			_game->Sdl.BlitNow((int) x, (int) y, _game->self_dest);
+	 if ( destruct_time > _game->Timer.Time() )
+	 {
+		 //_game->Sdl.DrawNum( (int)x, (int)y, "1" );
+		 _game->Sdl.BlitNow( (int)x, (int)y, _game->self_dest );
 
-			// PLAY SOUND
-			if (warning_time < _game->Timer.Time()) {
-				warning_time = _game->Timer.Time() + 1000;
-				_game->Snd.Play(SND_WARNING, (int) x);
-			}
-		}
-		else
-		{
-			DoDamage(1000U, myIndex);
-			// clear local var
-			self_destruction = false;
-		}
-	}
+		 // PLAY SOUND
+		 if ( warning_time < _game->Timer.Time() )
+		 {
+			 warning_time = _game->Timer.Time() + 1000;
+			 _game->Snd.Play( SND_WARNING, (int)x );
+		 }
+	 }
+	 else 
+	 {
+		 DoDamage( 1000U, myIndex );  
+		 self_destruction = false;  // clear local var
+	 }
+ }
 
-	if (honk_status == 2)
-	{
-		_game->Snd.Play( SND_MENU_HONK1, (int)x );
-		honk_status = 0;
-	}
+ if (honk_status == 2)
+ {
+	 _game->Snd.Play( SND_MENU_HONK1, (int)x );
+	 honk_status = 0;
+ }
 
 } 
 
+
+void CVehicle::UpdateStops()
+{
+	if ( set_stop )
+	{
+		SetVelocity( 0.0f );
+		set_stop = false;
+		// XXX
+		hit_vel = 0.0f;
+	}
+}
+ 
+
 ///////////////////////////////////////////////////////////////////////
-// Name: AI_Update()
-// Desc: Update AI state
+// Ime: AI_Update()
+// Opisanie: obnovi informaciqta za waypointa i cqloto AI
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_Update()
 {
 
 	float		    distance;
 /*	static float    tmp_x, tmp_y;
+
 	
 	tmp_x = x;
 	tmp_y = y;*/
+
 
 /*	// proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
 	if ( vel == 0 )
@@ -1509,20 +1522,12 @@ void CVehicle::AI_Update()
 	}
 */
 
-	// go 'back' if hit an enemy vehicle
+	// ako e udaril avtomobil to vyrni go nazad za 'n' kadyra 
 	if ( waypoint.do_reverse )
 	{
-		if (is_hit_wall)
-			waypoint.do_forward = true;
+		Move( VM_BACKWARD );
 
-		if (waypoint.do_forward) {
-			Move(VM_FORWARD);
-		}
-		else {
-			Move(VM_BACKWARD);
-		}
-
-		// 25% chance to put a mine when moving backwards
+		// 25% chance da pusni mina pri zaden hod
 		if ( intGetRnd( 0, 100 ) < 25 )
 			ai_putmine = false;
 		
@@ -1582,12 +1587,15 @@ void CVehicle::AI_Update()
 }
 
 
+
+
 ///////////////////////////////////////////////////////////////////////
-// Name: AI_GenerateWaypoint()
-// Desc: Generate new AI action.
+// Ime: AI_GenerateWaypoint()
+// Opisanie: generirai tip na deistvieto na AI-to
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_GenerateWaypoint()
 {
+
 	Uint16    action		= 0U;
 	Uint32	  bonus_index	= 0U, 
   			  car_index		= 0U;
@@ -1602,12 +1610,18 @@ void CVehicle::AI_GenerateWaypoint()
 	Uint16	  bonus_list_explorer[DT_MAX_DEADTOYS]	= { 45, 15, 25, 12, 8 };
 	CVehicle  *ptr_veh = _game->Auto;
 	
+
+/*	DT_BEARGOAL = 0,
+	DT_BEARANGER,
+	DT_BEARHP,
+	DT_BEARSPEED,
+	DT_BEARLANDMINE
+*/
+	// nulirai masiva
 	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint16) );
 
-	if ( avt == AVT_WARRIOR )
+	if ( avt == AVT_WARRIOR )				 // TYPE _WARRIOR
 	{
-		// TYPE _WARRIOR
-
 		if ( intGetRnd( 0, 1000 ) > 500 )
 			action = ACTION_ATTACK;
 		else if ( intGetRnd( 0, 1000 ) < 250 )
@@ -1616,7 +1630,7 @@ void CVehicle::AI_GenerateWaypoint()
 		{
 			action = ACTION_TAKEBONUS;
 
-			// check for available bonuses (on map) and create options list
+			// proveri za bonusi i systavi spisyk
 			for( i = 0; i < DT_MAX_CHILDS; i++ )
 			{
 				if ( _game->Dtoys.GetToyVisible( i ) )
@@ -1627,16 +1641,14 @@ void CVehicle::AI_GenerateWaypoint()
 				}
 			}
 
-			// in case no bonuses are available on the map
-			if ( !bonus_found )
-				action = ACTION_ATTACK;
+			// v sluchai che nqma vidimi bonusi
+			if ( !bonus_found ) action = ACTION_ATTACK;
 		}
 
 
 	}
-	else if ( avt == AVT_EXPLORER )
+	else if ( avt == AVT_EXPLORER )			 // TYPE _EXPLORER
 	{
-		// TYPE _EXPLORER
 
 		if ( intGetRnd( 0, 1000 ) < 250 )
 			action = ACTION_ATTACK;
@@ -1660,13 +1672,13 @@ void CVehicle::AI_GenerateWaypoint()
 		}
 	}
 
-	Uint16 bonus_action;
 
+	// izvyrshi izbranoto deistvie
 	switch( action )
 	{
 	case ACTION_ATTACK:
 		
-		// get distance to closest enemy vehicle
+		// vzemi razstoqnieto do 1viq avtomobil
 		i = car_index = 0;
 		distance = UINT_MAX;
 		
@@ -1692,7 +1704,7 @@ void CVehicle::AI_GenerateWaypoint()
 			i++;
 		}
 		
-		// create waypoint info
+		// zapylni info-to za waypoint-a
 		ptr_veh = &_game->Auto[car_index];
 		
 		waypoint.x				 = ptr_veh->GetCX();
@@ -1714,7 +1726,9 @@ void CVehicle::AI_GenerateWaypoint()
 
 	case ACTION_TAKEBONUS:
 		
-		// get random bonus from options list
+		// vzemi "proizvolen" bonus ot spisyka
+		Uint16 bonus_action;
+
 		bonus_action = AI_doFSM( bonus_list, DT_MAX_DEADTOYS );
 		bonus_index = bonus_list_index[bonus_action];
 
@@ -1738,44 +1752,45 @@ void CVehicle::AI_GenerateWaypoint()
 	
 	}
 
+	// vzemi koordinatite kym tochkata
 	AI_ProcessWaypoint();
+
 }
 
 
 
 ///////////////////////////////////////////////////////////////////////
-// Name: AI_ProcessWaypoint()
-// Desc: Adjust sprite direction based on the direction of movement
+// Ime: AI_ProcessWaypoint()
+// Opisanie: vzemi ygyla kym waypoint-a i sloji pravilniq motion_frame
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
 
 	float x_dist, y_dist;
+	float la;
 	float tmp_dest, tmp_cur;
 
 	// get angle to the next waypoint
 	x_dist = (waypoint.x - x);
 	y_dist = (waypoint.y - y);
 		
-	if ( y_dist > 0.0f )
+		
+	if ( y_dist > 0 ) 
 	{
-		ai_dest_angle = atanf( x_dist / y_dist ) - PI_2;
+		ai_dest_angle = (float)(atan( x_dist / y_dist ) - PI_2);
 	}
-	else if ( y_dist < 0.0f )
+	else if ( y_dist < 0 )
 	{
 		//st_angle = atan2( x_dist, y_dist );// + PI_2;
-		ai_dest_angle = atanf( x_dist / y_dist ) + PI_2;
+		ai_dest_angle = (float)(atan( x_dist / y_dist ) + PI_2);
 	}
 	else
 	{
-		ai_dest_angle = atanf( x_dist /y_dist ) - PI_2;
+		ai_dest_angle = (float)(atan( x_dist /y_dist ) - PI_2);
 	}
 
-//	ai_dest_angle = atan2f(y_dist, x_dist);
-//	FixAngle(&ai_dest_angle);
-
-	// check if display frame must be recalculated
-	if ( fabsf(ai_dest_angle - ai_cur_angle) < 0.001f )
+	// proveri dali uma nujda ot preizchislqvane 
+	if ( ai_dest_angle == ai_cur_angle ) 
 	{
 		ai_turning = VR_NONE;
 		return;
@@ -1808,24 +1823,28 @@ void CVehicle::AI_ProcessWaypoint()
 
 	
 	//-------display _frame
-	float la = (float)(ai_dest_angle * RAD1);
+	la = (float)(ai_dest_angle * 180 / PI); 
 	if ( la < 0 ) 
 	{
-		la += 360.0f;
+		la += 360;
 	}
 	
-	if ( la > 360.0f )
-		la -= 90.0f;
+	if ( la > 360 ) la -= 90;
 	
 	ai_final_frame = la * 0.1f; //la / 10;
+
 	//display_frame = la/10;
 	//motion_frame = display_frame;*/
+
 }
 
 
+
+
+
 ///////////////////////////////////////////////////////////////////////
-// Name: AI_doFSM()
-// Desc: choose (F)inite-(S)tate-(M)achines based action
+// Ime: AI_doFSM()
+// Opisanie: izberi dadeno deistvie sys (F)inite-(S)tate-(M)achines AI
 ///////////////////////////////////////////////////////////////////////
 Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 {
@@ -1837,12 +1856,12 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 		   tmp_val  = 0;
 	bool   proa_ok  = false;
 
-	// get a rnd num
+	// izberi random chislo
 	while ( val == 0 || val < 10 || !proa_ok )
 	{
 		val = rand()%100;
 		
-		// at least one value that is higher than rnd
+		// pone edna stoinost v masiva koqto e > rnd
 		for ( i = 0; i < max_actions; i++ )
 		{
 			if ( val > proActions[i] && proActions[i] != 0 )
@@ -1851,9 +1870,15 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 				break;
 			}
 		}
+
 	}
 
-	// find action with positive subs difference
+	//char buf[64];
+	//sprintf( buf, "rnd: %d / array: %u %u %u %u %u", val, proActions[0], proActions[1], 
+	//	proActions[2], proActions[3], proActions[4] );
+	//DBG( buf );
+
+	// nameri action-a s positivna razlika 
 	for ( j = 0; j < max_actions; j++ )
 	{
 		if ( ( val - proActions[j] ) >= 0 && proActions[j] != 0 )
@@ -1863,7 +1888,8 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 		}
 	}
 
-	// find closest action
+
+	// izberi nai-blizkiq do rnd-chisloto action
 	for ( i = j; i < max_actions; i++ )
 	{
 		tmp_val = val - proActions[i];
