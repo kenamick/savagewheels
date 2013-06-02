@@ -425,11 +425,11 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
   
 	// get input  
 	Sdl.GetInput(); 
-	//if ( Sdl.keys[SDLK_ESCAPE] ) 
+	//if ( Sdl.IsKeyPressed(SDLK_ESCAPE] )
 	//bRunning = false;
 
 	// map-change
-	if ( Sdl.keys[SDLK_F5] && !change_map_key ) 
+	if ( Sdl.IsKeyPressed(SDLK_F5) && !change_map_key )
 	{
 		change_map_key = true;
 		change_map = true;
@@ -441,11 +441,11 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			change_map = false;
 		}
 	}
-	if ( !Sdl.keys[SDLK_F5] ) 
+	if ( !Sdl.IsKeyPressed(SDLK_F5) )
 	  change_map_key = false;
 
 	// shadows on/off
-	if ( Sdl.keys[SDLK_F9] && !change_shadows_key ) 
+	if ( Sdl.IsKeyPressed(SDLK_F9) && !change_shadows_key )
 	{
 		change_shadows_key = true;
 		change_shadows = true;
@@ -460,19 +460,19 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			change_shadows = false;
 		}
 	}
-	if ( !Sdl.keys[SDLK_F9] ) 
+	if ( !Sdl.IsKeyPressed(SDLK_F9) )
 		change_shadows_key = false;
 	
-	if ( Sdl.keys[SDLK_F11] && !toggle_fullscreen )
+	if ( Sdl.IsKeyPressed(SDLK_F11) && !toggle_fullscreen )
 	{
 	  toggle_fullscreen = true;
 	  Sdl.ToggleFullscreen();
 	}
-	if ( !Sdl.keys[SDLK_F11] ) 
+	if ( !Sdl.IsKeyPressed(SDLK_F11) )
 	  toggle_fullscreen = false;
 
 	// music on/off
-	if ( Sdl.keys[SDLK_F4] && !music_off_key ) 
+	if ( Sdl.IsKeyPressed(SDLK_F4) && !music_off_key )
 	{
 		music_off_key = true;
 		music_off = true;
@@ -487,13 +487,13 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			music_off = false;
 		}
 	}
-	if ( !Sdl.keys[SDLK_F4] ) 
+	if ( !Sdl.IsKeyPressed(SDLK_F4) )
 		music_off_key = false;
 
-	//if ( Sdl.keys[SDLK_F12] ) 
+	//if ( Sdl.IsKeyPressed(SDLK_F12] )
 	//	bRunning = false; //{!}
 
-	if ( Sdl.keys[SDLK_F6] ) 
+	if ( Sdl.IsKeyPressed(SDLK_F6) )
 		show_fps = !show_fps;
 
 	// check music sequence
@@ -522,7 +522,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 			for ( i = 0; i < 255; i++ )
 			{
-				if ( Sdl.keys[i] && !Sdl.keys[SDLK_ESCAPE] )
+				if ( Sdl.IsKeyPressed(i) && !Sdl.IsKeyPressed(SDLK_ESCAPE) )
 				{
 					bRunning = false;
 					RELEASE_SURF( splash );
@@ -537,12 +537,12 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 	case GS_MENU:
 
-		if ( !Sdl.keys[SDLK_ESCAPE]  )
+		if ( !Sdl.IsKeyPressed(SDLK_ESCAPE)  )
 			menu_escape_key = false;
 
 		Menu.Update();
 
-		if ( Sdl.keys[SDLK_ESCAPE] && !menu_escape_key )
+		if ( Sdl.IsKeyPressed(SDLK_ESCAPE) && !menu_escape_key )
 		{
 			menu_escape_key = true;
 			Menu.SetMenuState( MS_EXIT );
@@ -559,7 +559,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			
 			for ( i = 0; i < 255; i++ )
 			{
-				if ( Sdl.keys[i] )
+				if ( Sdl.IsKeyPressed(i) )
 				{
 					Gamestate = GS_GAMEPLAY;	// now play...*/
 					wait_key = false;
@@ -595,13 +595,13 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 	case GS_GAMEPLAY:
 
-		if ( Sdl.keys[SDLK_ESCAPE] && !game_paused ) 
+		if ( Sdl.IsKeyPressed(SDLK_ESCAPE) && !game_paused )
 		{
 			//bRunning = false;  // {!} immediate QUIT
 			quit_dialog = true;
 			Sdl.FlipTo( pause_surf );
 		}
-		else if ( Sdl.keys[SDLK_p] && !quit_dialog && !game_paused_key )
+		else if ( Sdl.IsKeyPressed(SDLK_p) && !quit_dialog && !game_paused_key )
 		{
 			game_paused_key = true;
 
@@ -619,7 +619,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 		}
 
-		if ( !Sdl.keys[SDLK_p] ) 
+		if ( !Sdl.IsKeyPressed(SDLK_p) )
 		  game_paused_key = false;
 
 
@@ -773,7 +773,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			qg_frame += mpf * 10;
 			if ( qg_frame > 4 ) qg_frame = 0;
 
-			if ( Sdl.keys[SDLK_y] ) 
+			if ( Sdl.IsKeyPressed(SDLK_y) )
 			{
 				// reset campaign level
 				if ( ( Gameplayers == GP_JUDY_CAMPAIGN || Gameplayers == GP_KEETH_CAMPAIGN ) ) 
@@ -784,7 +784,9 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 				Snd.StopMusic();
 				Snd.Play( MUS_MENU, true );
 			}
-			if ( Sdl.keys[SDLK_n] ) quit_dialog = false;
+
+			if ( Sdl.IsKeyPressed(SDLK_n) )
+				quit_dialog = false;
 		}
 		else if ( game_paused )
 		{
@@ -793,7 +795,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 			Sdl.BlitNow( 0, 0, pause_surf );
 			Sdl.BlitNow( dx, dy, but_pause );
-			/*if ( Sdl.keys[SDLK_p] ) 
+			/*if ( Sdl.IsKeyPressed(SDLK_p] )
 			{
 				game_paused = false;
 				Timer.Unpause(); // unpause timer
@@ -805,7 +807,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 	case GS_GAMEPLAY_WINNER:
 
-		if ( Sdl.keys[SDLK_ESCAPE] || time_showwinner < Timer.Time() ) 
+		if ( Sdl.IsKeyPressed(SDLK_ESCAPE) || time_showwinner < Timer.Time() )
 		{
 			Gamestate = GS_MENU;
 

@@ -114,64 +114,69 @@ protected:
 	/*
 	 * Graphics
 	 */
-	struct STRUCT_BLIT 
-	{
-		Sint32 x,y,z;
+	struct STRUCT_BLIT {
+		Sint32 x, y, z;
 		SDL_Surface *surf;
 	};
 
-	SDL_Surface *screen;			    // main SDL screen buffer
-	STRUCT_BLIT surface[MAX_SPRITES];	// buffer that holds sprites to render on next SDL flip
-	Uint32		num_surfaces;			// number of sprites to render on next SDL flip
-	int			mouse_x, mouse_y;
-	int			mouse_lbutton, mouse_rbutton;
+	// main SDL screen buffer
+	SDL_Surface *screen;
 
-	Uint16		magenta16;
-	Uint16		shadow_mask16;
-	Uint16		bytes_per_color;
-	CGame		*_game;
+	// buffer that holds sprites to render on next SDL flip
+	STRUCT_BLIT surface[MAX_SPRITES];
+
+	// number of sprites to render on next SDL flip
+	Uint32 num_surfaces;
+
+	int mouse_x, mouse_y;
+	int mouse_lbutton, mouse_rbutton;
+
+	Uint16 magenta16;
+	Uint16 shadow_mask16;
+	Uint16 bytes_per_color;
+	CGame *_game;
 
 #ifdef FONT_TTF
-   TTF_Font			*font_ttf;
+	TTF_Font *font_ttf;
 #else
-   SDL_Surface		*font_bmp;
-   Uint16			font_size;
+	SDL_Surface *font_bmp;
+	Uint16 font_size;
 #endif
 
-   /*
-    * Sound
-    */
+	/*
+	 * Sound
+	 */
 #ifdef WITH_FMOD
-   FMOD_SYSTEM      *fmod_system;
-   FMOD_CHANNEL 	*fmod_musicChannel;
-   FMOD_SOUNDGROUP  *fmod_groupSounds;
-   FMOD_SOUNDGROUP  *fmod_groupMusic;
+	FMOD_SYSTEM *fmod_system;
+	FMOD_CHANNEL *fmod_musicChannel;
+	FMOD_SOUNDGROUP *fmod_groupSounds;
+	FMOD_SOUNDGROUP *fmod_groupMusic;
 #endif
 
-   CSound		  sounds[MAX_SOUNDS];	
-   bool			  bsound_initialized;	 // flag that says if sound initialization was OK
-   int			  volume_sound;
-   int			  volume_music;
+	// flag that says if sound initialization was OK
+	bool bsound_initialized;
 
-   /*
-    * Input
-    */
-   SDL_Joystick		*_joystick;
-   bool			_bJoystickSupport;
-   int 			_nJoystickDevices;
-   int			_nJoystickIdxDeviceToUse;
-   Sint16		_xJoystick;
-   Sint16		_yJoystick;
+	CSound sounds[MAX_SOUNDS];
+	int volume_sound;
+	int volume_music;
 
-   typedef std::vector<int>	udtButtonsBuffer;
-   udtButtonsBuffer	_JoystickButtons;
- 
-public:
-   //TODO: wrap
-	Uint8 *keys;				// array of pressed (held down) keys
+	/*
+	 * Input
+	 */
+	SDL_Joystick *_joystick;
+	bool _bJoystickSupport;
+	int _nJoystickDevices;
+	int _nJoystickIdxDeviceToUse;
+	Sint16 _xJoystick;
+	Sint16 _yJoystick;
+
+	typedef std::vector<int> udtButtonsBuffer;
+	udtButtonsBuffer _JoystickButtons;
+
 	int JoystickAxisX;
 	int JoystickAxisY;
 	Uint8 JoystickHatState;
+	Uint8 *keys;				// array of pressed (held down) keys
 
 private:
 	bool InitializeSound();
@@ -240,11 +245,13 @@ public:
 	void UnAcquireJoystick();
 	void ReleaseJoystick();
 	void GetInput();
-	bool GetJoystickButtonPressed( int idx );
-	int  GetMouseX() { return mouse_x; };
-	int  GetMouseY() { return mouse_y; };
-	int  GetMouseLButton() { return mouse_lbutton; };
-	int  GetMouseRButton() { return mouse_rbutton; };
+	bool GetJoystickButtonPressed(int idx);
+	int GetMouseX() { return mouse_x; };
+	int GetMouseY() { return mouse_y; };
+	int GetMouseLButton() { return mouse_lbutton; };
+	int GetMouseRButton() { return mouse_rbutton; };
+	bool IsJoystickHatState(int state);
+	bool IsKeyPressed(int keyIndex);
 
 	/*
 	 * Sound methods
