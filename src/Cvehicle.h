@@ -237,7 +237,7 @@ private:
 
 public:
 	CVehicle();  
-    ~CVehicle();
+    ~CVehicle() {};
 	
 	void Repulse( int, float );
 	//int	 Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex );
@@ -245,7 +245,7 @@ public:
 	void Release();
 	void Create();
 	void GetFrameRect( SDL_Rect *rect );
-	void DoDamage( Uint16 car_damage, Uint32 car_attacker );
+	void DoDamage( int damageAmount, Uint32 attackerIndex );
 	void Update();
 	void UpdateStops();
 	void AddFrags( int fragnum ) { frags += fragnum; }; 

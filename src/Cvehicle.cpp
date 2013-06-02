@@ -32,134 +32,63 @@
  anger 	     x:5 y:460    x:165 y:460   x:325 y:460   x:485 y:460 
 */
 
-POINT  pos_frag[4]	= { 105, 428, 265, 428, 425, 428, 585, 428 };
-POINT  pos_hp[4]	= { 5, 445, 165, 445, 325, 445, 485, 445 };
-POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
-POINT  pos_warp[4]	= { 30, 30, 30, 360, 535, 30, 535, 360 };
+/*
+ * Vehicle components (Extern)
+ */
+int attribACC[3] = { 160, 220, 320 };
+int attribSPEED[5] = { 180, 220, 260, 310, 340 };
+int attribROT[3] = { 15, 20, 25 };
+int attribDAMAGE[4] = { 40, 60, 70, 100 };
+int attribARMOUR[4] = { 210, 260, 300, 400 };
 
-// vehicle components
-int	   attribACC[3]		= { 160, 220, 320 };
-int	   attribSPEED[5]	= { 180, 220, 260, 310, 340 };
-int    attribROT[3]		= { 15, 20, 25 }; 
-int    attribDAMAGE[4]	= { 40, 60, 70, 100 };
-int    attribARMOUR[4]	= { 210, 260, 300, 400 };
+static POINT  pos_frag[4]  = { 105, 428, 265, 428, 425, 428, 585, 428 };
+static POINT  pos_hp[4]  = { 5, 445, 165, 445, 325, 445, 485, 445 };
+static POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
+static POINT  pos_warp[4]  = { 30, 30, 30, 360, 535, 30, 535, 360 };
 
-float g_dirx[] = {
-	1.0000f, 
-	0.9848f, 
-	0.9397f,
-    0.8660f,
-    0.7660f,
-    0.6428f,
-    0.5000f,
-    0.3420f,
-    0.1736f,
-    0.0000f,
-   -0.1736f,
-   -0.3420f,
-   -0.5000f,
-   -0.6428f,
-   -0.7660f,
-   -0.8660f,
-   -0.9397f,
-   -0.9848f,
-   -1.0000f,
-   -0.9848f,
-   -0.9397f,
-   -0.8660f,
-   -0.7660f,
-   -0.6428f,
-   -0.5000f,
-   -0.3420f,
-   -0.1736f,
-    0.0000f,
-    0.1736f,
-    0.3420f,
-    0.5000f,
-    0.6428f,
-    0.7660f,
-    0.8660f,
-    0.9397f,
-    0.9848f
-};
+/*
+ * 36 precalculated sin/cos values for each vehicle animation frame
+ *
+ * done by LordCIH using Matlab ;]
+ */
+static float g_dirx[] = { 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f, 0.6428f,
+    0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f, -0.5000f,
+    -0.6428f, -0.7660f, -0.8660f, -0.9397f, -0.9848f, -1.0000f, -0.9848f,
+    -0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f, -0.1736f,
+    0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f, 0.8660f, 0.9397f,
+    0.9848f };
 
-float g_diry[] = {
-    0.0000f,
-    0.1736f,
-    0.3420f,
-    0.5000f,
-    0.6428f,
-    0.7660f,
-    0.8660f,
-    0.9397f,
-    0.9848f,
-    1.0000f,
-    0.9848f,
-    0.9397f,
-    0.8660f,
-    0.7660f,
-    0.6428f,
-    0.5000f,
-    0.3420f,
-    0.1736f,
-    0.0000f,
-   -0.1736f,
-   -0.3420f,
-   -0.5000f,
-   -0.6428f,
-   -0.7660f,
-   -0.8660f,
-   -0.9397f,
-   -0.9848f,
-   -1.0000f,
-   -0.9848f,
-   -0.9397f,
-   -0.8660f,
-   -0.7660f,
-   -0.6428f,
-   -0.5000f,
-   -0.3420f,
-   -0.1736f
-};
-
-					
-// Gosho s MatLab-a go izchisli t'va po-gore ;]
+static float g_diry[] = { 0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f,
+    0.8660f, 0.9397f, 0.9848f, 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f,
+    0.6428f, 0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f,
+    -0.5000f, -0.6428f, -0.7660f, -0.8660f, -0.9397f, -0.9848f, -1.0000f,
+    -0.9848f, -0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f,
+    -0.1736f };
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: CVehicle()
-// Opisanie: konstructor
+// Name: CVehicle()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 CVehicle::CVehicle()
 : _game( NULL ),
    released(true),
+   visible(false),
    honk_status(0)
 {
-
 	driver_name = (SDL_Surface *)NULL;
 	sprite = sprite_norm = sprite_crash = (SDL_Surface **)NULL;
 
 	mask = mask_crash = mask_norm = NULL;
-
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: ~CVehicle()
-// Opisanie: destructor
-///////////////////////////////////////////////////////////////////////
-CVehicle::~CVehicle()
-{
-	
-}
-
-///////////////////////////////////////////////////////////////////////
-// Ime: Release()
-// Opisanie: osvobodi sprite-ovete
+// Name: Release()
+// Desc: osvobodi sprite-ovete
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Release()
 {
-
 	if ( released ) 
 		return;
 
@@ -196,8 +125,8 @@ void CVehicle::Release()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: create vehicle from module
+// Name: Initialize()
+// Desc: create vehicle from module
 ///////////////////////////////////////////////////////////////////////
 int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 {
@@ -283,8 +212,8 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetAttirbs()
-// Opisanie: car-attribs based on game difficulty
+// Name: SetAttirbs()
+// Desc: car-attribs based on game difficulty
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 {
@@ -317,8 +246,8 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY diff )
 
 
 /*///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: inicializira avtomobil
+// Name: Initialize()
+// Desc: inicializira avtomobil
 ///////////////////////////////////////////////////////////////////////
 int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 {
@@ -381,40 +310,43 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 */
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Initialize()
-// Opisanie: inicializira avtomobil
+// Name: Initialize()
+// Desc: Initialize new vehicle instance
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Create()
 {
-	Uint32 		dist;
-	CVehicle 	*ptr_veh;
 	bool 		do_not_warp = true;
-	int 		i = 0, j = 0;
+	int 		warpPos = 0;
 
-	// proveri dali ima avotmobil do izhodqshtata tochka za warp-vane
+	// get a safe vehicle spawn point
+	// warpPos - one of 4 possible warp points
 	while (do_not_warp) {
-		j = (int) (rand() % 4);
+		warpPos = (int) (rand() % 4);
 		do_not_warp = false;
 
-		ptr_veh = _game->Auto;
+		for (int i = 0; i < _game->game_num_cars; i++)
+		{
+			if (i != myIndex)
+			{
+				if (_game->Auto[i].GetVisible())
+				{
+					Uint32 dist = GetDistanceNSR(
+							_game->Auto[i].GetCX(),
+							_game->Auto[i].GetCY(),
+							pos_warp[warpPos].x,
+							pos_warp[warpPos].y);
 
-		for (i = 0; i < _game->game_num_cars; i++) {
-			if (i != myIndex) {
-				if (ptr_veh->GetVisible()) {
-					dist = GetDistanceNSR(ptr_veh->GetCX(), ptr_veh->GetCY(),
-							pos_warp[j].x, pos_warp[j].y);
-
-					if (dist < SAFE_WARP_DISTANCE) {
+					if (dist < SAFE_WARP_DISTANCE)
+					{
 						do_not_warp = true;
 						break;
 					}
 				}
 			}
-
-			ptr_veh++;
 		}
 
-		//if ( !do_not_warp ) break;
+		//if ( !do_not_warp )
+		//	break;
 	}
 
 	//if ( do_not_warp ) return;
@@ -426,17 +358,17 @@ void CVehicle::Create()
 	vmove = VM_NONE;
 	vrot = VR_NONE;
 
-	// sprite_pointer sochi kym normal pix
+	// point the current animations to the array of non-crashed vehicle animations
 	sprite = sprite_norm;
 	mask = mask_norm;
 	bcrashlook = false;
 
 	// reset vars
-	x = pos_warp[j].x;
-	y = pos_warp[j].y;
+	x = pos_warp[warpPos].x;
+	y = pos_warp[warpPos].y;
 	speed_bonus = 0;
  
-	if ( j == 2 || j == 3 )
+	if ( warpPos == 2 || warpPos == 3 )
 	{
 		motion_frame = 18;
 		display_frame = motion_frame;
@@ -484,28 +416,24 @@ void CVehicle::Create()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: SetControl()
-// Opisanie: set identifikaciq na upravlenie na avtomobila
+// Name: SetControl()
+// Desc: Set Vehicle control operator
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 {
-
 	control = vcontrol;
 	
-	// AI_setup
+	// AI type selection
 	waypoint.reached = true;
 	if ( control == VC_AI )
 	{
-	
 		if ( intGetRnd( 0, 10 ) < 5 )
 		{
 			avt = AVT_WARRIOR;
-			//AppendToLog( "Create AI class : WARRIOR ");
 		}
 		else
 		{
 			avt = AVT_EXPLORER;
-			//AppendToLog( "Created AI class : EXPLORER ");
 		}
 	}
 }
@@ -513,8 +441,8 @@ void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Move()
-// Opisanie: Mradni napred/nazad
+// Name: Move()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 {
@@ -524,8 +452,8 @@ void CVehicle::Move( CONST_VEHICLE_MOVEMENT mvt )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Rotate()
-// Opisanie: Varti kolata 
+// Name: Rotate()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
 {
@@ -536,8 +464,8 @@ void CVehicle::Rotate( CONST_VEHICLE_ROTATION rot )
  
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: DoMotion()
-// Opisanie: do vehicle motion
+// Name: DoMotion()
+// Desc: do vehicle motion
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::DoMotion()
 {
@@ -1090,8 +1018,8 @@ void CVehicle::DoMotion()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Repulse()
-// Opisanie: 
+// Name: Repulse()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Repulse( int frame_angle, float speed )
 {
@@ -1110,8 +1038,8 @@ void CVehicle::Repulse( int frame_angle, float speed )
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetCurrentFrame()
-// Opisanie:
+// Name: GetCurrentFrame()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 SDL_Surface* CVehicle::GetCurrentFrame()
 {
@@ -1119,8 +1047,8 @@ SDL_Surface* CVehicle::GetCurrentFrame()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetCurrentFrameMask()
-// Opisanie:
+// Name: GetCurrentFrameMask()
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 Uint32* CVehicle::GetCurrentFrameMask()
 {
@@ -1128,8 +1056,8 @@ Uint32* CVehicle::GetCurrentFrameMask()
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetFrameRect()
-// Opisanie: kvadrat za stylknovenie
+// Name: GetFrameRect()
+// Desc: kvadrat za stylknovenie
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::GetFrameRect( SDL_Rect *rect )
 {
@@ -1143,8 +1071,8 @@ void CVehicle::GetFrameRect( SDL_Rect *rect )
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: GetMotionFrameMirror()
-// Opisanie: wryshta obratniq ygyl na dvijenie kato index v masiva
+// Name: GetMotionFrameMirror()
+// Desc: Get an opposite (to the current) movement angle.
 ///////////////////////////////////////////////////////////////////////
 float CVehicle::GetMotionFrameMirror()
 {
@@ -1153,28 +1081,32 @@ float CVehicle::GetMotionFrameMirror()
 	tmp_frame = motion_frame;
 
 	tmp_frame += HALF_ROTATION_FRAMES;
-	if ( tmp_frame > MAX_ROTATION_FRAMES ) tmp_frame -= MAX_ROTATION_FRAMES;
-    //tmp_frame--;
+	if ( tmp_frame > MAX_ROTATION_FRAMES )
+		tmp_frame -= MAX_ROTATION_FRAMES;
 	
 	return tmp_frame;
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////
-// Ime: DoDamage()
-// Opisanie: 
+// Name: DoDamage()
+// Desc: Substract given damage from vehicle HP.
+//       Destroys vehicle if HP is < 0.
 ///////////////////////////////////////////////////////////////////////
-void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
+void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 {
-	hit_points -= car_damage;
+	hit_points -= damageAmount;
 	if ( hit_points <= 0 )
 	{
-		_game->Anims.Create( GetCX(), GetCY(), ANIM_EXPLOSION );
-		_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 		visible = false;
+
+		_game->Anims.Create( GetCX(), GetCY(), ANIM_EXPLOSION );
+
+		// PLAYSOUND
+		_game->Snd.Play( SND_EXPLOSION1, (int)x );
+
 		// give/lose a frag...
-		if ( car_attacker == myIndex )
+		if ( attackerIndex == myIndex )
 		{
 			if ( i_self_destruct )
 			{
@@ -1183,10 +1115,12 @@ void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
 				if ( frags < 0 ) frags = 0;
 			}
 		}
-		else if ( car_attacker != NO_ATTACKER && _game->Auto[car_attacker].GetTeam() != team )
-			_game->Auto[car_attacker].AddFrags( 1 );
+		else if ( attackerIndex != NO_ATTACKER && _game->Auto[attackerIndex].GetTeam() != team )
+		{
+			_game->Auto[attackerIndex].AddFrags( 1 );
+		}
 
-		// v sluchai che sme darjali goal-a
+		// in case this vehicle held 'the goal'
 		if ( has_the_goal )
 		{
 			_game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
@@ -1195,283 +1129,268 @@ void CVehicle::DoDamage( Uint16 car_damage, Uint32 car_attacker )
 	}
 	else if ( hit_points <= hit_points_crash && !bcrashlook )
 	{
-		// pokaji smachkanite kartinki i PLAY SOUND {!!!!!!}
-		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
+		// show smashed vehicle sprites
 		sprite = sprite_crash;
 		mask = mask_crash;
 		bcrashlook = true;
+
+		// PLAYSOUND
+		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
 	}
 }
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: Update()
-// Opisanie: obnovqva classa i parametrite na unit-a
+// Name: Update()
+// Desc: obnovqva classa i parametrite na unit-a
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
- 
- char		buf[64];
- float		perc		= 0.0f;
- Uint32		width		= 0U;
- Uint32		height		= 0U;
- SDL_Rect	rect;
+	float perc = 0.0f;
+	Uint32 width = 0U;
+	Uint32 height = 0U;
+	SDL_Rect rect;
 
- SDL_Surface	*surf		= NULL;
- Uint32			*cur_mask	= NULL;
- 
- cur_mask = GetCurrentFrameMask();
- surf = sprite[(int)display_frame + MAX_ROTATION_FRAMES * (int)tire_frame];
+	SDL_Surface *surf = NULL;
+	Uint32 *cur_mask = NULL;
 
- // ne obnovqvai ako ne sme vidimi
- if ( ! visible ) 
- {
-	 Create();  
-	//return;
- }
+	cur_mask = GetCurrentFrameMask();
+	surf = sprite[(int) display_frame + MAX_ROTATION_FRAMES * (int) tire_frame];
 
- // preizchisli center koordinati na avtomobila i kvadrat na kadyra
- width = surf->w;
- height = surf->h;
- center_x = x + (width >> 1);
- center_y = y + (height >> 1); 
+	// respawn vehicle (if not visible, e.g., destroyed)
+	if (!visible) {
+		Create();
+		//return;
+	}
 
- // pridviji MPS-to $p.petrov - comented
- DoMotion();
- //if ( control != VC_AI ) DoMotion();
+	// preizchisli center koordinati na avtomobila i kvadrat na kadyra
+	width = surf->w;
+	height = surf->h;
+	center_x = x + (width >> 1);
+	center_y = y + (height >> 1);
 
- width		= surf->w;
- height		= surf->h;
- center_x	= x + (width >> 1);
- center_y	= y + (height >> 1); 
- rect.x		= rect.y = 0;
- rect.w		= width; 
- rect.h		= height;
- 
- // expire 1 anger point
- if ( anger_time < _game->Timer.Time() && anger > 0 )
- {
-	 anger--;
-	 anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
- }
- // kill speed_bonus 
- if ( speed_time < _game->Timer.Time() && speed_bonus != 0 )
- {
-	 speed_bonus = 0;
- }
- // expire goal
- if ( goal_time < _game->Timer.Time() && has_the_goal )
- {
-	 // dai 3 fraga i varni goal-a otnovo na pytq
-	 has_the_goal = false;
-	 _game->Dtoys.SetToyGoalState( DTG_ONTHEROAD );
-	 frags += 1;
- }
+	// pridviji MPS-to $p.petrov - comented
+	DoMotion();
+	//if ( control != VC_AI ) DoMotion();
 
- // blit shadow and vehicle
- //_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
- _game->Sdl.BlitShadow( x + 1.0f, y + 4.0f, cur_mask, &rect );
- _game->Sdl.AddToBlit( x, y, surf );
- 
+	width = surf->w;
+	height = surf->h;
+	center_x = x + (width >> 1);
+	center_y = y + (height >> 1);
+	rect.x = rect.y = 0;
+	rect.w = width;
+	rect.h = height;
+
+	// expire 1 anger point
+	if (anger_time < _game->Timer.Time() && anger > 0) {
+		anger--;
+		anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
+	}
+	// kill speed_bonus
+	if (speed_time < _game->Timer.Time() && speed_bonus != 0) {
+		speed_bonus = 0;
+	}
+	// expire goal
+	if (goal_time < _game->Timer.Time() && has_the_goal) {
+		// give 3 frags and put bonus back on map
+		has_the_goal = false;
+		_game->Dtoys.SetToyGoalState(DTG_ONTHEROAD);
+		frags += 1;
+	}
+
+	// blit shadow and vehicle
+	//_game->Sdl.BlitShadow( (int)x + 1, (int)y + 4, surf );
+	_game->Sdl.BlitShadow(x + 1.0f, y + 4.0f, cur_mask, &rect);
+	_game->Sdl.AddToBlit(x, y, surf);
+
 // DBG( "Vehicle " << myIndex << " position X: " << x << " Y: " << y );
- 
- // blit status
- sprintf( buf, "%d", frags );
- _game->Sdl.DrawNum( pos_frag[myIndex].x, pos_frag[myIndex].y, buf );
- perc = ( (float)hit_points / (float)max_hitpoints ) * 100.0f;
- _game->scales[0]->w = (Uint32)( /*(130.0f / 100.0f )*/ 1.3f * perc);
- _game->Sdl.BlitNow( pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0] ); 
- _game->scales[1]->w = anger;
- _game->Sdl.BlitNow( pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1] ); 
 
+	// blit status
+	char buf[8];
+	sprintf(buf, "%d", frags);
+	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
+	perc = ((float) hit_points / (float) max_hitpoints) * 100.0f;
+	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
+	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
+	_game->scales[1]->w = anger;
+	_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y,_game->scales[1]);
 
- // proveri controla na autoto
- switch( control )
- {
-  
-  case VC_PLAYER1:
-	
-	if ( _game->Sdl.keys[_game->Bindings.GetP1Key( CBindings::BK_LEFT ) ] )
-		Rotate( VR_LEFT );
+	switch (control) {
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_RIGHT ) ] ) 
-		Rotate( VR_RIGHT );
+	case VC_PLAYER1:
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_ACC ) ] ) 
-		Move( VM_FORWARD );
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_LEFT)])
+			Rotate(VR_LEFT);
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BREAK ) ] ) 
-		Move( VM_BACKWARD );
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_RIGHT)])
+			Rotate(VR_RIGHT);
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_HONK ) ] )
-	{
-		honk_status = 1;
-	}
-	else {
-		honk_status = honk_status == 1 ? 2 : 0;
-	}
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_ACC)])
+			Move(VM_FORWARD);
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_BLOWUP ) ] )
-	{
-		self_destruct	= true;
-		i_self_destruct = true;
-	}
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_BREAK)])
+			Move(VM_BACKWARD);
 
-	//{!}
-	if ( _game->Sdl.JoystickHatState == SDL_HAT_LEFT ) Rotate( VR_LEFT );
-	if ( _game->Sdl.JoystickHatState == SDL_HAT_RIGHT ) Rotate( VR_RIGHT );
-	if ( _game->Sdl.GetJoystickButtonPressed( 1 ) ) Move( VM_FORWARD );
-	if ( _game->Sdl.GetJoystickButtonPressed( 2 ) ) Move( VM_BACKWARD );
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_HONK)]) {
+			honk_status = 1;
+		} else {
+			honk_status = honk_status == 1 ? 2 : 0;
+		}
 
-	if ( _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_MINE ) ] )
-	{
-		if ( !bputmine )
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_BLOWUP)]) {
+			self_destruct = true;
+			i_self_destruct = true;
+		}
+
+		//{!}
+		if (_game->Sdl.JoystickHatState == SDL_HAT_LEFT)
+			Rotate(VR_LEFT);
+		if (_game->Sdl.JoystickHatState == SDL_HAT_RIGHT)
+			Rotate(VR_RIGHT);
+		if (_game->Sdl.GetJoystickButtonPressed(1))
+			Move(VM_FORWARD);
+		if (_game->Sdl.GetJoystickButtonPressed(2))
+			Move(VM_BACKWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_MINE)]) {
+			if (!bputmine)
+				bputminekey = true;
+		} else if (!_game->Sdl.keys[_game->Bindings.GetP1Key(CBindings::BK_MINE)]) {
+			bputminekey = false;
+			bputmine = false;
+		}
+
+		break;
+
+	case VC_PLAYER2:
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_LEFT)])
+			Rotate(VR_LEFT);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_RIGHT)])
+			Rotate(VR_RIGHT);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_ACC)])
+			Move(VM_FORWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_BREAK)])
+			Move(VM_BACKWARD);
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_BLOWUP)]) {
+			self_destruct = true;
+			i_self_destruct = true;
+		}
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_HONK)]) {
+			honk_status = 1;
+		} else {
+			honk_status = honk_status == 1 ? 2 : 0;
+		}
+
+		if (_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_MINE)]) {
+			if (!bputmine)
+				bputminekey = true;
+		} else if (!_game->Sdl.keys[_game->Bindings.GetP2Key(CBindings::BK_MINE)]) {
+			bputminekey = false;
+			bputmine = false;
+		}
+
+		break;
+
+		// case VC_PLAYER3:
+		// 	if ( _game->Sdl.keys[SDLK_j] ) Rotate( VR_LEFT );
+		//if ( _game->Sdl.keys[SDLK_l] ) Rotate( VR_RIGHT );
+		//if ( _game->Sdl.keys[SDLK_i] ) Move( VM_FORWARD );
+		//if ( _game->Sdl.keys[SDLK_k] ) Move( VM_BACKWARD );
+		// break;
+
+	case VC_AI:
+		AI_Update();
+
+		if (ai_putmine) {
+			ai_putmine = false;
 			bputminekey = true;
+		}
+
+		break;
+
+	default:
+		break;
+
 	}
-	else if ( ! _game->Sdl.keys[ _game->Bindings.GetP1Key( CBindings::BK_MINE ) ] )
+
+	// put a landime mine down?
+	if (bputminekey)
 	{
+		bputmine = true;
+		if (landmines > 0)
+		{
+			landmines--;
+			_game->Mines.Create(GetCX(), GetCY(), myIndex);
+		}
+
 		bputminekey = false;
-		bputmine = false;
 	}
-  
-	break;
 
-  case VC_PLAYER2:
-
-	if ( _game->Sdl.keys[_game->Bindings.GetP2Key( CBindings::BK_LEFT ) ] )
-		Rotate( VR_LEFT );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_RIGHT ) ] ) 
-		Rotate( VR_RIGHT );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_ACC ) ] ) 
-		Move( VM_FORWARD );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BREAK ) ] ) 
-		Move( VM_BACKWARD );
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_BLOWUP ) ] )
+	// self-distruct if vehicle has 'stuck'
+	// XXX This is a nasty hack due to existing collision physics issue :(
+	if (vel == 0 && !self_destruct)
 	{
-		self_destruct	= true;
-		i_self_destruct = true;
+		if (!ai_stuck)
+		{
+			ai_stuck = true;
+			ai_stucktime = _game->Timer.Time() + 4000 + (rand() % 2000);
+		}
 	}
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_HONK ) ] )
+	else
 	{
-		honk_status = 1;
-	}
-	else {
-		honk_status = honk_status == 1 ? 2 : 0;
-	}
-
-	if ( _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
-	{
-		if ( !bputmine )
-			bputminekey = true;
-	}
-	else if ( ! _game->Sdl.keys[ _game->Bindings.GetP2Key( CBindings::BK_MINE ) ] )
-	{
-		bputminekey = false;
-		bputmine = false;
-	}
-
-
-  break;
-  
- // case VC_PLAYER3:
- // 	if ( _game->Sdl.keys[SDLK_j] ) Rotate( VR_LEFT );
-	//if ( _game->Sdl.keys[SDLK_l] ) Rotate( VR_RIGHT );
-	//if ( _game->Sdl.keys[SDLK_i] ) Move( VM_FORWARD );
-	//if ( _game->Sdl.keys[SDLK_k] ) Move( VM_BACKWARD );
- // break;
-    
-  case VC_AI:
-	  AI_Update();
-
-	  if ( ai_putmine )
-	  {
-		  ai_putmine = false;
-		  bputminekey = true;
-	  }
-  
-  break;
-
-  default: 
-	  break;
-  
- }
-
- // trqbwa li da ostavim mina
- if ( bputminekey ) 
- {
-	 bputmine = true;
-	 if ( landmines > 0 ) 
-	 {
-		 landmines--;
-		 _game->Mines.Create( GetCX(), GetCY(), myIndex );
-	 }
-
-	 bputminekey = false;
- }
-
- // proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
- if ( vel == 0 && ! self_destruct )
- {
-	 if ( !ai_stuck )
-	 {
-		ai_stuck = true;
-		ai_stucktime = _game->Timer.Time() + 4000 + (rand()%2000);
-	 }
- }
- else
- {
-	 ai_stuck = false;
- }
-
- if ( ai_stuck )
- {
-	if ( ai_stucktime < _game->Timer.Time() )
-	{
-		self_destruct = true;
 		ai_stuck = false;
 	}
- }
 
- // proveri "_game->self_destruct" mechanizm
- if ( self_destruct && ! self_destruction ) 
- {
-	 self_destruction = true;
-	 self_destruct = false;
-	 destruct_time = _game->Timer.Time() + 3000;
- }
+	if (ai_stuck)
+	{
+		if (ai_stucktime < _game->Timer.Time())
+		{
+			self_destruct = true;
+			ai_stuck = false;
+		}
+	}
 
- if ( self_destruction )
- {
+	// proveri "_game->self_destruct" mechanizm
+	if (self_destruct && !self_destruction)
+	{
+		self_destruction = true;
+		self_destruct = false;
+		destruct_time = _game->Timer.Time() + 3000;
+	}
 
-	 if ( destruct_time > _game->Timer.Time() )
-	 {
-		 //_game->Sdl.DrawNum( (int)x, (int)y, "1" );
-		 _game->Sdl.BlitNow( (int)x, (int)y, _game->self_dest );
+	if (self_destruction)
+	{
 
-		 // PLAY SOUND
-		 if ( warning_time < _game->Timer.Time() )
-		 {
-			 warning_time = _game->Timer.Time() + 1000;
-			 _game->Snd.Play( SND_WARNING, (int)x );
-		 }
-	 }
-	 else 
-	 {
-		 DoDamage( 1000U, myIndex );  
-		 self_destruction = false;  // clear local var
-	 }
- }
+		if (destruct_time > _game->Timer.Time())
+		{
+			//_game->Sdl.DrawNum( (int)x, (int)y, "1" );
+			_game->Sdl.BlitNow((int) x, (int) y, _game->self_dest);
 
- if (honk_status == 2)
- {
-	 _game->Snd.Play( SND_MENU_HONK1, (int)x );
-	 honk_status = 0;
- }
+			// PLAY SOUND
+			if (warning_time < _game->Timer.Time())
+			{
+				warning_time = _game->Timer.Time() + 1000;
+				_game->Snd.Play(SND_WARNING, (int) x);
+			}
+		}
+		else
+		{
+			DoDamage(1000U, myIndex);
+			self_destruction = false;  // clear local var
+		}
+	}
+
+	if (honk_status == 2)
+	{
+		_game->Snd.Play(SND_MENU_HONK1, (int) x);
+		honk_status = 0;
+	}
 
 } 
 
@@ -1489,8 +1408,8 @@ void CVehicle::UpdateStops()
  
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_Update()
-// Opisanie: obnovi informaciqta za waypointa i cqloto AI
+// Name: AI_Update()
+// Desc: obnovi informaciqta za waypointa i cqloto AI
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_Update()
 {
@@ -1590,8 +1509,8 @@ void CVehicle::AI_Update()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_GenerateWaypoint()
-// Opisanie: generirai tip na deistvieto na AI-to
+// Name: AI_GenerateWaypoint()
+// Desc: Generate new AI action.
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_GenerateWaypoint()
 {
@@ -1610,14 +1529,6 @@ void CVehicle::AI_GenerateWaypoint()
 	Uint16	  bonus_list_explorer[DT_MAX_DEADTOYS]	= { 45, 15, 25, 12, 8 };
 	CVehicle  *ptr_veh = _game->Auto;
 	
-
-/*	DT_BEARGOAL = 0,
-	DT_BEARANGER,
-	DT_BEARHP,
-	DT_BEARSPEED,
-	DT_BEARLANDMINE
-*/
-	// nulirai masiva
 	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint16) );
 
 	if ( avt == AVT_WARRIOR )				 // TYPE _WARRIOR
@@ -1673,12 +1584,11 @@ void CVehicle::AI_GenerateWaypoint()
 	}
 
 
-	// izvyrshi izbranoto deistvie
 	switch( action )
 	{
 	case ACTION_ATTACK:
 		
-		// vzemi razstoqnieto do 1viq avtomobil
+		// distance to closest enemy vehicle
 		i = car_index = 0;
 		distance = UINT_MAX;
 		
@@ -1704,7 +1614,7 @@ void CVehicle::AI_GenerateWaypoint()
 			i++;
 		}
 		
-		// zapylni info-to za waypoint-a
+		// fill-in new waypoint information
 		ptr_veh = &_game->Auto[car_index];
 		
 		waypoint.x				 = ptr_veh->GetCX();
@@ -1726,11 +1636,8 @@ void CVehicle::AI_GenerateWaypoint()
 
 	case ACTION_TAKEBONUS:
 		
-		// vzemi "proizvolen" bonus ot spisyka
-		Uint16 bonus_action;
-
-		bonus_action = AI_doFSM( bonus_list, DT_MAX_DEADTOYS );
-		bonus_index = bonus_list_index[bonus_action];
+		// take random bonus from the list
+		bonus_index = bonus_list_index[AI_doFSM( bonus_list, DT_MAX_DEADTOYS )];
 
 		_game->Dtoys.GetToyRect( bonus_index, &rtoy );
 		
@@ -1760,8 +1667,8 @@ void CVehicle::AI_GenerateWaypoint()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_ProcessWaypoint()
-// Opisanie: vzemi ygyla kym waypoint-a i sloji pravilniq motion_frame
+// Name: AI_ProcessWaypoint()
+// Desc: vzemi ygyla kym waypoint-a i sloji pravilniq motion_frame
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_ProcessWaypoint()
 {
@@ -1789,7 +1696,7 @@ void CVehicle::AI_ProcessWaypoint()
 		ai_dest_angle = (float)(atan( x_dist /y_dist ) - PI_2);
 	}
 
-	// proveri dali uma nujda ot preizchislqvane 
+	// check if display frame must be recalculated
 	if ( ai_dest_angle == ai_cur_angle ) 
 	{
 		ai_turning = VR_NONE;
@@ -1843,8 +1750,8 @@ void CVehicle::AI_ProcessWaypoint()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Ime: AI_doFSM()
-// Opisanie: izberi dadeno deistvie sys (F)inite-(S)tate-(M)achines AI
+// Name: AI_doFSM()
+// Desc: izberi dadeno deistvie sys (F)inite-(S)tate-(M)achines AI
 ///////////////////////////////////////////////////////////////////////
 Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 {
@@ -1856,12 +1763,12 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 		   tmp_val  = 0;
 	bool   proa_ok  = false;
 
-	// izberi random chislo
+	// get a rnd num
 	while ( val == 0 || val < 10 || !proa_ok )
 	{
 		val = rand()%100;
 		
-		// pone edna stoinost v masiva koqto e > rnd
+		// at least one value that is higher than rnd
 		for ( i = 0; i < max_actions; i++ )
 		{
 			if ( val > proActions[i] && proActions[i] != 0 )
@@ -1873,12 +1780,7 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 
 	}
 
-	//char buf[64];
-	//sprintf( buf, "rnd: %d / array: %u %u %u %u %u", val, proActions[0], proActions[1], 
-	//	proActions[2], proActions[3], proActions[4] );
-	//DBG( buf );
-
-	// nameri action-a s positivna razlika 
+	// find action with positive subs difference
 	for ( j = 0; j < max_actions; j++ )
 	{
 		if ( ( val - proActions[j] ) >= 0 && proActions[j] != 0 )
@@ -1888,8 +1790,7 @@ Uint16 CVehicle::AI_doFSM( Uint16 *proActions, Uint16 max_actions )
 		}
 	}
 
-
-	// izberi nai-blizkiq do rnd-chisloto action
+	// find closest action
 	for ( i = j; i < max_actions; i++ )
 	{
 		tmp_val = val - proActions[i];
