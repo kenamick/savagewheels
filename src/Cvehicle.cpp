@@ -94,7 +94,7 @@ void CVehicle::Release()
 
 	AppendToLog( "Closing CVehicle() class..." );
 
-	for ( int cn = 0; cn < MAX_ROTATION_FRAMES * tire_frames; cn++ )
+	for ( int cn = 0; cn < MAX_ROTATION_FRAMES * max_tire_frames; cn++ )
 	{
 		RELEASE_SURF( sprite_norm[cn] );
 		RELEASE_SURF( sprite_crash[cn] );
@@ -144,7 +144,7 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 	frames = swv->animation_frames;
 
 	// get tire frames
-	tire_frames = frames / MAX_ROTATION_FRAMES;
+	max_tire_frames = frames / MAX_ROTATION_FRAMES;
 	frags = 0; // reset fragovete
 	anger = 0; // reset anger-a
 
@@ -268,35 +268,35 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
  {
       case VT_KAMION:
 		sprintf ( carname, "%s", "v4" );
-	    tire_frames = 1;
+	    max_tire_frames = 1;
 	  break;   
    
 	  case VT_FERRARI:
 		sprintf ( carname, "%s", "fera" );
-   	    tire_frames = 1;
+   	    max_tire_frames = 1;
 	  break;
 	  
 	  case VT_MERCEDES:
 		sprintf ( carname, "%s", "merc" );
-		tire_frames = 1;
+		max_tire_frames = 1;
    	  break;
 
       case VT_BUGGY:
    	    sprintf ( carname, "%s", "bugi" );
-		tire_frames = 2;
+		max_tire_frames = 2;
 	  break;
 
 	  default: return 0;
  }
 
  // ...
- sprite_norm = (SDL_Surface **) new SDL_Surface[MAX_ROTATION_FRAMES * tire_frames];
- sprite_crash = (SDL_Surface **) new SDL_Surface[MAX_ROTATION_FRAMES * tire_frames];
+ sprite_norm = (SDL_Surface **) new SDL_Surface[MAX_ROTATION_FRAMES * max_tire_frames];
+ sprite_crash = (SDL_Surface **) new SDL_Surface[MAX_ROTATION_FRAMES * max_tire_frames];
 
 
 
  // load animation 
- for( cn = 0; cn < MAX_ROTATION_FRAMES * tire_frames; cn++ )
+ for( cn = 0; cn < MAX_ROTATION_FRAMES * max_tire_frames; cn++ )
  {
 		 // normal 
 		 sprintf ( cardir, "gfx/%s/ok/%d.bmp", carname, cn );
@@ -358,19 +358,19 @@ void CVehicle::Create()
 	x_acc = 0.0f;
 	y_acc = 0.0f;
 	hit_vel = 0.0f;
-	landmines = 0;
+	landmines_count = 0;
 	vmove = VM_NONE;
 	vrot = VR_NONE;
 
 	// point the current animations to the array of non-crashed vehicle animations
 	sprite = sprite_norm;
 	mask = mask_norm;
-	bcrashlook = false;
+	hit_points_crash = false;
 
 	// reset vars
 	x = pos_warp[warpPos].x;
 	y = pos_warp[warpPos].y;
-	speed_bonus = 0;
+	velocity_bonus = 0;
  
 	if ( warpPos == 2 || warpPos == 3 )
 	{
@@ -558,7 +558,7 @@ void CVehicle::DoMotion()
 	 * Acceleration
 	 */
 
-	float maxvel_p = tmp_maxvel + speed_bonus;
+	float maxvel_p = tmp_maxvel + velocity_bonus;
 	float maxvel_n = -maxvel_p; // / 2;
 
 	if ( vmove == VM_FORWARD )
@@ -608,11 +608,11 @@ void CVehicle::DoMotion()
 	}
 
 	// rotate vehicle tires (if moving)
-	if (tire_frames > 1 && abs_vel > 0.0f)
+	if (max_tire_frames > 1 && abs_vel > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
 		
-		if ( tire_frame >= tire_frames ) 
+		if ( tire_frame >= max_tire_frames )
 			tire_frame = 0;
 	}
 
@@ -911,8 +911,8 @@ void CVehicle::DoMotion()
 
 				   case DT_BEARSPEED:
 
-					speed_bonus = max_vel / 3;
-					speed_time = _game->Timer.Time() + SPEEDEXPIRE_TIME;
+					velocity_bonus = max_vel / 3;
+					velocity_bonus_time = _game->Timer.Time() + SPEEDEXPIRE_TIME;
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
 					tire_trails = VTT_BLOOD;
@@ -930,11 +930,11 @@ void CVehicle::DoMotion()
 
 					hit_points += _game->Dtoys.GetToyValue( i );
 					
-					if ( hit_points >= hit_points_crash && bcrashlook )
+					if ( hit_points >= hit_points_crash && hit_points_crash )
 					{
 						sprite = sprite_norm;
 						mask = mask_norm;
-						bcrashlook = false;
+						hit_points_crash = false;
 					}
 					if ( hit_points > max_hitpoints ) 
 						hit_points = max_hitpoints;
@@ -972,7 +972,7 @@ void CVehicle::DoMotion()
 				   break;
 
 				   case DT_BEARLANDMINE:
-					landmines += _game->Dtoys.GetToyValue( i );
+					landmines_count += _game->Dtoys.GetToyValue( i );
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
 				    tire_trails = VTT_BLOOD;
@@ -1004,7 +1004,7 @@ void CVehicle::DoMotion()
 	} 
 
 	/*
-	 * Landmines hit test
+	 * landmines_count hit test
 	 */
 	for ( int i = 0; i < LANDMINE_CHILDS; i++ )
 	{
@@ -1134,12 +1134,12 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 			has_the_goal = false;
 		}
 	}
-	else if ( hit_points <= hit_points_crash && !bcrashlook )
+	else if ( hit_points <= hit_points_crash && !hit_points_crash )
 	{
 		// show smashed vehicle sprites
 		sprite = sprite_crash;
 		mask = mask_crash;
-		bcrashlook = true;
+		hit_points_crash = true;
 
 		// PLAYSOUND
 		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
@@ -1189,9 +1189,9 @@ void CVehicle::Update()
 		anger--;
 		anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
 	}
-	// kill speed_bonus
-	if (speed_time < _game->Timer.Time() && speed_bonus != 0) {
-		speed_bonus = 0;
+	// kill velocity_bonus
+	if (velocity_bonus_time < _game->Timer.Time() && velocity_bonus != 0) {
+		velocity_bonus = 0;
 	}
 	// expire goal
 	if (goal_time < _game->Timer.Time() && has_the_goal) {
@@ -1329,9 +1329,9 @@ void CVehicle::Update()
 	if (bputminekey)
 	{
 		bputmine = true;
-		if (landmines > 0)
+		if (landmines_count > 0)
 		{
-			landmines--;
+			landmines_count--;
 			_game->Mines.Create(GetCX(), GetCY(), myIndex);
 		}
 
@@ -1419,40 +1419,13 @@ void CVehicle::UpdateStops()
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::AI_Update()
 {
-
-	float		    distance;
-/*	static float    tmp_x, tmp_y;
-
-	
-	tmp_x = x;
-	tmp_y = y;*/
-
-
-/*	// proveri dali kolata ne e zasednala, ako e taka vkl. "_game->self_destruction"
-	if ( vel == 0 )
-	{
-		if ( !ai_stuck )
-		{
-			ai_stuck = true;
-			ai_stucktime = _game->Timer.Time() + 2000 + (rand()%2000);
-		}
-	}
-	else
-		ai_stuck = false;
-
-	if ( ai_stuck )
-	{
-		if ( ai_stucktime < _game->Timer.Time() )
-			_game->self_destruct = true;
-	}
-*/
-
-	// ako e udaril avtomobil to vyrni go nazad za 'n' kadyra 
+	// This will be called if AI has hit someone.
+	// Then we need to move the AI controlled vehicle back for a defined period of time
 	if ( waypoint.do_reverse )
 	{
 		Move( VM_BACKWARD );
 
-		// 25% chance da pusni mina pri zaden hod
+		// 25% chacne to put a landmine when moving backwards
 		if ( intGetRnd( 0, 100 ) < 25 )
 			ai_putmine = false;
 		
@@ -1467,7 +1440,7 @@ void CVehicle::AI_Update()
 		}
 	}
 
-	// proveri dali nqkoi veche ne vzel bonus-a ili dali ne e izcheznal
+	// check if bonus is still on map
 	if ( waypoint.goal_type == WAYPOINT_BONUS )
 	{
 		if ( !_game->Dtoys.GetToyVisible( waypoint.index ) )
@@ -1475,29 +1448,26 @@ void CVehicle::AI_Update()
 	}
 	else if ( waypoint.goal_type == WAYPOINT_VEHICLE )
 	{
-		// proveri dali avtomobila ne e unishtojen
+		// check if enemy target is still on map
 		if ( !_game->Auto[waypoint.index].GetVisible() )
 			waypoint.reached = true;
 	}
 
-
-
-	// proveri dali sme dostignali zadadenata poziciq
-	distance = fGetDistanceNSR( GetCX(), GetCY(), waypoint.x, waypoint.y );
+	// check if waypoint has been reached
+	float distance = fGetDistanceNSR( GetCX(), GetCY(), waypoint.x, waypoint.y );
 	if ( distance <= WAYPOINT_RADIUS ) 
 		waypoint.reached = true;
 
-	// ako sme dostignali poziciqta to generirai nov waypoint
+	// get a new waypoint
 	if ( waypoint.reached )
 	{
 		AI_GenerateWaypoint();
 		return;
 	}
 	
-
+	// we need to recalculate the destination every now and then
 	if ( !waypoint.static_pos || waypoint.do_precalculate )
 	{
-		// ako e avtomobil to toi se e pridvijil i waypoint-a trqbwa da byde pre-def
 		if ( waypoint.goal_type == WAYPOINT_VEHICLE )
 		{
 			waypoint.x = (float)_game->Auto[waypoint.index].GetCX();
@@ -1508,10 +1478,7 @@ void CVehicle::AI_Update()
 	}
 
 	Move( VM_FORWARD );
-
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////

@@ -147,45 +147,47 @@ private:
 	CGame		 *_game;
 
 	Uint32		 myIndex;		// class index
-	bool		 visible;		// is the car warped and ready
+	bool		 visible;		// is the car warped/spawned
 	bool		 released;		// is class released
 
-	//int          vel,max_vel;	// skorost, maksimalna
-	int          max_vel;	// skorost, maksimalna
-	float		 vel;
-	int          acc, dec_acc;  // uskorenie i dec_uskorenie na spirane
+	int          max_vel;		// maximum velocity
+	float		 vel;			// current velocity
+	int          acc, dec_acc;  // acceleration, deceleration
 	float		 hit_vel;
+	float		 x_acc, y_acc;  // hit - acceleration vector
 
-	int			 speed_bonus;   // bonus-kym skorostta
-	Uint32		 speed_time;	// vreme na bonus-skorost
+	int			 velocity_bonus;		// bonus to velocity
+	Uint32		 velocity_bonus_time;	// bonus activity time
 
-	int			 lbs;			// kolko teji 
+	int			 lbs;			// weight of the vehicle
 	int			 rot_speed;		// rotation speed
-	SDL_Rect     rCollide;		// kvadrat na zasichane
-	Uint32		 center_x, center_y;
-	//SDL_Rect	 rFrame;
-	float	     x,y;			// poziciq
-	float		 x_acc, y_acc;  // ugly na uskorenie pri udar
-	float		 rep_frame;		// kadyr na udrqshtiqt ni avtomobil
-	float 	     display_frame;	// kadyr za rendirane
-	float		 motion_frame;  // kadyr za ygyla na dvijenie
-	float		 tire_frame;	// kadyr na dvijenie na gumite
-	Uint16		 tire_frames;	 // kadri za vyrtqshti se gumi
+//	Uint32		 center_x, center_y;
+
+	float	     x, y;			// current position (top-left)
+	float		 center_x, center_y; // current sprite center coordinates
+	float		 rep_frame;		// hit impulse direction/sprite animation frame
+	float 	     display_frame;	// sprite index to render
+	float		 motion_frame;  // movement sprite index
+	bool		 reset_frame;
+	float		 motion_angle;
+	float		 tire_frame;	// offset to moving tires sprite
+	Uint16		 max_tire_frames;	// maximum moving tires animation frames
 
 	int			 max_hitpoints;
 	int 	     hit_points;
 	int			 hit_points_crash;
-	bool		 bcrashlook;
-	int			 frags;			// kills
-	Uint32		 goal_time;		// vreme za koeto zadryjame goal-a +3 frags 
-	bool		 has_the_goal;  // v tazi mashina li e goal-a
+	bool		 crashed_look;
+	int			 frags;			// current (round) kills
+	Uint32		 goal_time;		// amount of time this vehicle kept the goal bonus
+	bool		 has_the_goal;  // has the goal bonus?
 
-	int			 landmines;		// kolko mini ima v nalichnost...
+	int			 landmines_count;	// qty. of available landmines
 	Uint16		 damage;
 	int   		 anger;
 	Uint32		 anger_time;
-	bool		 bputmine, bputminekey;
 
+	bool		 bputmine;
+	bool		 bputminekey;
 	bool		 i_self_destruct;
 	bool		 self_destruct;
 	bool		 self_destruction;
@@ -193,14 +195,15 @@ private:
 	Uint32		 warning_time;
 	Uint32		 honk_status;		// 0 - none, 1 - down, 2 - up
 
-	SDL_Surface  **sprite;			// current image-pointer
-	SDL_Surface  **sprite_norm; 
-	SDL_Surface  **sprite_crash;
-	Uint32 	     **mask, **mask_norm, **mask_crash;
-	SDL_Surface  *driver_name;
-	//SDL_Surface	 ***sprite_norm; //*sprite_norm[36];  // car faces
-	//SDL_Surface  ***sprite_crash; //*sprite_crash[36]; // car crashed-faces
-	
+	SDL_Surface  **sprite;			// current (visible) array ptr.
+	SDL_Surface  **sprite_norm;		// array of normal (not crashed) sprites
+	SDL_Surface  **sprite_crash;	// array of crashed sprites
+	Uint32 	     **mask;			// current mask
+	Uint32		 **mask_norm;		// mask for normal sprites
+	Uint32		 **mask_crash;		// mask for crashed sprites
+	SDL_Surface  *driver_name;		// driver sprite
+
+	char		 vehicle_name[8];	// name of vehicle in data file
 	//CONST_VEHICLE_TYPE		me;
 	CONST_VEHICLE_CONTROL   control;
 	CONST_VEHICLE_MOVEMENT  vmove;
@@ -212,16 +215,16 @@ private:
 	// AI
 	CONST_AI_VEHICLE_TYPE	avt;
 	CWaypoint				waypoint;
-	float					ai_cur_angle;
-	float					ai_dest_angle;
-	CONST_VEHICLE_ROTATION	ai_turning;				// poskoa na zavivane na avtomobila
+	float					ai_cur_angle;		// AI movement angle
+	float					ai_dest_angle;		// AI destination angle to reach
+	CONST_VEHICLE_ROTATION	ai_turning;			// AI rotation angle
 	int						ai_maxvel;
 	float					ai_final_frame;
 	bool					ai_putmine;
-	Uint32					ai_stucktime;			// car-stuck timer
+	Uint32					ai_stucktime;		// car-stuck timer
 	bool					ai_stuck;
 
-	Uint16					team;					// vehicle Team
+	Uint16					team;				// vehicle Team
 
 	bool					set_stop;
 
