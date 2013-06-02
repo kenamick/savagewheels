@@ -25,7 +25,7 @@ set(
 	src/Cvehicle.cpp 
 	src/Utils.cpp 
 	src/CAnimation.cpp 
-	src/Cgame.cpp 
+	src/CGame.cpp 
 	src/CMainMenu.cpp 
 	src/CSounds.cpp
 	src/CTimer.cpp

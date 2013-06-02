@@ -117,7 +117,7 @@ typedef std::ostringstream	OutputSStream;
 #include "CSounds.h"
 #include "CDeadToy.h"
 #include "Bindings.h"
-#include "Cgame.h"
+#include "CGame.h"
 #include "CBufferedReader.h"
 
 #endif
