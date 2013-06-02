@@ -141,7 +141,6 @@ public:
 class CMainMenu
 {
 private:
-
 	CGame			  *_game;	
 
 	SDL_Surface		  *ssBack[MENU_BACKGROUNDS];
@@ -189,16 +188,15 @@ private:
 	
 public:
 	CMainMenu();
-	~CMainMenu();
+	~CMainMenu() {};
 
 	int  Initialize( CGame *game );
 	void Update();
 	void Release();
 
-	/* put utside because music volume settings 
-	wouldn't work before playing music!! */ 
+	// put outside because music volume settings
+	// wouldn't work before playing music!!
 	void LoadSettings();
-
 	void SetMenuState(CONST_MENUSTATE state) { Menustate = state; };
 };
 

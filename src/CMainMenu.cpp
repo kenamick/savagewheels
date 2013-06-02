@@ -25,31 +25,26 @@
 */
 #include "Main.h"
 
-extern int attribACC[3];
-extern int attribSPEED[5];
-//extern int attribROT[3];
-extern int attribDAMAGE[4];
-extern int attribARMOUR[4];
-
 //POINT	pos_menu[5] = { 420, 100, 420, 170, 420, 240, 420, 310, 420, 380 };
 /*POINT	pos_opt_but[13] = { 230, 50, 230, 80, 230, 110, 230, 140, 230, 170, 230, 200,
-							470, 50, 300, 80, 300, 110, 300, 140, 400, 170, 400, 200, 
-							420, 400 };*/
-static POINT pos_options[6]	= {37, 60, 37, 110, 37, 160, 37, 210, 37, 260, 37, 310, /*37, 360*/};
-static POINT pos_opt_but[13] = { 230, 50, 230, 100, 230, 150, 230, 200, 230, 250, 230, 300, //230, 350,
+ 470, 50, 300, 80, 300, 110, 300, 140, 400, 170, 400, 200,
+ 420, 400 };*/
+static POINT pos_options[6] = { 37, 60, 37, 110, 37, 160, 37, 210, 37, 260, 37,
+		310, /*37, 360*/};
+static POINT pos_opt_but[13] = { 230, 50, 230, 100, 230, 150, 230, 200, 230,
+		250, 230, 300, //230, 350,
 		470, 50, 330, 100, 300, 150, 300, 200, 400, 250, 400, 300, //400, 350,
 		520, 420 };
 
-static POINT   pos_sel[8] = { 20, 100, 590, 100, 440, 420, 520, 420,
-		160, 335, 360, 335,
-		160, 385, 360, 385  };
-static POINT pos_menu[5]		= { 20, 110, 10, 180, 0, 245, 0, 310, 0, 375 };
+static POINT pos_sel[8] = { 20, 100, 590, 100, 440, 420, 520, 420, 160, 335,
+		360, 335, 160, 385, 360, 385 };
+static POINT pos_menu[5] = { 20, 110, 10, 180, 0, 245, 0, 310, 0, 375 };
 //static POINT pos_campmenu[2]	= { 440, 420, 520, 420 };
-static POINT pos_campselect[2]	= { 59, 15, 59, 285 };
+static POINT pos_campselect[2] = { 59, 15, 59, 285 };
 
-static int current_car 		= 1;
-static bool faces_released	= true;
-static bool p2_choice		= false;
+static int current_car = 1;
+static bool faces_released = true;
+static bool p2_choice = false;
 
 static SDL_Surface *ssButtons[MENU_BUTTONS];
 static SDL_Surface *ssStrings[STRINGS_SURFACES];
@@ -103,13 +98,6 @@ CMainMenu::CMainMenu()
 
 }
 
-//////////////////////////////////////////////////////////////////////
-// Name: ~CMainMenu()
-// Desc:
-//////////////////////////////////////////////////////////////////////
-CMainMenu::~CMainMenu()
-{
-}
 
 //////////////////////////////////////////////////////////////////////
 // Name: Release()
@@ -165,7 +153,6 @@ void CMainMenu::Release()
 		ReleaseCarsAttribs();
 
 }
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -376,7 +363,6 @@ int CMainMenu::Initialize( CGame *game )
 
 	return true;
 }
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1134,7 +1120,6 @@ void CButton::Initialize( POINT *pos, Uint32 picture_index )
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Name: Initialize()
 // Desc: init button with text
@@ -1154,7 +1139,6 @@ void CButton::Initialize( POINT *pos, Uint32 picture_index, Uint32 txt_index, Ui
 	height = ssButtons[pic_index]->h;
 
 }
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1231,7 +1215,6 @@ void CButton::Update( CGame *game )
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Name: SaveSettings()
 // Desc: save game options
@@ -1269,7 +1252,6 @@ void CMainMenu::SaveSettings()
 
 	fclose( fp );
 }
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1336,7 +1318,6 @@ void CMainMenu::LoadSettings()
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Name: ReloadCarsAttribs()
 // Desc:
@@ -1378,7 +1359,6 @@ int CMainMenu::ReloadCarsAttribs()
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Name: ReleaseCarsAttribs()
 // Desc:
@@ -1405,30 +1385,32 @@ void CMainMenu::ReleaseCarsAttribs()
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Name: PreviewCar()
-// Desc: pokaji main_pic i harakteristiki na kolata
+// Desc: Show selected vehicle characteristics
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::PreviewCar( int car_index )
 {
+	int dy = 195, dx = 325;
+	SDL_Rect rsrc;
+	Uint16 perc[5] = {0, 0, 0, 0, 0};
 
-	int		      dy = 195, dx = 325;
-	SDL_Rect      rsrc;
-	static int    perc[5];
-	static int    old_car_index = -1;
-
-	// precalculate perc
-	if ( old_car_index != car_index )
+	if (car_index != -1)
 	{
-		// 1.3f = 130.0f / 100.0f
-		perc[0] = (Uint16)(1.3f * ( (float)attribSPEED[(int)_game->Swv.GetVehiclesData()[car_index].max_vel] / (float)attribSPEED[4] ) * 100.0f);
-		perc[1] = (Uint16)(1.3f * ( (float)attribACC[(int)_game->Swv.GetVehiclesData()[car_index].acc] / (float)attribACC[2] ) * 100.0f);
-		perc[2] = (Uint16)(1.3f * ( (float)_game->Swv.GetVehiclesData()[car_index].lbs / (float)4 ) * 100.0f);
-		perc[3] = (Uint16)(1.3f * ( (float)attribARMOUR[(int)_game->Swv.GetVehiclesData()[car_index].hp] / (float)attribARMOUR[3] ) * 100.0f);
-		perc[4] = (Uint16)(1.3f * ( (float)attribDAMAGE[(int)_game->Swv.GetVehiclesData()[car_index].damage] / (float)attribDAMAGE[3] ) * 100.0f);
+		SWV_HEADER vehicle_data = _game->Swv.GetVehiclesData()[car_index];
 
-		old_car_index = car_index;
+		float speed = CVehicle::GetAttributeSpeed((int)vehicle_data.max_vel) / (float)CVehicle::GetAttributeSpeed(4);
+		float acc = CVehicle::GetAttributeAcceleration((int)vehicle_data.acc) / (float)CVehicle::GetAttributeAcceleration(2);
+		float weight = (int)vehicle_data.lbs / 4.0f;
+		float armour = CVehicle::GetAttributeArmour((int)vehicle_data.hp) / (float)CVehicle::GetAttributeArmour(3);
+		float damage = CVehicle::GetAttributeDamage((int)vehicle_data.damage) / (float)CVehicle::GetAttributeDamage(3);
+
+		// 1.3f = 130.0f / 100.0f
+		perc[0] = (1.3f * speed * 100.0f);
+		perc[1] = (1.3f * acc * 100.0f);
+		perc[2] = (1.3f * weight * 100.0f);
+		perc[3] = (1.3f * armour * 100.0f);
+		perc[4] = (1.3f * damage * 100.0f);
 	}
 	
 	_game->Sdl.BlitNow( 168, 30, ssDriverName[car_index] );
@@ -1468,24 +1450,23 @@ void CMainMenu::PreviewCar( int car_index )
 	_game->Sdl.BlitNow( dx, dy + 80, ssUpg[ANIM_ARMOUR][(int)frame] );
 	_game->Sdl.BlitNow( dx, dy + 110, ssUpg[ANIM_DAMAGE][(int)frame] );
 
-	frame += _game->getMpf() * 25;
-	if ( frame > 34 ) frame = 0;
+	frame += _game->getMpf() * 25.0f;
+	if ( frame > 34 )
+		frame = 0;
 }
-
 
 
 //////////////////////////////////////////////////////////////////////
 // Name: ScrollScreen()
-// Desc: Scroll-ekrana
+// Desc: Update scrolling background animation
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::ScrollScreen()
 {
-
 	static float  y_move = 0;
 	int			  tmp_y;
 	SDL_Rect	  rect1, rect2;
 
-	y_move += 50 * _game->getMpf();
+	y_move += 50.0f * _game->getMpf();
 	tmp_y = SCREEN_HEIGHT - (int)y_move;
 
 	// scroll up 
@@ -1508,14 +1489,12 @@ void CMainMenu::ScrollScreen()
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Name: DoTitle()
 // Desc:
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::DoTitle()
 {
-
 	static float cur_frame = 0;
 	static float reminder = 1;
 
@@ -1535,7 +1514,6 @@ void CMainMenu::DoTitle()
 	
 	_game->Sdl.BlitNow( 340, 40, ssTitle[(int)cur_frame] );
 }
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1564,14 +1542,12 @@ bool CMainMenu::LoadPlayerLevel( int level )
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: UpdateCredits()
 // Desc: update credit list
 ///////////////////////////////////////////////////////////////////////
 void CMainMenu::UpdateCredits()
 {
-
 	static int   phase = -1;
 	static float x = 650, acc = 0;
 	static int	 time = 0;
@@ -1599,4 +1575,3 @@ void CMainMenu::UpdateCredits()
 		_game->Sdl.BlitNow( (int)x, 350, credits, &rect );	
 	}
 }
-

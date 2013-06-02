@@ -26,21 +26,17 @@
 
 #include "Main.h"
 
-/*	 
- frags	     x:105 y:430  x:265 y:430  	x:425 y:430   x:585 y:430
- hitpoints - x:5 y:445    x:165 y:445   x:325 y:445   x:485 y:445 
- anger 	     x:5 y:460    x:165 y:460   x:325 y:460   x:485 y:460 
-*/
+static int attribACC[3] = { 160, 220, 320 };
+static int attribSPEED[5] = { 180, 220, 260, 310, 340 };
+static int attribROT[3] = { 15, 20, 25 };
+static int attribDAMAGE[4] = { 40, 60, 70, 100 };
+static int attribARMOUR[4] = { 210, 260, 300, 400 };
 
 /*
- * Vehicle components (Extern)
- */
-int attribACC[3] = { 160, 220, 320 };
-int attribSPEED[5] = { 180, 220, 260, 310, 340 };
-int attribROT[3] = { 15, 20, 25 };
-int attribDAMAGE[4] = { 40, 60, 70, 100 };
-int attribARMOUR[4] = { 210, 260, 300, 400 };
-
+ frags	     x:105 y:430  x:265 y:430  	x:425 y:430   x:585 y:430
+ hitpoints - x:5 y:445    x:165 y:445   x:325 y:445   x:485 y:445
+ anger 	     x:5 y:460    x:165 y:460   x:325 y:460   x:485 y:460
+*/
 static POINT  pos_frag[4]  = { 105, 428, 265, 428, 425, 428, 585, 428 };
 static POINT  pos_hp[4]  = { 5, 445, 165, 445, 325, 445, 485, 445 };
 static POINT  pos_anger[4] = { 5, 460, 165, 460, 325, 460, 485, 460 };
@@ -1795,3 +1791,27 @@ int CVehicle::AI_doFSM( Uint32 *proActions, Uint32 max_actions )
 	return index;
 }
 
+int CVehicle::GetAttributeAcceleration(int index)
+{
+	return attribACC[index];
+}
+
+int CVehicle::GetAttributeSpeed(int index)
+{
+	return attribSPEED[index];
+}
+
+int CVehicle::GetAttributeRotation(int index)
+{
+	return attribROT[index];
+}
+
+int CVehicle::GetAttributeDamage(int index)
+{
+	return attribDAMAGE[index];
+}
+
+int CVehicle::GetAttributeArmour(int index)
+{
+	return attribARMOUR[index];
+}

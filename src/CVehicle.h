@@ -285,6 +285,12 @@ public:
 	void    SetControl( CONST_VEHICLE_CONTROL vcontrol );
 	void    SetAttirbs( CONST_DIFFICULTY diff );
 	void    SetTeam( Uint16 team_index ) { team = team_index; };
+
+	static int GetAttributeAcceleration(int index);
+	static int GetAttributeSpeed(int index);
+	static int GetAttributeRotation(int index);
+	static int GetAttributeDamage(int index);
+	static int GetAttributeArmour(int index);
 };
 
 #endif
