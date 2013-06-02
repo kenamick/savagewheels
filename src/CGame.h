@@ -129,7 +129,7 @@ private:
 public:
 	CMainMenu       Menu;
 	CSdl			Sdl;
-	CSounds			Snd;
+	CSounds			Sounds;
 	CTimer			Timer;
 	CAnimations	    Anims;
 	CVehicle		Auto[ NUM_MPS ];
@@ -178,7 +178,7 @@ public:
 
 	void Execute(bool bFullScreen = false, bool bHardware = false);
 	void Close();
-	const float getMpf()	{ return mpf; };
+	const float getMpf() { return mpf; };
 	String GetWindowTitle();
 
 };

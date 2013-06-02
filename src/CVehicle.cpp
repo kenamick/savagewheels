@@ -719,7 +719,7 @@ void CVehicle::DoMotion()
 					ptr_veh->DoDamage( fulldmg, myIndex );
 				
 					// PLAY CRASH SOUND
-					_game->Snd.Play( intGetRnd( 0, 50 ) % 2 ?
+					_game->Sounds.Play( intGetRnd( 0, 50 ) % 2 ?
 							SND_CRASHLIGHT1 : SND_CRASHLIGHT2, (int)x );
 						
 				}
@@ -1003,7 +1003,7 @@ void CVehicle::DoMotion()
 				// do vehicle damage
 				DoDamage( LANDMINE_DAMAGE, _game->Mines.GetMineIndex( i ) );
 				_game->Mines.KillMine( i );
-				_game->Snd.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
+				_game->Sounds.Play( SND_EXPLOSION1, (int)x ); // PLAYSOUND
 			}
 		}
 	}
@@ -1097,7 +1097,7 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 		_game->Anims.Create( GetCX(), GetCY(), ANIM_EXPLOSION );
 
 		// PLAYSOUND
-		_game->Snd.Play( SND_EXPLOSION1, (int)x );
+		_game->Sounds.Play( SND_EXPLOSION1, (int)x );
 
 		// give/lose a frag...
 		if ( attackerIndex == myIndex )
@@ -1129,7 +1129,7 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 		crashed_look = true;
 
 		// PLAYSOUND
-		_game->Snd.Play( SND_CRASHBRAKE, (int)x );
+		_game->Sounds.Play( SND_CRASHBRAKE, (int)x );
 	}
 }
 
@@ -1328,7 +1328,7 @@ void CVehicle::Update()
 	// beep
 	if (honk_status == 2)
 	{
-		_game->Snd.Play(SND_MENU_HONK1, (int) x);
+		_game->Sounds.Play(SND_MENU_HONK1, (int) x);
 		honk_status = 0;
 	}
 
@@ -1376,7 +1376,7 @@ void CVehicle::Update()
 			if (warning_time < _game->Timer.Time())
 			{
 				warning_time = _game->Timer.Time() + 1000;
-				_game->Snd.Play(SND_WARNING, (int) x);
+				_game->Sounds.Play(SND_WARNING, (int) x);
 			}
 		}
 		else

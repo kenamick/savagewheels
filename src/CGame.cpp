@@ -112,7 +112,7 @@ void CGame::Close()
 	// release menu
 	Menu.Release();
 
-	Snd.Release();
+//	Snd.Release();
 	Swv.Release();
 	Sdl.Close();
 	Bindings.Release();
@@ -185,7 +185,7 @@ bool CGame::LoadGame()
 	UpdateSplash();  // UPDATESPLASH... 
 
 	// load sounds & music
-	if ( ! Snd.Initialize( &Sdl ) )
+	if ( ! Sounds.Initialize( &Sdl ) )
 	{
 		AppendToLog( "...failed to load sfx. Missing sound/music files!" );
 		//return false;
@@ -322,7 +322,7 @@ bool CGame::LoadGame()
 
 	Menu.LoadSettings();
 
-	Snd.Play( MUS_MENU, true );
+	Sounds.Play( MUS_MENU, true );
 
 	return true;
 }
@@ -479,10 +479,10 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	
 		if ( music_off )
 		{
-			if ( Snd.IsMusicPlaying() ) 
-				Snd.StopMusic();
+			if ( Sounds.IsMusicPlaying() ) 
+				Sounds.StopMusic();
 			else
-				Snd.PlayMusic();
+				Sounds.PlayMusic();
 			
 			music_off = false;
 		}
@@ -498,7 +498,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 	// check music sequence
 	//if ( Gamestate != GS_MENU )
-		Snd.CheckMusic();
+		Sounds.CheckMusic();
 
 
 	// GAME_STATES
@@ -568,9 +568,9 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 					cur_map = intGetRnd( 2, NUM_BACKGROUNDS );
 
 					// stop menu-music
-					Snd.StopMusic();
+					Sounds.StopMusic();
 					// start_random_ingame_music
-					Snd.Play( (CONST_MUSIC)intGetRnd( 1, NUM_MUSIX ), false );
+					Sounds.Play( (CONST_MUSIC)intGetRnd( 1, NUM_MUSIX ), false );
 
 					// prepare time if time-round
 					time_round = Timer.Time() + game_time * 1000;
@@ -756,7 +756,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 				Gamestate = GS_GAMEPLAY_WINNER;
 				time_showwinner = Timer.Time() + TIME_SHOWWINNER;
-				Snd.FadeMusic( TIME_SHOWWINNER );
+				Sounds.FadeMusic( TIME_SHOWWINNER );
 			}
 		}
 
@@ -781,8 +781,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 				quit_dialog = false;
 				Gamestate = GS_MENU;
-				Snd.StopMusic();
-				Snd.Play( MUS_MENU, true );
+				Sounds.StopMusic();
+				Sounds.Play( MUS_MENU, true );
 			}
 
 			if ( Sdl.IsKeyPressed(SDLK_n) )
@@ -813,8 +813,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 			if ( time_showwinner < Timer.Time() )
 			{
-				Snd.StopMusic();
-				Snd.Play( MUS_MENU, true );
+				Sounds.StopMusic();
+				Sounds.Play( MUS_MENU, true );
 			}
 			
 			// advance campaign level if player won

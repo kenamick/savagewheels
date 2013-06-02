@@ -27,10 +27,8 @@
 #ifndef __CSOUNDS_INCLUDED
 #define __CSOUNDS_INCLUDED
 
-
 #define NUM_SOUNDS 12
 #define NUM_MUSIX  4 
-
 
 enum CONST_MUSIC
 {
@@ -39,7 +37,6 @@ enum CONST_MUSIC
 	MUS_INGAME2,
 	MUS_INGAME3
 };
-
 
 enum CONST_SOUNDS
 {
@@ -77,11 +74,9 @@ private:
 
 public:
 	CSounds();
-	~CSounds();
+	~CSounds() {};
 
 	bool Initialize( CSdl *pSdl );
-	void Release();
-
 	void Play( CONST_SOUNDS snd_to_play );
 	void Play( CONST_SOUNDS snd_to_play, int pos );
 	void Play( CONST_MUSIC music_to_play, bool looped );

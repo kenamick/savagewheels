@@ -634,7 +634,7 @@ void CMainMenu::Update()
 			// SELECT
 			Menustate = MS_CAMPAIGN_PREVIEW;
 			// PLAY SOUND
-			_game->Snd.Play( SND_MENU_NEXTCAR );
+			_game->Sounds.Play( SND_MENU_NEXTCAR );
 		}
 		else if ( buttons_select[2].GetState() == BS_UP )
 			Menustate = MS_STARTSCREEN;  // GO BACK
@@ -815,7 +815,7 @@ void CMainMenu::Update()
 				current_car = _game->Swv.GetVehicles() - 1;
 
 			// PLAY SOUND
-			_game->Snd.Play( SND_MENU_NEXTCAR );
+			_game->Sounds.Play( SND_MENU_NEXTCAR );
 		}
 		else if ( buttons_select[1].GetState() == BS_UP )
 		{
@@ -833,7 +833,7 @@ void CMainMenu::Update()
 				current_car = 0;
 
 			// PLAY SOUND
-			_game->Snd.Play( SND_MENU_NEXTCAR );
+			_game->Sounds.Play( SND_MENU_NEXTCAR );
 		}
 		else if ( buttons_select[3].GetState() == BS_UP )
 		{
@@ -1547,7 +1547,7 @@ void CButton::Update( CGame *game )
 		{
 			state = BS_UP;
 			// PLAY SOUND
-			game->Snd.Play( SND_MENU_CLICK );
+			game->Sounds.Play( SND_MENU_CLICK );
 			//over_sound = false;
 		}
 		//else
