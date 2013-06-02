@@ -33,7 +33,7 @@
  *
  * $Release history
  *
- * Release 1.5:   ??.05.2013
+ * Release 1.5:   ??.06.2013
  * Release 1.4:   12.09.2010 / Started Revision: 23.04.2005 / Ended Revision: 12.09.2010
  * Patch 1.03:    ??.05.2004
  * Patch 1.02:    ??.03.2004
@@ -49,12 +49,12 @@ int main( int argc, char *argv[] )
 {
 	bool hardware_support = true;
 	/*
-	 * Start the game in a Window by default.
+	 * Start the game in a window by default.
 	 * The 640x480 resolution is quite small and it really doesn't feel good when
-	 * playing on a large monitor. Users may however force a fullscreen by specifying command
-	 * line parameter.
+	 * playing on a large screen resolution.
+	 * Users may however force fullscreen mode by specifying a command line parameter.
 	 *
-	 * Linux Note: With certain video drivers running the game in fullscreen seems to crash
+	 * Linux Note: With some video drivers, running the game in fullscreen seems to crash
 	 * the gfx manager.
 	 */
 	bool fullscreen = false;
