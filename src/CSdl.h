@@ -37,7 +37,7 @@ class CKdf_Packeger;
 
 //#define FONT_TTF						// use TTF_FONTS
 
-#define MAX_SPRITES  60 				// maximum sprites to blit on one flip
+#define MAX_SPRITES  60 				// maximum sprites to blit in one flip
 #define NO_COLORKEY  -1
 #define NO_ALPHA	 255
 #define MAX_SOUNDS	 30					// maximum sounds to load
@@ -168,23 +168,31 @@ protected:
  
 public:
    //TODO: wrap
-
 	Uint8 *keys;				// array of pressed (held down) keys
 	int JoystickAxisX;
 	int JoystickAxisY;
 	Uint8 JoystickHatState;
 
-protected:
-	void	_Blitall();
-	Uint32	_GetPixel(SDL_Surface *surface, int x, int y);
-	bool	_Slock( SDL_Surface *surface );
-	void	_Sunlock( SDL_Surface *surface );
-	int		_ClipRect( int *x , int *y, SDL_Rect *rSurf );
+private:
+	bool InitializeSound();
+
+	void	Blitall();
+	Uint32	GetPixel(SDL_Surface *surface, int x, int y);
+	bool	Slock( SDL_Surface *surface );
+	void	Sunlock( SDL_Surface *surface );
+	int		ClipRect( int *x , int *y, SDL_Rect *rSurf );
 //	SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
+
+	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
+	void BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
+	void BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf );
+	void BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf );
+	void MakeBoolMask16( SDL_Surface *surf, Uint32 *& );
+	void MakeBoolMask32( SDL_Surface *surf, Uint32 *& );
 
 public:
 	CSdl();
-	~CSdl();
+	~CSdl() {};
 
 	bool Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFullscreen, bool bHardware = false );
 
@@ -257,15 +265,7 @@ public:
 	void SetMusicVolume( int );
 	void ChangeSoundVolume( int );
 	void ChangeMusicVolume( int );
-	
-private:
-	bool InitializeSound();
-	void BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
-	void BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf );
-	void BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf );
-	void BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf );
-	void MakeBoolMask16( SDL_Surface *surf, Uint32 *& );
-	void MakeBoolMask32( SDL_Surface *surf, Uint32 *& );
+
 };
 
 

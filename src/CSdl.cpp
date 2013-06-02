@@ -51,27 +51,13 @@ CSdl::CSdl()
 	mouse_rbutton( MOUSE_BUTTON_UNPRESSED )
 {
 
-	// reset na powyrhnostite za blitvane
 	keys = SDL_GetKeyState(NULL);
-
 	_JoystickButtons = udtButtonsBuffer( 30 );
 
 #ifndef FONT_TTF
 	font_bmp = NULL;
 #endif
 }
-
-
-
-///////////////////////////////////////////////////////////////////////
-// Name: ~CSdl()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-CSdl::~CSdl()
-{
-
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -155,7 +141,7 @@ void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf )
 // Name: _BlitAll()
 // Desc: izprashta wsichki kyrtinki za rendirane
 ///////////////////////////////////////////////////////////////////////
-void CSdl::_Blitall()
+void CSdl::Blitall()
 {
 
 	if (num_surfaces == 0)
@@ -231,7 +217,7 @@ bool CSdl::AddToBlit( Sint32 x, Sint32 y, SDL_Surface *surf )
 void CSdl::Flip()
 {
 
-  _Blitall();
+  Blitall();
 
   SDL_Flip(screen);
 
@@ -463,7 +449,7 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 	Uint32			i = 0U, j = 0U;
 	Uint32			*mask_val = NULL;
 
-	_Slock( screen );
+	Slock( screen );
 
 	x *= bytes_per_color;   // 2 bytes per pixel =16bpp
 	Uint16 *pixel1 = (Uint16 *)((Uint8 *)screen->pixels + y * screen->pitch + x );
@@ -484,7 +470,7 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 		pixel1 = (Uint16 *)((Uint8 *)screen->pixels + x + (y + j) * screen->pitch );
 	}
 
-	_Sunlock( screen );
+	Sunlock( screen );
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -499,7 +485,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 	register Uint32		i = 0U, j = 0U;
 	Uint32				*mask_val = NULL;
 
-	_Slock( screen );
+	Slock( screen );
 
 	//x *= bytes_per_color; 
 	Uint32 *pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
@@ -523,7 +509,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 		//pixel1 = (Uint32 *)screen->pixels + (y + j) * screen->pitch + (Uint32)x * sizeof(Uint32);
 	}
 	
-	_Sunlock( screen );
+	Sunlock( screen );
 }
 
 
@@ -559,8 +545,8 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf )
 	rSurf1.h = surf->h;
 
 	// lock surfaces
-	_Slock( screen );
-	_Slock( surf );
+	Slock( screen );
+	Slock( surf );
 
 	x *= bytes_per_color;   // 2 bytes per pixel =16bpp
 
@@ -584,8 +570,8 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf )
 		pixel2 = (Uint16 *)((Uint8 *)surf->pixels + j * surf->pitch );
 	}
 
-	_Sunlock( screen );
-	_Sunlock( surf );
+	Sunlock( screen );
+	Sunlock( surf );
 }
 
 
@@ -608,8 +594,8 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 	rSurf1.h = surf->h;
 
 	// lock surfaces
-	_Slock( screen );
-	_Slock( surf );
+	Slock( screen );
+	Slock( surf );
 
 	pixel1 = (Uint32 *)screen->pixels + y * (screen->pitch >> 2) + x;
 	pixel2 = (Uint32 *)surf->pixels;
@@ -631,15 +617,15 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 		pixel2 = (Uint32 *)surf->pixels + j * (surf->pitch >> 2);
 	}
 
-	_Sunlock( screen );
-	_Sunlock( surf );
+	Sunlock( screen );
+	Sunlock( surf );
 }
 
 ///////////////////////////////////////////////////////////////////////////
 //// Name: _ClipRect()
 //// Purpose: fit rectangle into world screen
 ///////////////////////////////////////////////////////////////////////////
-int CSdl::_ClipRect( int *x , int *y, SDL_Rect *rSurf )
+int CSdl::ClipRect( int *x , int *y, SDL_Rect *rSurf )
 {
 	SDL_Rect 	rWld, rResult, rDest;
 	int 		tx = *x,
@@ -704,7 +690,7 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 	
 	mask = new Uint32[width * height];
 
-	_Slock( surf );
+	Slock( surf );
 	
 	Uint16 *pixel = (Uint16 *)((Uint8 *)surf->pixels );
 
@@ -720,7 +706,7 @@ void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 		pixel = (Uint16 *)((Uint8 *)surf->pixels + j * surf->pitch );
 	}
 
-	_Sunlock( surf );
+	Sunlock( surf );
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -734,7 +720,7 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 	
 	mask = (Uint32 *) new Uint32[width * height];
 	
-	_Slock( surf );
+	Slock( surf );
 
 	Uint32 *pixel = (Uint32 *)surf->pixels;
 
@@ -750,7 +736,7 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 		pixel = (Uint32 *)surf->pixels + j * surf->pitch / 4;
 	}
 
-	_Sunlock( surf );
+	Sunlock( surf );
 }
 
 
@@ -881,7 +867,7 @@ bool CSdl::Collide( SDL_Rect *r1, Uint32 *mask1,
 // Name: _GetPixel() -> SDL_DOCUMENTATION
 // Desc:
 ///////////////////////////////////////////////////////////////////////
-Uint32 CSdl::_GetPixel(SDL_Surface *surface, int x, int y)
+Uint32 CSdl::GetPixel(SDL_Surface *surface, int x, int y)
 {
     int bpp = surface->format->BytesPerPixel;
     /* Here p is the address to the pixel we want to retrieve */
@@ -913,7 +899,7 @@ Uint32 CSdl::_GetPixel(SDL_Surface *surface, int x, int y)
 // Name: _Slock()
 // Desc: Locks a surface for direct access.
 ///////////////////////////////////////////////////////////////////////
-inline bool CSdl::_Slock( SDL_Surface *surface )
+inline bool CSdl::Slock( SDL_Surface *surface )
 {
 	if ( SDL_MUSTLOCK( surface ) )
 	{
@@ -930,7 +916,7 @@ inline bool CSdl::_Slock( SDL_Surface *surface )
 // Name: _Sunlock()
 // Desc: Unlocks locked surface.
 ///////////////////////////////////////////////////////////////////////
-inline void CSdl::_Sunlock( SDL_Surface *surface )
+inline void CSdl::Sunlock( SDL_Surface *surface )
 {
 	if ( SDL_MUSTLOCK( surface ) )
 	{
