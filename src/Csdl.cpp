@@ -909,26 +909,26 @@ Uint32 CSdl::_GetPixel(SDL_Surface *surface, int x, int y)
 }
 
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: _Slock()
-// Desc:
+// Desc: Locks a surface for direct access.
 ///////////////////////////////////////////////////////////////////////
-inline int CSdl::_Slock( SDL_Surface *surface )
+inline bool CSdl::_Slock( SDL_Surface *surface )
 {
 	if ( SDL_MUSTLOCK( surface ) )
 	{
-		if ( SDL_LockSurface( surface ) < 0 ) 
-			return 0;
+		// returns 0, or -1 if the surface couldn't be locked.
+		if ( SDL_LockSurface( surface ) <= 0 )
+			return false;
 	}
 
-	return 1;
+	return true;
 }
 
 
 ///////////////////////////////////////////////////////////////////////
 // Name: _Sunlock()
-// Desc:
+// Desc: Unlocks locked surface.
 ///////////////////////////////////////////////////////////////////////
 inline void CSdl::_Sunlock( SDL_Surface *surface )
 {

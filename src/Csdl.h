@@ -177,7 +177,7 @@ public:
 protected:
 	void	_Blitall();
 	Uint32	_GetPixel(SDL_Surface *surface, int x, int y);
-	int		_Slock( SDL_Surface *surface );
+	bool	_Slock( SDL_Surface *surface );
 	void	_Sunlock( SDL_Surface *surface );
 	int		_ClipRect( int *x , int *y, SDL_Rect *rSurf );
 //	SDL_Surface* LoadBitmap( char *filename, long file_offset, Uint32 file_size, Uint32 color_key = NO_COLORKEY, Uint16 alpha_value = NO_ALPHA);
