@@ -42,7 +42,8 @@ class CVehicle;
 #define GOALEXPIRE_TIME			5000
 #define NO_ATTACKER				10
 
-#define LANDMINE_DAMAGE      	35U
+#define MAX_ANGER				200
+#define LANDMINE_DAMAGE      	60U
 #define MIN_DAMAGE_VELOCITY		45
 #define SAFE_WARP_DISTANCE		6400 // 80 pixels
 #define WAYPOINT_RADIUS			900  //30pixels
@@ -186,7 +187,7 @@ private:
 	bool		 has_the_goal;  // has the goal bonus?
 
 	int			 landmines_count;	// qty. of available landmines
-	Uint16		 damage;
+	int			 damage;
 	int   		 anger;
 	Uint32		 anger_time;
 
@@ -230,7 +231,7 @@ private:
 
 	Uint16					team;				// vehicle Team
 
-	bool					set_stop;
+//	bool					set_stop;
 
 private:
 	void DoMotion();
@@ -255,7 +256,7 @@ public:
 	void GetFrameRect( SDL_Rect *rect );
 	void DoDamage( int damageAmount, Uint32 attackerIndex );
 	void Update();
-	void UpdateStops();
+//	void UpdateStops();
 	void AddFrags( int fragnum ) { frags += fragnum; }; 
 
 	SDL_Surface*	GetCurrentFrame();

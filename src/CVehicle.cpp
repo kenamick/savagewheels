@@ -44,8 +44,7 @@ static POINT  pos_warp[4]  = { 30, 30, 30, 360, 535, 30, 535, 360 };
 
 /*
  * 36 precalculated sin/cos values for each vehicle animation frame
- *
- * done by LordCIH using Matlab ;]
+ * calced by LordCIH using Matlab ;]
  */
 static float g_dirx[] = { 1.0000f, 0.9848f, 0.9397f, 0.8660f, 0.7660f, 0.6428f,
     0.5000f, 0.3420f, 0.1736f, 0.0000f, -0.1736f, -0.3420f, -0.5000f,
@@ -201,7 +200,7 @@ int CVehicle::Initialize( CGame *game, const SWV_HEADER *swv, Uint16 carIndex )
 	team = carIndex;
 
 	released = false;
-	set_stop = false;
+//	set_stop = false;
 
 	return 1;
 }
@@ -701,19 +700,20 @@ void CVehicle::DoMotion()
 				// enemy vehicle damage calculations
 				if ( !no_damage )
 				{
-					float perc = (float)tmp_vel / (float)max_vel * 100.0f;
-					int tmp_anger = ((float)anger / 100.0f ) * perc;
+//					anger = anger > MAX_ANGER ? MAX_ANGER : anger;
+
+					float perc = tmp_vel / (float)max_vel * 100.0f;
+					int tmp_anger = ((float)anger / 100.0f ) * perc * (80.0f / damage);
 
 					anger -= tmp_anger;
 					anger = anger < 0 ? 0 : anger;
-					anger = anger > 110 ? 110 : anger;
 					
-					float speed_damage = (float)damage + 0.10f * (float)tmp_vel;
-					float armour_absorb = (0.12f * (float)ptr_veh->GetHitPoints());
+					float speed_damage = (float)damage + 0.12f * tmp_vel;
+					float armour_absorb = (0.10f * (float)ptr_veh->GetHitPoints());
 					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
+
 					int fulldmg = speed_damage - armour_absorb + tmp_anger;
 					fulldmg = fulldmg < 0 ? 0 : fulldmg;
-					
 					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " tmp_vel=" << tmp_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
 
 					ptr_veh->DoDamage( fulldmg, myIndex );
@@ -721,7 +721,6 @@ void CVehicle::DoMotion()
 					// PLAY CRASH SOUND
 					_game->Sounds.Play( intGetRnd( 0, 50 ) % 2 ?
 							SND_CRASHLIGHT1 : SND_CRASHLIGHT2, (int)x );
-						
 				}
 
 				/*
@@ -941,9 +940,9 @@ void CVehicle::DoMotion()
 				 
 				   case DT_BEARANGER:
 					anger += _game->Dtoys.GetToyValue( i );
-					if ( anger > 130 ) anger = 130; // bound anger value to match surface width
+					if ( anger > MAX_ANGER )
+						anger = MAX_ANGER;
 
-					//damage += anger;
 					anger_time = _game->Timer.Time() + ANGEREXPIRE_TIME;
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
 					_game->Anims.Create( dx, dy, ANIM_SPLAT );
@@ -1017,7 +1016,6 @@ void CVehicle::DoMotion()
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Repulse( int frame_angle, float speed )
 {
-
 //	motion_frame = (float)frame_angle;
 	rep_frame = (float)frame_angle;
 	hit_vel = speed;
@@ -1027,8 +1025,6 @@ void CVehicle::Repulse( int frame_angle, float speed )
 
 	if ( control == VC_AI ) 
 		waypoint.do_precalculate = true;
-
-
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1136,7 +1132,7 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Update()
-// Desc: obnovqva classa i parametrite na unit-a
+// Desc: Update vehicle movement, collisions and animations
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Update()
 {
@@ -1205,7 +1201,8 @@ void CVehicle::Update()
 	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
 	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
 	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
-	_game->scales[1]->w = anger;
+	// bound anger value to match surface width of 130px
+	_game->scales[1]->w = RangeGetXY(anger, 0, MAX_ANGER, 0, 130);
 	_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y,_game->scales[1]);
 
 	switch (control) {
@@ -1431,17 +1428,17 @@ void CVehicle::Update()
 } 
 
 // TODO: Remove
-void CVehicle::UpdateStops()
-{
-	if ( set_stop )
-	{
-		SetVelocity( 0.0f );
-		set_stop = false;
-		// XXX
-		hit_vel = 0.0f;
-	}
-}
- 
+//void CVehicle::UpdateStops()
+//{
+//	if ( set_stop )
+//	{
+//		SetVelocity( 0.0f );
+//		set_stop = false;
+//		// XXX
+//		hit_vel = 0.0f;
+//	}
+//}
+//
 
 ///////////////////////////////////////////////////////////////////////
 // Name: AI_Update()
