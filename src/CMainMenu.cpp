@@ -1066,7 +1066,7 @@ void CMainMenu::Update()
 		{
 			rsrc.x = 0;
 			rsrc.y = 0;
-			rsrc.w = fRangeGetXY(_game->Sdl.GetSoundVolume(), 0, 256, 0, VOLUME_PIXEL_WIDTH);
+			rsrc.w = fRangeGetXY(_game->Sdl.GetSoundVolume(), 0, CSdl::GetMaxVolume(), 0, VOLUME_PIXEL_WIDTH);
 			rsrc.h = MENU_TEXTHEIGHT;
 			_game->Sdl.BlitNow( dx, pos_options[4].y + 5, ssVolume, &rsrc );
 		}
@@ -1084,7 +1084,7 @@ void CMainMenu::Update()
 		{
 			rsrc.x = 0;
 			rsrc.y = 0;
-			rsrc.w = fRangeGetXY(_game->Sdl.GetMusicVolume(), 0, 256, 0, VOLUME_PIXEL_WIDTH);
+			rsrc.w = fRangeGetXY(_game->Sdl.GetMusicVolume(), 0, CSdl::GetMaxVolume(), 0, VOLUME_PIXEL_WIDTH);
 			rsrc.h = MENU_TEXTHEIGHT;
 			_game->Sdl.BlitNow( dx, pos_options[5].y + 5, ssVolume, &rsrc );
 		}
@@ -1436,7 +1436,7 @@ void CMainMenu::DoTitle()
 //////////////////////////////////////////////////////////////////////
 bool CMainMenu::LoadPlayerLevel( int level )
 {
-	char		   buf[255];
+	char buf[255];
 	static Uint16  last_level = 255;
 
 	if ( last_level == level && camp_preview != NULL ) 

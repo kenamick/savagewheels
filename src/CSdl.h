@@ -266,14 +266,14 @@ public:
 	bool IsMusicPlaying();
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );
 
-	float  GetSoundVolume() { return volume_sound; };
-	float  GetMusicVolume() { return volume_music; };
+	float GetSoundVolume() { return volume_sound; };
+	float GetMusicVolume() { return volume_music; };
 	void SetSoundVolume( float );
 	void SetMusicVolume( float );
 	void ChangeSoundVolume( float );
 	void ChangeMusicVolume( float );
 	static float GetDefaultVolume();
-
+	static float GetMaxVolume();
 };
 
 

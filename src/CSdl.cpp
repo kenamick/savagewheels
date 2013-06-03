@@ -1846,13 +1846,13 @@ bool CSdl::IsMusicPlaying()
 void CSdl::SetMusicVolume( float new_vol )
 {
 #ifdef WITH_FMOD
-	if ( new_vol > 256 )
-		new_vol = 256;
+	if ( new_vol > CSdl::GetMaxVolume() )
+		new_vol = CSdl::GetMaxVolume();
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
 	volume_music = new_vol; // 0 - 256 range
-	float fineVol = fRangeGetXY(volume_music, 0.0f, 256.0f, 0.0f, 1.0f);
+	float fineVol = fRangeGetXY(volume_music, 0.0f, CSdl::GetMaxVolume(), 0.0f, 1.0f);
 
 	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
 
@@ -1873,13 +1873,13 @@ void CSdl::SetMusicVolume( float new_vol )
  void CSdl::SetSoundVolume( float new_vol )
 {
 #ifdef WITH_FMOD
-	if ( new_vol > 256 ) 
-		new_vol = 256;
+	if ( new_vol > CSdl::GetMaxVolume() ) 
+		new_vol = CSdl::GetMaxVolume();
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
 	volume_sound = new_vol;
-	float fineVol = fRangeGetXY(volume_sound, 0.0f, 256.0f, 0.0f, 1.0f);
+	float fineVol = fRangeGetXY(volume_sound, 0.0f, CSdl::GetMaxVolume(), 0.0f, 1.0f);
 
 	DBG("Setting Sound volume to " << volume_sound << " / fine volume " << fineVol);
 
@@ -1924,6 +1924,15 @@ void CSdl::ChangeMusicVolume( float m_vol )
 // Desc: 
 ///////////////////////////////////////////////////////////////////////
 float CSdl::GetDefaultVolume() 
+{
+	return 225.0f;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Name: GetMaxVolume()
+// Desc: 0-256
+///////////////////////////////////////////////////////////////////////
+float CSdl::GetMaxVolume() 
 {
 	return 255.0f;
 }
