@@ -51,8 +51,8 @@ CGame::CGame()
 	game_hitmode( false )
 { 
 
-	for( int cn = 0; cn < NUM_BACKGROUNDS; cn++ )
-		back[cn] = NULL;
+	for( int i = 0; i < NUM_BACKGROUNDS; i++ )
+		back[i] = NULL;
 
 	for( int i = 0; i < 2; i++ )
 		scales[i] = NULL;
@@ -64,15 +64,6 @@ CGame::CGame()
 
 	for( int i = 0; i < 30; i++ )
 		splash_logo[i] = NULL;
-}
-
-//////////////////////////////////////////////////////////////////////
-// Name: ~CGame()
-// Desc:
-//////////////////////////////////////////////////////////////////////
-CGame::~CGame()
-{
- 
 }
 
 
@@ -355,36 +346,36 @@ void CGame::UpdateSplash()
 void CGame::Execute( bool bFullScreen, bool bHardware )
 {
   
-  float    ftimer			= 0.0f;
-  float    ftimediff			= 0.0f;
-  float    ffpstime			= 0.0f;
-  int	   fps				= 0, 
-		   frames		= 0;
-  char	   szfps[3]			= { '0', '0' };
-  int      i				= 0;
-  int	   dx				= 0, 
-		   dy			= 0;
-  Uint32   winner_index			= 0U, 
+  float    ftimer	= 0.0f;
+  float    ftimediff = 0.0f;
+  float    ffpstime	= 0.0f;
+  int	   fps		= 0, 
+		   frames	= 0;
+  char	   szfps[3]	= { '0', '0' };
+  int      i		= 0;
+  int	   dx		= 0, 
+		   dy		= 0;
+  Uint32   winner_index		= 0U, 
 		   winner_index2	= 0U;
-  Uint32   time_destroyem		= 0U;
-  Uint32   time_showwinner		= 0U;
+  Uint32   time_destroyem	= 0U;
+  Uint32   time_showwinner	= 0U;
   SDL_Rect rtemp;
   bool	   change_map			= false;
   bool	   change_map_key		= false;
   bool	   change_shadows		= false;
-  bool	   change_shadows_key		= false;
+  bool	   change_shadows_key	= false;
   bool	   game_paused_key		= false;
   bool	   menu_escape_key		= false;
   bool	   music_off			= false;
   bool	   music_off_key		= false;
-  bool	   toggle_fullscreen		= false;
-  bool	   game_end			= false;
-  float    qg_frame			= 0.0f;
-  bool	   wait_key			= false;
-  Uint32   time_round			= 0U, 
-		   tv			= 0U;
-  bool	   at_exit			= false;
-  CVehicle *ptr_veh			= NULL;
+  bool	   toggle_fullscreen	= false;
+  bool	   game_end		= false;
+  float    qg_frame		= 0.0f;
+  bool	   wait_key		= false;
+  Uint32   time_round	= 0U, 
+		   tv		= 0U;
+  bool	   at_exit	= false;
+  CVehicle *ptr_veh	= NULL;
 
   p1_auto_index = 99;
   p2_auto_index = 99;
@@ -394,8 +385,6 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
   Sdl.InitializeJoystick();
   Sdl.AcquireJoystick();
- // bRunning = false;
-  //exit(0);
 
   if ( bRunning )
   {
@@ -421,7 +410,6 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	}
 	frames++;
 	//fps = 1.0 / mpf;
-
   
 	// get input  
 	Sdl.GetInput(); 
@@ -490,16 +478,17 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	if ( !Sdl.IsKeyPressed(SDLK_F4) )
 		music_off_key = false;
 
-	//if ( Sdl.IsKeyPressed(SDLK_F12] )
-	//	bRunning = false; //{!}
-
 	if ( Sdl.IsKeyPressed(SDLK_F6) )
-		show_fps = !show_fps;
+		show_fps = !show_fps;	
+
+#ifdef _DEBUG
+	if ( Sdl.IsKeyPressed(SDLK_F12) )
+		bRunning = false;
+#endif
 
 	// check music sequence
 	//if ( Gamestate != GS_MENU )
 		Sounds.CheckMusic();
-
 
 	// GAME_STATES
 	switch( Gamestate )
@@ -1475,7 +1464,3 @@ String CGame::GetWindowTitle()
 			VER_MAJ, VER_MIN, VER_PATCH, VER_ARCH );
 	return String(buf);
 }
-
-
-
-

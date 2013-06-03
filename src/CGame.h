@@ -174,7 +174,7 @@ private:
 
 public:
 	CGame();
-	~CGame();
+	~CGame() {};
 
 	void Execute(bool bFullScreen = false, bool bHardware = false);
 	void Close();
