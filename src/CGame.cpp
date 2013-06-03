@@ -313,7 +313,15 @@ bool CGame::LoadGame()
 
 	Menu.LoadSettings();
 
-	//Sounds.Play( MUS_MENU, true );
+	// Turn off music if muted
+	if (Sdl.GetMusicVolume() <= 0) 
+	{
+		Sounds.StopMusic();
+	}
+	else 
+	{
+		Sounds.Play( MUS_MENU, true );	
+	}
 
 	return true;
 }
@@ -326,7 +334,6 @@ bool CGame::LoadGame()
 ///////////////////////////////////////////////////////////////////////
 void CGame::UpdateSplash()
 {
-
 	static int cur_frame = 0;
  
 	Sdl.BlitNow( 0, 0, splash );
@@ -486,9 +493,12 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		bRunning = false;
 #endif
 
-	// check music sequence
-	//if ( Gamestate != GS_MENU )
+	// Check music sequence ingame.
+	// Play a new track once the previous one has finished playing.
+	if ( Gamestate != GS_MENU )
+	{
 		Sounds.CheckMusic();
+	}
 
 	// GAME_STATES
 	switch( Gamestate )
@@ -519,8 +529,9 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			}
 		}
 		else
+		{
 			bRunning = false;
-
+		}
 
 	break;
 
@@ -536,6 +547,13 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			menu_escape_key = true;
 			Menu.SetMenuState( MS_EXIT );
 		}
+
+		// play once volume is > 0
+		if ( !Sounds.IsMusicPlaying() ) 
+		{
+			if (Sdl.GetMusicVolume() > 0)
+				Sounds.Play( MUS_MENU, true );
+		}		
 
 	break;
 

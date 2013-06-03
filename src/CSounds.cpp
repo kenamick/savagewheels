@@ -127,6 +127,7 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 	current_track = (int)music_to_play;
 	_sdl->PlayMusic( music[current_track], looped );
 
+	music_stopped = false;
 #endif
 }
 
