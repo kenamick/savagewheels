@@ -69,7 +69,7 @@ CGame::CGame()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Close()
-// Desc: close game...
+// Desc: Releases acquired memory and resources
 ///////////////////////////////////////////////////////////////////////
 void CGame::Close()
 {
@@ -112,7 +112,7 @@ void CGame::Close()
 
 ///////////////////////////////////////////////////////////////////////
 // Name: LoadGame()
-// Desc: Zarejdane na igrata (grafika, zwuk, clasove i t.n.)
+// Desc: Loads all game resources and initializes ingame objects
 ///////////////////////////////////////////////////////////////////////
 bool CGame::LoadGame()
 {
@@ -387,7 +387,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
   p1_auto_index = 99;
   p2_auto_index = 99;
   
-  // inicializirai prozoreca
+  // init engine
   bRunning = Sdl.Initialize( this, 640, 480, 16, bFullScreen, bHardware );
 
   Sdl.InitializeJoystick();
@@ -395,15 +395,15 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
   if ( bRunning )
   {
-	  if ( bRunning = (bool)LoadGame() )
-		  AppendToLog("Starting Game loop...");
+	  bRunning = LoadGame();
+
+	  LOG("Starting Game loop...");
 	  
 	  ftimer = (float)SDL_GetTicks();
   }
 
   while( bRunning )
   {
-
 	// do hires timing
 	ftimediff = SDL_GetTicks() - ftimer;
 	mpf = ftimediff / 1000.0f;
@@ -477,7 +477,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			if ( Sounds.IsMusicPlaying() ) 
 				Sounds.StopMusic();
 			else
-				Sounds.PlayMusic();
+				Sounds.ResumeMusic();
 			
 			music_off = false;
 		}
@@ -763,7 +763,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 				Gamestate = GS_GAMEPLAY_WINNER;
 				time_showwinner = Timer.Time() + TIME_SHOWWINNER;
-				Sounds.FadeMusic( TIME_SHOWWINNER );
+				//Sounds.FadeMusic( TIME_SHOWWINNER );
+				Sounds.StopMusic();
 			}
 		}
 
@@ -778,7 +779,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			// blit quit_game dialog
 			Sdl.BlitNow( dx, dy, but_quit[(int)qg_frame] );
 			qg_frame += mpf * 10;
-			if ( qg_frame > 4 ) qg_frame = 0;
+			if ( qg_frame > 4 )
+				qg_frame = 0;
 
 			if ( Sdl.IsKeyPressed(SDLK_y) )
 			{
@@ -982,7 +984,7 @@ void CGame::SetupVehicles()
 	bool    bFound		= false;
 	Uint32  total_cars	= 0U;
     //Uint32  swm_ai_index;
-	Uint32  ai_car[3]; // ai_car1, ai_car2, ai_car3;
+	Uint32  ai_car[3];
 	char    *v_name;
 	int		i			= 0;
 	Uint32  cn			= 0U;
@@ -1022,7 +1024,6 @@ void CGame::SetupVehicles()
 
 	if ( Gameplayers == GP_2PLAYER )
 	{
-
 		// setup 2-PLAYER_GAME with bots
 		// ------------------------------
 
