@@ -1121,8 +1121,7 @@ void CMainMenu::SaveSettings()
 	if ( _game == NULL )
 	  return;
 
-	FILE *fp;
-	int   tmp_int;
+	FILE *fp = NULL;
 	char  header[3] = { 'S', 'W', 'P' };
 
 	if ( ( fp = fopen( "pref", "wb" ) ) == NULL )
@@ -1131,21 +1130,31 @@ void CMainMenu::SaveSettings()
 		return;
 	}
 
-	tmp_int = (int)_game->Gamediff;
-
 	fwrite( header, sizeof(char) * 3, 1, fp );
-	fwrite( &tmp_int, sizeof(tmp_int), 1, fp );
-	fwrite( &_game->game_shadows, sizeof(_game->game_shadows), 1, fp );
-	fwrite( &_game->game_bots, sizeof(_game->game_bots), 1, fp );
-	fwrite( &_game->game_frags, sizeof(_game->game_frags), 1, fp );
-	fwrite( &_game->game_time, sizeof(_game->game_time), 1, fp );
 
-	tmp_int = (int)_game->Sdl.GetSoundVolume();
-	fwrite( &tmp_int, sizeof(tmp_int), 1, fp );
-	tmp_int = (int)_game->Sdl.GetMusicVolume();
-	fwrite( &tmp_int, sizeof(tmp_int), 1, fp );
+	Uint32 gamediff = (Uint32)_game->Gamediff;
+	fwrite( &gamediff, sizeof(Uint32), 1, fp );
 
-	fwrite( &_game->game_hitmode, sizeof(_game->game_hitmode), 1, fp );
+	Uint32 gameshadows = (Uint32)_game->game_shadows;
+	fwrite( &gameshadows, sizeof(Uint32), 1, fp );
+
+	Uint32 gamebots = (Uint32)_game->game_bots;
+	fwrite( &gamebots, sizeof(Uint32), 1, fp );
+
+	Uint32 gamefrags = (Uint32)_game->game_frags;
+	fwrite( &gamefrags, sizeof(Uint32), 1, fp );
+
+	Uint32 gametime = (Uint32)_game->game_time;
+	fwrite( &gametime, sizeof(Uint32), 1, fp );
+
+	Uint32 soundvol = (Uint32)_game->Sdl.GetSoundVolume();
+	fwrite( &soundvol, sizeof(Uint32), 1, fp );
+
+	Uint32 musicvol = (Uint32)_game->Sdl.GetMusicVolume();
+	fwrite( &musicvol, sizeof(Uint32), 1, fp );
+
+	Uint32 gamehitmode = (Uint32)_game->game_hitmode;
+	fwrite( &gamehitmode, sizeof(Uint32), 1, fp );
 
 	fclose( fp );
 }
@@ -1157,11 +1166,9 @@ void CMainMenu::SaveSettings()
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::LoadSettings()
 {
-
-	FILE  *fp		= NULL;
-	int   tmp_int	= 0;
+	FILE  *fp = NULL;
 	char  header[3];
-	bool  success	= true;
+	bool  success = true;
 
 	if ( ( fp = fopen( "pref", "rb" ) ) == NULL )
 	{
@@ -1169,7 +1176,7 @@ void CMainMenu::LoadSettings()
 		success = false;
 	}
 
-	if ( success )
+	if (success)
 	{
 		fread( header, sizeof(char) * 3 , 1, fp );
 		
@@ -1177,7 +1184,7 @@ void CMainMenu::LoadSettings()
 			success = false;
 	}
 
-	if ( ! success )
+	if (!success)
 	{
 		// Default settings
 		_game->Gamediff = DIFF_NORMAL;
@@ -1185,29 +1192,39 @@ void CMainMenu::LoadSettings()
 		_game->game_bots = true;
 		_game->game_frags = 50;
 		_game->game_time = 180;
-		_game->Sdl.SetSoundVolume( 85 );
-		_game->Sdl.SetMusicVolume( 75 );
+		_game->Sdl.SetSoundVolume( CSdl::GetDefaultVolume() );
+		_game->Sdl.SetMusicVolume( CSdl::GetDefaultVolume() );
 		_game->game_hitmode = false;
 	}
 	else
 	{
-	
-		fread( &tmp_int, sizeof(tmp_int), 1, fp );
-		if ( tmp_int < 6 || tmp_int > 8 )
-			tmp_int = 6;
-		_game->Gamediff = (CONST_DIFFICULTY)tmp_int;
-	
-		fread( &_game->game_shadows, sizeof(_game->game_shadows), 1, fp );
-		fread( &_game->game_bots, sizeof(_game->game_bots), 1, fp );
-		fread( &_game->game_frags, sizeof(_game->game_frags), 1, fp );
-		fread( &_game->game_time, sizeof(_game->game_time), 1, fp );
-	
-		fread( &tmp_int, sizeof(tmp_int), 1, fp );
-		_game->Sdl.SetSoundVolume( tmp_int );
-		fread( &tmp_int, sizeof(tmp_int), 1, fp );
-		_game->Sdl.SetMusicVolume( tmp_int );
+		Uint32 temp = 0;
 
-		fread( &_game->game_hitmode, sizeof(_game->game_hitmode), 1, fp );
+		fread( &temp, sizeof(temp), 1, fp );
+		if ( temp < 6 || temp > 8 )
+			temp = 6;
+		_game->Gamediff = (CONST_DIFFICULTY)temp;
+	
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->game_shadows = (bool)temp;
+
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->game_bots = (bool)temp;
+
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->game_frags = (int)temp;
+
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->game_time = (int)temp;
+	
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->Sdl.SetSoundVolume( temp );
+
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->Sdl.SetMusicVolume( temp );
+
+		fread( &temp, sizeof(temp), 1, fp );
+		_game->game_hitmode = (bool)temp;
 	}
 
 	if ( fp )

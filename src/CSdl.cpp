@@ -1147,8 +1147,8 @@ bool CSdl::InitializeSound()
 			LOG("FModEx initialized successfully.");
 
 			// set default volume
-			volume_sound = 255;
-			volume_music = 255;
+			volume_sound = CSdl::GetDefaultVolume();
+			volume_music = CSdl::GetDefaultVolume();
 		}
 	}
 #else
@@ -1907,7 +1907,7 @@ void CSdl::ChangeSoundVolume( float s_vol )
 #endif
 }
 
- ///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 // Name: ChangeMusicVolume()
 // Desc: Ratio to add/remove to the current music volume. 
 //       This could also be a negative number.
@@ -1919,6 +1919,14 @@ void CSdl::ChangeMusicVolume( float m_vol )
 #endif
 }
 
+///////////////////////////////////////////////////////////////////////
+// Name: GetDefaultVolume()
+// Desc: 
+///////////////////////////////////////////////////////////////////////
+float CSdl::GetDefaultVolume() 
+{
+	return 255.0f;
+}
 
 /*///////////////////////////////////////////////////////////////////////
 // Name: PlaySound()

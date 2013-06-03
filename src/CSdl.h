@@ -272,6 +272,7 @@ public:
 	void SetMusicVolume( float );
 	void ChangeSoundVolume( float );
 	void ChangeMusicVolume( float );
+	static float GetDefaultVolume();
 
 };
 
