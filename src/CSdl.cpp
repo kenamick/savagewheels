@@ -1843,7 +1843,7 @@ bool CSdl::IsMusicPlaying()
 // Name: SetMusicVolume()
 // Desc:
 ///////////////////////////////////////////////////////////////////////
-void CSdl::SetMusicVolume( int new_vol )
+void CSdl::SetMusicVolume( float new_vol )
 {
 #ifdef WITH_FMOD
 	if ( new_vol > 256 )
@@ -1852,7 +1852,7 @@ void CSdl::SetMusicVolume( int new_vol )
 		new_vol = 0;
 
 	volume_music = new_vol; // 0 - 256 range
-	float fineVol = fRangeGet0255(volume_music, 0.0f, 1.0f);
+	float fineVol = fRangeGetXY(volume_music, 0.0f, 256.0f, 0.0f, 1.0f);
 
 	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
 
@@ -1870,7 +1870,7 @@ void CSdl::SetMusicVolume( int new_vol )
 // Name: SetSoundVolume()
 // Desc:
 ///////////////////////////////////////////////////////////////////////
- void CSdl::SetSoundVolume( int new_vol )
+ void CSdl::SetSoundVolume( float new_vol )
 {
 #ifdef WITH_FMOD
 	if ( new_vol > 256 ) 
@@ -1879,7 +1879,7 @@ void CSdl::SetMusicVolume( int new_vol )
 		new_vol = 0;
 
 	volume_sound = new_vol;
-	float fineVol = fRangeGet0255(volume_sound, 0.0f, 1.0f);
+	float fineVol = fRangeGetXY(volume_sound, 0.0f, 256.0f, 0.0f, 1.0f);
 
 	DBG("Setting Sound volume to " << volume_sound << " / fine volume " << fineVol);
 
@@ -1897,9 +1897,10 @@ void CSdl::SetMusicVolume( int new_vol )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: ChangeSoundVolume()
-// Desc:
+// Desc: Ratio to add/remove to the current sound volume. 
+//       This could also be a negative number.
 ///////////////////////////////////////////////////////////////////////
-void CSdl::ChangeSoundVolume( int s_vol ) 
+void CSdl::ChangeSoundVolume( float s_vol ) 
 { 
 #ifdef WITH_FMOD
 	SetSoundVolume( volume_sound + s_vol ); 
@@ -1908,12 +1909,13 @@ void CSdl::ChangeSoundVolume( int s_vol )
 
  ///////////////////////////////////////////////////////////////////////
 // Name: ChangeMusicVolume()
-// Desc:
+// Desc: Ratio to add/remove to the current music volume. 
+//       This could also be a negative number.
 ///////////////////////////////////////////////////////////////////////
-void CSdl::ChangeMusicVolume( int m_vol ) 
+void CSdl::ChangeMusicVolume( float m_vol ) 
 { 
 #ifdef WITH_FMOD
-	SetMusicVolume( volume_music + (float)m_vol * 1.5f );
+	SetMusicVolume( volume_music + m_vol );
 #endif
 }
 

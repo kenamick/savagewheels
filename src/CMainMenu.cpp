@@ -57,7 +57,8 @@ static SDL_Surface *ssStrings[STRINGS_SURFACES];
 CMainMenu::CMainMenu()
 : _game( NULL )
 {
-	Uint32 i = 0;
+	int i = 0;
+
 	for ( i = 0; i < MENU_BACKGROUNDS; i++ )
 		 ssBack[i] = NULL;
 
@@ -105,8 +106,7 @@ CMainMenu::CMainMenu()
 //////////////////////////////////////////////////////////////////////
 void CMainMenu::Release()
 {
-
-	Uint32 i = 0;
+	int i = 0;
 
 	// save settings on close
 	SaveSettings();
@@ -151,7 +151,6 @@ void CMainMenu::Release()
 
 	if ( !faces_released) 
 		ReleaseCarsAttribs();
-
 }
 
 
@@ -161,8 +160,8 @@ void CMainMenu::Release()
 //////////////////////////////////////////////////////////////////////
 int CMainMenu::Initialize( CGame *game )
 {
-	char     buf[64];
-	Uint32   i = 0, j = 0;
+	char buf[64];
+	int i = 0, j = 0;
 
 	this->_game = game;
 	ASSERT( _game != NULL );
@@ -946,19 +945,19 @@ void CMainMenu::Update()
 					break;
 
 				case 8:
-					_game->Sdl.ChangeSoundVolume( -10 );
+					_game->Sdl.ChangeSoundVolume( -VOLUME_CHANGE_RATIO );
 					break;
 
 				case 9:
-					_game->Sdl.ChangeSoundVolume( 10 );
+					_game->Sdl.ChangeSoundVolume( VOLUME_CHANGE_RATIO );
 					break;
 
 				case 10:
-					_game->Sdl.ChangeMusicVolume( -10 );
+					_game->Sdl.ChangeMusicVolume( -VOLUME_CHANGE_RATIO );
 					break;
 
 				case 11:
-					_game->Sdl.ChangeMusicVolume( 10 );
+					_game->Sdl.ChangeMusicVolume( VOLUME_CHANGE_RATIO );
 					break;
 
 				//case 12:
@@ -1067,7 +1066,7 @@ void CMainMenu::Update()
 		{
 			rsrc.x = 0;
 			rsrc.y = 0;
-			rsrc.w = _game->Sdl.GetSoundVolume();
+			rsrc.w = fRangeGetXY(_game->Sdl.GetSoundVolume(), 0, 256, 0, VOLUME_PIXEL_WIDTH);
 			rsrc.h = MENU_TEXTHEIGHT;
 			_game->Sdl.BlitNow( dx, pos_options[4].y + 5, ssVolume, &rsrc );
 		}
@@ -1085,7 +1084,7 @@ void CMainMenu::Update()
 		{
 			rsrc.x = 0;
 			rsrc.y = 0;
-			rsrc.w = _game->Sdl.GetMusicVolume();
+			rsrc.w = fRangeGetXY(_game->Sdl.GetMusicVolume(), 0, 256, 0, VOLUME_PIXEL_WIDTH);
 			rsrc.h = MENU_TEXTHEIGHT;
 			_game->Sdl.BlitNow( dx, pos_options[5].y + 5, ssVolume, &rsrc );
 		}
@@ -1141,9 +1140,9 @@ void CMainMenu::SaveSettings()
 	fwrite( &_game->game_frags, sizeof(_game->game_frags), 1, fp );
 	fwrite( &_game->game_time, sizeof(_game->game_time), 1, fp );
 
-	tmp_int = _game->Sdl.GetSoundVolume();
+	tmp_int = (int)_game->Sdl.GetSoundVolume();
 	fwrite( &tmp_int, sizeof(tmp_int), 1, fp );
-	tmp_int = _game->Sdl.GetMusicVolume();
+	tmp_int = (int)_game->Sdl.GetMusicVolume();
 	fwrite( &tmp_int, sizeof(tmp_int), 1, fp );
 
 	fwrite( &_game->game_hitmode, sizeof(_game->game_hitmode), 1, fp );

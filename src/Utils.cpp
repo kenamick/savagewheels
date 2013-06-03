@@ -195,26 +195,27 @@ bool InRange ( float val, float rangeMin, float rangeMax )
     return false;
 }
 
+
 ///////////////////////////////////////////////////////////////////////
 // Name: fRangeGetXY()
 // Desc: Convert one range to another
 ///////////////////////////////////////////////////////////////////////
-float	fRangeGetXY(int in, int inMin, int inMax, float min, float max)
+float fRangeGetXY(float in, float inMin, float inMax, float min, float max)
 {
-	int inRange = (inMax - inMin);
-	float newRange = (max - min);
-	float result = (((in - inMin) * newRange) / inRange) + min;
+    float inRange = (inMax - inMin);
+    float newRange = (max - min);
+    float result = (((in - inMin) * newRange) / inRange) + min;
 
-	return result;
+    return result;
 }
 
 ///////////////////////////////////////////////////////////////////////
-// Name: fRangeGet0255()
-// Desc:
+// Name: fRangeGetXY()
+// Desc: Convert one range to another (INT input)
 ///////////////////////////////////////////////////////////////////////
-float	fRangeGet0255(int in, float min, float max)
+int	RangeGetXY(int in, int inMin, int inMax, int min, int max)
 {
-	return fRangeGetXY(in, 0, 255, min, max);
+    return (int)fRangeGetXY((float)in, (float)inMin, (float)inMax, (float)min, (float)max);
 }
 
 ///////////////////////////////////////////////////////////////////////

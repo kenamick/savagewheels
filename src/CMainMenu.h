@@ -70,6 +70,10 @@ class CMainMenu;
 #define STRINGS_SURFACE_OPTIONS	1
 #define STRINGS_SURFACE_ONOFF	2
 
+#define VOLUME_PIXEL_WIDTH		125
+// Ratio = 125px/256
+#define VOLUME_CHANGE_RATIO		2.048f * 5.0f
+
 // Menu screens
 enum CONST_MENUSTATE
 {

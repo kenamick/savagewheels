@@ -157,8 +157,8 @@ protected:
 	bool bsound_initialized;
 
 	CSound sounds[MAX_SOUNDS];
-	int volume_sound;
-	int volume_music;
+	float volume_sound;
+	float volume_music;
 
 	/*
 	 * Input
@@ -266,12 +266,12 @@ public:
 	bool IsMusicPlaying();
 	//Mix_Chunk* LoadWav( char *filename, long file_offset, Uint32 file_size );
 
-	int  GetSoundVolume() { return volume_sound; };
-	int  GetMusicVolume() { return volume_music; };
-	void SetSoundVolume( int );
-	void SetMusicVolume( int );
-	void ChangeSoundVolume( int );
-	void ChangeMusicVolume( int );
+	float  GetSoundVolume() { return volume_sound; };
+	float  GetMusicVolume() { return volume_music; };
+	void SetSoundVolume( float );
+	void SetMusicVolume( float );
+	void ChangeSoundVolume( float );
+	void ChangeMusicVolume( float );
 
 };
 

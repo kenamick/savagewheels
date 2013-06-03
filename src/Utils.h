@@ -58,8 +58,8 @@ int intGetRnd(int min_val, int max_val);
 Uint32 GetDistanceNSR(int x1, int y1, int x2, int y2);
 float fGetDistanceNSR(float, float, float, float);
 bool InRange(float val, float bound1, float bound2);
-float fRangeGetXY(int in, int inMin, int inMax, float min, float max);
-float fRangeGet0255(int in, float min, float max);
+float fRangeGetXY(float in, float inMin, float inMax, float min, float max);
+int RangeGetXY(int in, int inMin, int inMax, int min, int max);
 bool fIsZero(float value);
 
 bool OpenLog(const char *filename);
