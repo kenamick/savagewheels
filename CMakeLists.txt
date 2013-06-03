@@ -220,7 +220,7 @@ if (UNIX AND NOT WIN32)
 	set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
 else()
 	set(CPACK_CMAKE_GENERATOR "MinGW Makefiles")
-	set(CPACK_PACKAGING_INSTALL_PREFIX "/savagewheels")
+#	set(CPACK_PACKAGING_INSTALL_PREFIX "/savagewheels")
 endif()
 
 set(CPACK_RESOURCE_FILE_LICENSE  "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
