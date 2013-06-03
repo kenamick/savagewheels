@@ -152,12 +152,12 @@ void CSounds::StopMusic()
 }
 
 
-void CSounds::FadeMusic( int milliseconds )
-{
-#ifdef WITH_FMOD
-	StopMusic();
-#endif
-}
+//void CSounds::FadeMusic( int milliseconds )
+//{
+//#ifdef WITH_FMOD
+//	StopMusic();
+//#endif
+//}
 
 
 //////////////////////////////////////////////////////////////////////

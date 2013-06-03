@@ -63,14 +63,14 @@ class CSounds
 {
 
 private:
-	CSdl	*_sdl;
+	CSdl *_sdl;
+
 #ifdef WITH_FMOD
 	int sounds[NUM_SOUNDS];
 	int music[NUM_MUSIX];
 #endif
-
-	int		current_track;
-	bool	music_stopped;
+	int current_track;
+	bool music_stopped;
 
 public:
 	CSounds();
@@ -81,11 +81,10 @@ public:
 	void Play( CONST_SOUNDS snd_to_play, int pos );
 	void Play( CONST_MUSIC music_to_play, bool looped );
 	void StopMusic();
-	void PlayMusic() { music_stopped = false; };
-	void FadeMusic( int milliseconds );
+	void ResumeMusic() { music_stopped = false; };
+//	void FadeMusic( int milliseconds );
 	void CheckMusic();
 	bool IsMusicPlaying() { return !music_stopped; };
-
 //	void setMusicVolume( int volume );
 };
 
