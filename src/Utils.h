@@ -32,6 +32,7 @@
 #define PI_2		1.5707963f
 #define RAD1		57.2957795786f
 #define DEG1		0.0174532925f
+// XXX .00001f or FLT_EPSILON 
 #define MIN_FLOAT	0.00000001f
 
 #define LOG_DASH   "------------------------------------------------"
