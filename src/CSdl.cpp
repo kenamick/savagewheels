@@ -1582,9 +1582,15 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 
 			if (IsStream)
 			{
+				// FMOD_ACCURATETIME
+				// for accurate Sound::getLength/Channel::setPosition on VBR MP3,
+				// and MOD/S3M/XM/IT/MIDI files. Scans file first, so takes longer to open.
+				// FMOD_OPENONLY does not affect this.
+
 				result = FMOD_System_CreateSound(fmod_system,
 						filename,
-						FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM | FMOD_LOOP_NORMAL,
+						FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM | FMOD_LOOP_NORMAL
+						| FMOD_ACCURATETIME,
 						0,
 						&ptr_snd->sound);
 
@@ -1774,9 +1780,9 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 //	}
 
 	result = FMOD_System_PlaySound(fmod_system,
-			FMOD_CHANNEL_REUSE, //FMOD_CHANNEL_FREE
+			FMOD_CHANNEL_FREE, //FMOD_CHANNEL_REUSE
 			sounds[snd_index].sound,
-			0,
+			(FMOD_BOOL)1,
 			&fmod_musicChannel);
 	FM_OK(result);
 
@@ -1786,6 +1792,8 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 	FM_OK(result);
 //	result = FMOD_Channel_SetPriority(fmod_musicChannel, 255);
 //	FM_OK(result);
+	result = FMOD_Channel_SetPaused(fmod_musicChannel, 0 /* FALSE */);
+	FM_OK(result);
 #endif
 }
 
@@ -1805,7 +1813,7 @@ void CSdl::StopMusic()
 	{
 		FMOD_RESULT result = FMOD_Channel_Stop(fmod_musicChannel);
 		FM_OK(result);
-		fmod_musicChannel = NULL;
+//		fmod_musicChannel = NULL;
 	}
 #endif
 }
@@ -1838,7 +1846,6 @@ bool CSdl::IsMusicPlaying()
 	return false;
 }
 
-
 ///////////////////////////////////////////////////////////////////////
 // Name: SetMusicVolume()
 // Desc:
@@ -1858,13 +1865,8 @@ void CSdl::SetMusicVolume( float new_vol )
 
 	FMOD_RESULT result = FMOD_SoundGroup_SetVolume(fmod_groupMusic, fineVol);
 	FM_OK(result);
-//	if (fmod_musicChannel) {
-//		FMOD_RESULT result = FMOD_Channel_SetVolume(fmod_musicChannel, fineVol);
-//		FM_OK(result);
-//	}
 #endif
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 // Name: SetSoundVolume()
@@ -1894,6 +1896,7 @@ void CSdl::SetMusicVolume( float new_vol )
 //	}
 #endif
 }
+
 
 ///////////////////////////////////////////////////////////////////////
 // Name: ChangeSoundVolume()
