@@ -2,6 +2,7 @@ Savage Wheels Release HISTORY
 -----------------------------
 
 V1.5 Release
+  * improved vehicle damage balancing.
   * changed all ingame sound effects.
   * changed sound support library. Game now uses FMod Ex sound library to play sound fx and music.
   * added Linux startup script - 'run.sh'. 

@@ -19,15 +19,15 @@ All drivers have background stories which are revealed when playing the campaign
 # Running the game
 
   * On **Windows** - Start the game by simply running the **savagewheels.exe** file.
-  * On **Linux** - Start the game by running the **savagewheels** binary or the **run.sh** script in case you get an error that some shared object libraries are missing.
+  * On **Linux** - Start the game by running the **savagewheels** binary or the **run.sh** script in case you get an error that either *libfmodex.so* or *libSDL.so* shared object libraries are missing.
 
   You may also run the game in fullscreen mode by specifying *-fullscreen* on the command line.
 
 # How to play
 
-Please check the [Readme.html](bin/Readme.html) for complete info.
+Please check the [Readme.html](bin/Readme.html) for additional game information.
 
 # Used Libraries 
   * [libSDL](http://www.libsdl.org/) - Simple DirectMedia Layer is a cross-platform multimedia library.
-  * [FMod Ex](http://www.fmod.org/fmod-sales.html) - Audio engine : FMOD Sound System by Firelight Technologies
   * [TinyXML](http://www.grinninglizard.com/tinyxml/) - TinyXML is a simple, small, C++ XML parser that can be easily integrating into other programs.
+  * [FMod Ex](http://www.fmod.org/fmod-sales.html) - Audio engine : FMOD Sound System by Firelight Technologies  
