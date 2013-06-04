@@ -62,7 +62,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 
 	LOAD_SOUND( SND_CRASHLIGHT1, "sound/crash3.wav", true );
 	LOAD_SOUND( SND_CRASHLIGHT2, "sound/crash2.wav", true );
-	LOAD_SOUND( SND_CRASHBRAKE, "sound/crash1.wav", true );
+	LOAD_SOUND( SND_CRASHLIGHT3, "sound/crash1.wav", true );
 	LOAD_SOUND( SND_EXPLOSION1, "sound/exp.wav", true );
 	LOAD_SOUND( SND_SPLAT1, "sound/splat.wav", true );
 	LOAD_SOUND( SND_TIRES1, "sound/tires1.wav", true );

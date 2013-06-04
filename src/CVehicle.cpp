@@ -718,9 +718,23 @@ void CVehicle::DoMotion()
 
 					ptr_veh->DoDamage( fulldmg, myIndex );
 				
-					// PLAY CRASH SOUND
-					_game->Sounds.Play( intGetRnd( 0, 50 ) % 2 ?
-							SND_CRASHLIGHT1 : SND_CRASHLIGHT2, (int)x );
+					// PLAY RANDOM CRASH SOUND
+					int sound = intGetRnd(0, 3);
+					DBG("crash sound = " << sound);
+					CONST_SOUNDS crash_sound;
+					switch(sound) {
+					case 0:
+						crash_sound = SND_CRASHLIGHT1;
+						break;
+					case 1:
+						crash_sound = SND_CRASHLIGHT2;
+						break;
+					case 2:
+					default:
+						crash_sound = SND_CRASHLIGHT3;
+						break;
+					}
+					_game->Sounds.Play( crash_sound, (int)x );
 				}
 
 				/*
@@ -1123,9 +1137,6 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 		sprite = sprite_crash;
 		mask = mask_crash;
 		crashed_look = true;
-
-		// PLAYSOUND
-		_game->Sounds.Play( SND_CRASHBRAKE, (int)x );
 	}
 }
 
