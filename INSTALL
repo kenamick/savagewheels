@@ -24,7 +24,7 @@ Extract the downloaded archive 'savagewheels-gamedata.tar.gz' into the bin/ fold
 
 3.1) Requirements:
   * CMake 2.8.x
-  * libSDL 1.2.x - You should install this using your package manager.
+  * libSDL 1.2.x - You should install libSDL using your package manager.
   * FMod Ex API 4.x - Install using your package manager or get the package from FMod's website.
   * (Ubuntu specific) Install 'build-essential' package.
 
@@ -71,14 +71,15 @@ Extract the downloaded archive 'savagewheels-gamedata.tar.gz' into the bin/ fold
 4) Installation on Windows
 
 4.1) Requirements
-  * MinGW (Minimalist GNU for Windows). I have only tested Mingw32!
+  * MinGW (Minimalist GNU for Windows). I have only tested with Mingw32.
   * CMake 2.8.x
   * libSDL 1.2.x - Download the Development Libraries archive.
-  * FMod Ex API 4.x - Download and install the FMOD Ex API installer EXE.
+  * FMod Ex API 4.x - Download and install the FMOD Ex API installer EXE from www.fmod.org.
 
 4.2) Instructions
 
-	a) Extract the contents of SDL 1.2.x package into the libs/ subfolder. Set the environment variable SDLDIR=<SDL-directory-in-libs>.
+	a) Extract the contents of SDL 1.2.x package into the libs/ subfolder. 
+	Set the environment variable SDLDIR=<SDL-directory-in-libs>.
 	
 	b) Install the FMod Ex API and copy the api/ folder into the libs/ subfolder.
 
@@ -94,9 +95,10 @@ Extract the downloaded archive 'savagewheels-gamedata.tar.gz' into the bin/ fold
 	d) Create the installation package with:
 	> cpack
 
-	c) Extract the produced archive file, e.g., savagewheels-1.5.0-Windows-x86.tar.gz to your desired Games folder.
+	c) Extract the produced archive file, e.g., savagewheels-1.5.0-Windows-x86.tar.gz to your 
+	desired Games folder.
 	
-	e) Start the game run:
+	e) Start the game with:
 	> savagewheels  
 
 5) Compiling a Debug version
