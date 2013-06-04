@@ -26,9 +26,10 @@
 
 #include "Main.h"
 
+
 ///////////////////////////////////////////////////////////////////////
 // Name: CSdl()
-// Desc: Constructor
+// Desc:
 ///////////////////////////////////////////////////////////////////////
 CSdl::CSdl()
 :	_game( NULL ),
@@ -52,7 +53,7 @@ CSdl::CSdl()
 {
 
 	keys = SDL_GetKeyState(NULL);
-	_JoystickButtons = udtButtonsBuffer( 30 );
+	_JoystickButtons = udtButtonsBuffer(30);
 
 #ifndef FONT_TTF
 	font_bmp = NULL;
@@ -114,14 +115,9 @@ void CSdl::Close()
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf)
 {
-	SDL_Rect      rdest = { 0, 0, 0, 0 };
-
-	rdest.x = x;
-	rdest.y = y;
-	SDL_BlitSurface( surf, NULL, screen, &rdest );
+	SDL_Rect rdest = { x, y, 0, 0 };
+	SDL_BlitSurface(surf, NULL, screen, &rdest);
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////
 // Name: BlitNow()
@@ -129,34 +125,28 @@ void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf)
 ///////////////////////////////////////////////////////////////////////
 void CSdl::BlitNow( Sint32 x, Sint32 y, SDL_Surface *surf, SDL_Rect *rsurf )
 {
-	SDL_Rect      rdest = { 0, 0, 0, 0 };
-
-	rdest.x = x;
-	rdest.y = y;
-	SDL_BlitSurface( surf, rsurf, screen, &rdest );
+	SDL_Rect rdest = { x, y, 0, 0 };
+	SDL_BlitSurface(surf, rsurf, screen, &rdest);
 }
 
-
 ///////////////////////////////////////////////////////////////////////
-// Name: _BlitAll()
-// Desc: izprashta wsichki kyrtinki za rendirane
+// Name: BlitAll()
+// Desc: Sorts and blits all surfaces in buffer
 ///////////////////////////////////////////////////////////////////////
-void CSdl::Blitall()
+void CSdl::BlitAll()
 {
-
 	if (num_surfaces == 0)
 		return;
 
 	SDL_Rect 	rdest = { 0, 0, 0, 0 };
 	bool 		bSorted = true;
 	STRUCT_BLIT surf;
-	Uint32 		i = 0;
 
 	// sort by z-order (TODO: use qsort)
 	while (bSorted) {
 		bSorted = false;
 
-		for (i = 0; i < num_surfaces - 1; i++) {
+		for (int i = 0; i < num_surfaces - 1; i++) {
 			if (surface[i].z > surface[i + 1].z) {
 				surf = surface[i];
 				surface[i] = surface[i + 1];
@@ -166,7 +156,7 @@ void CSdl::Blitall()
 		}
 	}
 
-	for (i = 0; i < num_surfaces; i++) {
+	for (int i = 0; i < num_surfaces; i++) {
 		rdest.x = surface[i].x;
 		rdest.y = surface[i].y;
 		SDL_BlitSurface(surface[i].surf, NULL, screen, &rdest);
@@ -211,42 +201,31 @@ bool CSdl::AddToBlit( Sint32 x, Sint32 y, SDL_Surface *surf )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Flip()
-// Desc: flipva, razmenq backbuffer-a i primbufera...abe pokazwa
-// wsichko na ekrana ;]
+// Desc: Flip backbuffer
 ///////////////////////////////////////////////////////////////////////
 void CSdl::Flip()
 {
+	BlitAll();
 
-  Blitall();
-
-  SDL_Flip(screen);
+	SDL_Flip(screen);
 
 #ifdef WITH_FMOD
-  if (bsound_initialized)
-  {
-	  FMOD_System_Update(fmod_system);
-  }
+	if (bsound_initialized)
+	{
+		FMOD_System_Update(fmod_system);
+	}
 #endif
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////
 // Name: FlipTo()
-// Desc: blit-va backbuffera v/u dadena powyrhnost
+// Desc: Copy backbuffer contents to given surface
 ///////////////////////////////////////////////////////////////////////
-void CSdl::FlipTo( SDL_Surface *dest_surf )
+void CSdl::FlipTo(SDL_Surface *dest_surf)
 {
-
-  SDL_Rect      rdest;
-
-  rdest.x = 0;
-  rdest.y = 0;
-  SDL_BlitSurface( screen, NULL, dest_surf, &rdest );
-
+	SDL_Rect rdest = { 0, 0, 0, 0 };
+	SDL_BlitSurface(screen, NULL, dest_surf, &rdest);
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////
 // Name: GetInput()
@@ -254,12 +233,10 @@ void CSdl::FlipTo( SDL_Surface *dest_surf )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::GetInput()
 {
-
 	//SDL_Event     event;  
 	Uint8  button_mask = 0U;
 
 	//SDL_PollEvent( &event );
-	// wzemi rejimite na klavishite i gi zapishi w masiva
 	SDL_PumpEvents();
 
 	if ( _nJoystickIdxDeviceToUse != -1 )
@@ -671,11 +648,9 @@ int CSdl::ClipRect( int *x , int *y, SDL_Rect *rSurf )
 	return false;
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////
 // Name: SetRect()
-// Desc: set rect dims
+// Desc: Set rectangle size
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetRect( SDL_Rect *rect, int x, int y, int width, int height )
 {
@@ -687,7 +662,7 @@ void CSdl::SetRect( SDL_Rect *rect, int x, int y, int width, int height )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: MakeBoolMask()
-// Desc: make sprte boolean mask
+// Desc: make sprite boolean mask
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 {
@@ -699,7 +674,7 @@ void CSdl::MakeBoolMask( SDL_Surface *surf, Uint32 *&mask )
 
 ///////////////////////////////////////////////////////////////////////
 // Name: MakeBoolMask16()
-// Desc: make sprte boolean mask
+// Desc: make sprite boolean mask
 ///////////////////////////////////////////////////////////////////////
 void CSdl::MakeBoolMask16( SDL_Surface *surf, Uint32 *&mask )
 {
@@ -1582,11 +1557,8 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 
 			if (IsStream)
 			{
-				// FMOD_ACCURATETIME
-				// for accurate Sound::getLength/Channel::setPosition on VBR MP3,
-				// and MOD/S3M/XM/IT/MIDI files. Scans file first, so takes longer to open.
-				// FMOD_OPENONLY does not affect this.
-
+				// FMOD_ACCURATETIME - for accurate Sound::getLength/Channel::setPosition
+				// on VBR MP3, and MOD/S3M/XM/IT/MIDI files.
 				result = FMOD_System_CreateSound(fmod_system,
 						filename,
 						FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM | FMOD_LOOP_NORMAL
@@ -1728,7 +1700,7 @@ void CSdl::PlaySound( int snd_index, int position )
 		pos = fRangeGetXY(position, 0, 640, -1.0f, 1.0f);
  	}
 
-	FMOD_CHANNEL 	*channel;
+	FMOD_CHANNEL *channel;
 
 	if ( sounds[snd_index].buffered )
 	{

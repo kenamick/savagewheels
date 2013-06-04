@@ -181,7 +181,7 @@ protected:
 private:
 	bool InitializeSound();
 
-	void	Blitall();
+	void	BlitAll();
 	Uint32	GetPixel(SDL_Surface *surface, int x, int y);
 	bool	Slock( SDL_Surface *surface );
 	void	Sunlock( SDL_Surface *surface );
