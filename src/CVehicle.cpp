@@ -545,8 +545,8 @@ void CVehicle::DoMotion()
 	 */
 
 	float maxvel_p = tmp_maxvel + velocity_bonus;
-	// 80% of total acc when going backwards
-	float maxvel_n = -maxvel_p * 0.8;
+	// 50% of allowed velocity when going backwards
+	float maxvel_n = -maxvel_p * 0.5f;
 
 	if ( vmove == VM_FORWARD )
 	{
@@ -691,7 +691,7 @@ void CVehicle::DoMotion()
 				bool no_damage = false;
 
 				// TODO: fix this because it disbalances the game!
-				if ( tmp_vel <= MIN_DAMAGE_VELOCITY ) 
+				if ( abs_vel < MIN_DAMAGE_VELOCITY )
 				{
 					no_damage = true;
 					DBG( "[COLLIDE] Step #6" );
@@ -702,13 +702,13 @@ void CVehicle::DoMotion()
 				{
 //					anger = anger > MAX_ANGER ? MAX_ANGER : anger;
 
-					float perc = tmp_vel / (float)max_vel * 100.0f;
+					float perc = abs_vel / (float)max_vel * 100.0f;
 					int tmp_anger = ((float)anger / 100.0f ) * perc * (80.0f / damage);
 
 					anger -= tmp_anger;
 					anger = anger < 0 ? 0 : anger;
 					
-					float speed_damage = (float)damage + 0.12f * tmp_vel;
+					float speed_damage = (float)damage + 0.12f * abs_vel;
 					float armour_absorb = (0.10f * (float)ptr_veh->GetHitPoints());
 					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
 
