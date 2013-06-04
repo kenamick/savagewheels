@@ -40,6 +40,7 @@ set(
 
 set(RES_FILES "")
 if(MINGW)
+    # include a Windows resource file
 	set(RES_FILES "src/res.rc")
 	set(CMAKE_RC_COMPILER_INIT windres)
 	ENABLE_LANGUAGE(RC)
@@ -217,7 +218,9 @@ set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 # Advanced settings
 if (UNIX AND NOT WIN32)
 	set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
-	set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
+    if (CPACK_GENERATOR STREQUAL "DEB")
+	    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
+	endif()
 else()
 	set(CPACK_CMAKE_GENERATOR "MinGW Makefiles")
 #	set(CPACK_PACKAGING_INSTALL_PREFIX "/savagewheels")
