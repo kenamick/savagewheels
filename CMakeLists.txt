@@ -200,7 +200,7 @@ INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
 ### build a CPack driven installer package
 include (InstallRequiredSystemLibraries)
 
-set(CPACK_GENERATOR "TGZ")
+#set(CPACK_GENERATOR "TGZ")
 
 set(CPACK_PACKAGE_NAME "SavageWheels")
 set(CPACK_PACKAGE_VENDOR "Petar Petrov")
@@ -218,8 +218,8 @@ set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 # Advanced settings
 if (UNIX AND NOT WIN32)
 	set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
-    if (CPACK_GENERATOR STREQUAL "DEB")
-	    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local/games/savagewheels")
+	if (CPACK_GENERATOR STREQUAL "DEB")
+		set(CPACK_PACKAGING_INSTALL_PREFIX "/opt")
 	endif()
 else()
 	set(CPACK_CMAKE_GENERATOR "MinGW Makefiles")
