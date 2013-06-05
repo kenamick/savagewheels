@@ -200,7 +200,9 @@ INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
 ### build a CPack driven installer package
 include (InstallRequiredSystemLibraries)
 
-#set(CPACK_GENERATOR "TGZ")
+if (NOT CPACK_GENERATOR)
+	set(CPACK_GENERATOR "STGZ")
+endif(NOT CPACK_GENERATOR)
 
 set(CPACK_PACKAGE_NAME "SavageWheels")
 set(CPACK_PACKAGE_VENDOR "Petar Petrov")
@@ -216,14 +218,12 @@ set(CPACK_PACKAGE_FILE_NAME "savagewheels-${PCKVER}-${CMAKE_SYSTEM_NAME}-${APP_A
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 # Advanced settings
-if (UNIX AND NOT WIN32)
-	set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
-	if (CPACK_GENERATOR STREQUAL "DEB")
-		set(CPACK_PACKAGING_INSTALL_PREFIX "/opt")
-	endif()
-else()
-	set(CPACK_CMAKE_GENERATOR "MinGW Makefiles")
-#	set(CPACK_PACKAGING_INSTALL_PREFIX "/savagewheels")
+
+# Debian DEB package stuff
+if (${CPACK_GENERATOR} STREQUAL "DEB")
+	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt")
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCH}) 
+	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6, libsdl1.2debian (>= 1.2.11)")
 endif()
 
 set(CPACK_RESOURCE_FILE_LICENSE  "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
@@ -235,10 +235,7 @@ set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #"^${PROJECT_SOURCE_DIR}/bin/pref"
 #"^${PROJECT_SOURCE_DIR}/bin/debug.html"
 #)
-set(CPACK_PACKAGE_EXECUTABLES "savagewheels" "Savage Wheels Game")
 
-# Debian DEB package stuff
-set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCH}) 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl1.2debian (>= 1.2.11)")
+set(CPACK_PACKAGE_EXECUTABLES "savagewheels" "Savage Wheels Game" "run.sh" "Startup script")
 
 include (CPack)
