@@ -75,8 +75,12 @@ else()
 	add_definitions(-lpthread)
 	include_directories(${SDL_INCLUDE_DIR})
 	link_directories($ENV{SDLDIR}\\lib)
-	
 	set(SDL_LIBRARY_SO $ENV{SDLDIR}\\bin\\SDL.dll)
+	
+	# Static linkage of the gcc libs
+	#add_definitions(-static-libgcc)
+	#add_definitions(-static-libstdc++)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
 endif()
 
 target_link_libraries(savagewheels ${SDL_LIBRARY})
