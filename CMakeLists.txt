@@ -204,9 +204,11 @@ INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
 ### build a CPack driven installer package
 include (InstallRequiredSystemLibraries)
 
-if (NOT CPACK_GENERATOR)
+if (NOT CPACK_GENERATOR AND (UNIX AND NOT WIN32))
 	set(CPACK_GENERATOR "STGZ")
-endif(NOT CPACK_GENERATOR)
+else()
+	set(CPACK_GENERATOR "TGZ")
+endif()
 
 set(CPACK_PACKAGE_NAME "SavageWheels")
 set(CPACK_PACKAGE_VENDOR "Petar Petrov")
