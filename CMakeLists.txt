@@ -10,6 +10,19 @@ set(APP_VER_PATCH "0")
 ### check for required libs
 find_package(SDL REQUIRED)
 
+### Install targets (see: http://www.cmake.org/Wiki/CMake_RPATH_handling)
+if (NOT INSTALL_DIR)
+    set(INSTALL_DIR "./")
+endif()
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+
+# add the automatically determined parts of the RPATH
+SET(CMAKE_INSTALL_RPATH "${INSTALL_DIR}/")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 ### sources
 include_directories(src/)
 include_directories(tinyxml/)
@@ -49,7 +62,10 @@ if(MINGW)
 	add_executable(savagewheels ${SOURCES} ${RES_FILES})	
 else()
 	add_executable(savagewheels ${SOURCES})	
-endif(MINGW)
+endif(MINGW)### configure a header file to pass some of the CMake settings to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/Config.h.in"
+  "${PROJECT_SOURCE_DIR}/src/Config.h")
 
 
 ### add required libarires
@@ -83,9 +99,8 @@ else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
 endif()
 
-target_link_libraries(savagewheels ${SDL_LIBRARY})
-
 message(STATUS "libSDL.so/DLL is at ${SDL_LIBRARY_SO}")
+target_link_libraries(savagewheels ${SDL_LIBRARY})
 
 add_custom_command(TARGET savagewheels POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different 
@@ -100,38 +115,46 @@ if (NOT SOUND STREQUAL "NO")
 		set(FMOD_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/fmod/api")
 	endif()
 
+    add_definitions(-I${FMOD_PATH}/inc)
+    link_directories(${FMOD_PATH}/lib)
+
 	if (UNIX AND NOT WIN32)
 		# Linux
 		
-		set(FMOD_LIB_NAME "libfmodex.so")
-		set(FMOD_SO_NAME "libfmodex.so")
+		if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
+			set(FMOD_LIB_NAME "libfmodex64.so")
+			set(FMOD_SO_NAME "libfmodex64.so")
+		else()
+			set(FMOD_LIB_NAME "libfmodex.so")
+			set(FMOD_SO_NAME "libfmodex.so")
+		endif()		
 		
+		# just in case check also in the system folders
 		add_definitions(-I/usr/include/fmodex)
 	else()
 		# Windows
 		
 		set(FMOD_LIB_NAME "libfmodex.a")
-		if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+		if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
 			set(FMOD_SO_NAME "fmodex64.dll")
 		else()
 			set(FMOD_SO_NAME "fmodex.dll")
 		endif()
-		
-		add_definitions(-I${FMOD_PATH}/inc)
-		link_directories(${FMOD_PATH}/lib)
 	endif()
 
 	# add FMod Ex (if present)
 	find_library( 
 		FMOD_LIBRARY
 		NAMES ${FMOD_LIB_NAME}
-		PATHS "/usr/lib" "/usr/local/lib/" "${FMOD_PATH}/lib"
+		PATHS "/usr/lib" "/usr/local/lib/"
+		HINTS "${FMOD_PATH}/lib"
 	)
 	
 	find_library(
 		FMOD_LIBRARY_SO_PATH
 		NAMES ${FMOD_SO_NAME}	
-		PATHS "/usr/lib" "/usr/local/lib/" "${FMOD_PATH}"
+		PATHS "/usr/lib" "/usr/local/lib/"
+		HINTS "${FMOD_PATH}" "${FMOD_PATH}/lib"
 	)
 
 	if (NOT FMOD_LIBRARY)
@@ -147,9 +170,9 @@ if (NOT SOUND STREQUAL "NO")
 			${FMOD_LIBRARY_SO_PATH} 
 			$<TARGET_FILE_DIR:savagewheels>)
 			
-		INSTALL(FILES
-		    "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}"
-			DESTINATION "./")
+		INSTALL(
+		FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}" 
+		DESTINATION ${INSTALL_DIR})
 	endif()
 
 else()
@@ -182,14 +205,13 @@ else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
-### configure a header file to pass some of the CMake settings to the source code
+### Configure compile time header file 
 configure_file (
   "${PROJECT_SOURCE_DIR}/Config.h.in"
   "${PROJECT_SOURCE_DIR}/src/Config.h")
-
-### Install targets
+  
 INSTALL(TARGETS savagewheels 
-    RUNTIME DESTINATION "./")
+    RUNTIME DESTINATION ${INSTALL_DIR})
 INSTALL(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/${SDL_LIB_NAME}"
     "${CMAKE_CURRENT_SOURCE_DIR}/run.sh"
@@ -197,9 +219,9 @@ INSTALL(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/HISTORY"
     "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/sw1.ico"
-    DESTINATION "./")
+    DESTINATION ${INSTALL_DIR})
 INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
-    DESTINATION "./"
+    DESTINATION ${INSTALL_DIR}
     PATTERN "debug.html" EXCLUDE
     PATTERN "pref" EXCLUDE)
     
