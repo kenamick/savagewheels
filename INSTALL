@@ -39,7 +39,7 @@ Extract the downloaded archive 'savagewheels-gamedata.tar.gz' into the bin/ fold
    	$ ./build.sh
    
    	d) Go to the 'release/' subfolder. Extract the produced archive file, 
-   	e.g., savagewheels-1.5.0-Linux-x64.tar.gz to your desired Games folder.
+   	e.g., savagewheels-1.5.0-Linux-x64.sh, to your (desired) Games folder.
    	
 	e) Start the game run:
 	$ ./savagewheels  
@@ -63,10 +63,20 @@ Extract the downloaded archive 'savagewheels-gamedata.tar.gz' into the bin/ fold
 	c) Create the installation package with:
 	$ cpack
 	
-	Debian/Ubuntu users may also run:
+3.2.1) Debian package
+	
+	Debian/Ubuntu users may run:
 	$ cpack -G DEB
 	This will create a .deb package that you can install with, e.g.,
 	$ dpkg -i savagewheels-1.5.0-Linux-x64.deb
+
+3.2.2) Compile 32-bit version on 64-bit Linux
+
+	This requires that you have the 'gcc-multilib' package installed on your system.
+	You will also need to have 32-bit versions of libSDL.so and fmodex.so.
+	
+	After all required packages are installed build the makefile by running:
+	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DM32=1
 
 4) Installation on Windows
 

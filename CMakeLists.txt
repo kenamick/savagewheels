@@ -135,9 +135,9 @@ if (NOT NO_SOUND)
 	)
 
 	if (NOT FMOD_LIBRARY)
-		message( STATUS "FModEx lib - ${FMOD_LIB_NAME} not found! Will compile without sound support." )
+		message(STATUS "FModEx lib - ${FMOD_LIB_NAME} not found! Will compile without sound support.")
 	else()
-		message( STATUS "Found FModEx lib at ${FMOD_LIBRARY}. Found FModEx DLL at ${FMOD_LIBRARY_SO_PATH}." )
+		message(STATUS "Found FModEx lib at ${FMOD_LIBRARY}. Found FModEx DLL at ${FMOD_LIBRARY_SO_PATH}.")
 		
 		add_definitions(-DWITH_FMOD)
 		target_link_libraries(savagewheels ${FMOD_LIBRARY})
@@ -153,7 +153,7 @@ if (NOT NO_SOUND)
 	endif()
 
 else()
-	message( STATUS "NO_SOUND option found! Compiling without sound support ..." )
+	message(STATUS "NO_SOUND option found! Compiling without sound support ...")
 endif()
 
 ### additional defines
@@ -162,15 +162,16 @@ if (UNIX AND NOT WIN32)
 	add_definitions(-DLINUX_BUILD)
 endif()
 
-message( STATUS "Build type is ${CMAKE_BUILD_TYPE}" )
-
+message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions(-g -D_DEBUG -DDEBUG)
 else()
 	add_definitions(-O3 -DNDEBUG)
 endif()
 
-if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+# set architecture
+
+if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
 	add_definitions(-DARCH_X64)
 	set(APP_ARCH "x64")
 	set(DEB_ARCH "amd64")
@@ -178,6 +179,7 @@ else()
 	add_definitions(-DARCH_X86)
 	set(APP_ARCH "x86")
 	set(DEB_ARCH "i386")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
 ### configure a header file to pass some of the CMake settings to the source code
