@@ -93,7 +93,7 @@ add_custom_command(TARGET savagewheels POST_BUILD
 	$<TARGET_FILE_DIR:savagewheels>)  
 
 # check if sound support is available
-if (NOT NO_SOUND)
+if (NOT SOUND STREQUAL "NO")
 
 	# check if path to FMod is defined
 	if(NOT DEFINED ${FMOD_PATH})
