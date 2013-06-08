@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
 project(savagewheels) 
 
-### App defaults
+### Defaults
 set(APP_ARCH "")
 set(APP_VER_MAJ "1")
 set(APP_VER_MIN "5")
@@ -62,30 +62,33 @@ if(MINGW)
 	add_executable(savagewheels ${SOURCES} ${RES_FILES})	
 else()
 	add_executable(savagewheels ${SOURCES})	
-endif(MINGW)### configure a header file to pass some of the CMake settings to the source code
-configure_file (
-  "${PROJECT_SOURCE_DIR}/Config.h.in"
-  "${PROJECT_SOURCE_DIR}/src/Config.h")
-
+endif()
 
 ### add required libarires
 
-## SDL
+## libstdc runtime on Windows
+if (WIN32)
+	# Static linkage of the gcc libs
+	#add_definitions(-static-libgcc)
+	#add_definitions(-static-libstdc++)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+endif()
 
+## SDL
 if (UNIX AND NOT WIN32)
 	# Linux
-	set(SDL_LIB_NAME "libSDL.so")
 	
-	find_library(
-		SDL_LIBRARY_SO
-		NAMES ${SDL_LIB_NAME}
-		PATHS "/usr/lib" "/usr/local/lib/" ${SDL_LIBRARY} $ENV{SDLDIR} "${CMAKE_CURRENT_SOURCE_DIR}/libs"
-	)
-	
+#	set(SDL_LIB_NAME "libSDL.so")
+#	find_library(
+#		SDL_LIBRARY_SO
+#		NAMES ${SDL_LIB_NAME}
+#		PATHS "/usr/lib" "/usr/local/lib/"
+#		HINTS $ENV{SDLDIR} ${SDL_LIBRARY} "${CMAKE_CURRENT_SOURCE_DIR}/libs")
     add_definitions(`sdl-config --cflags`)
     add_definitions(`sdl-config --libs`)	
 else()
 	# Windows
+	
 	set(SDL_LIB_NAME "SDL.dll")
 	
 	add_definitions(-lpthread)
@@ -93,22 +96,23 @@ else()
 	link_directories($ENV{SDLDIR}\\lib)
 	set(SDL_LIBRARY_SO $ENV{SDLDIR}\\bin\\SDL.dll)
 	
-	# Static linkage of the gcc libs
-	#add_definitions(-static-libgcc)
-	#add_definitions(-static-libstdc++)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+	message(STATUS "Found libSDL.so/DLL at ${SDL_LIBRARY}")
+	
+    # copy the SDL DLL file to the install dir
+    add_custom_command(TARGET savagewheels POST_BUILD
+    	COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+    	${SDL_LIBRARY_SO}
+    	$<TARGET_FILE_DIR:savagewheels>)  
+    	
+    INSTALL(FILES "${CMAKE_CURRENT_SOURCE_DIR}/SDL.dll" DESTINATION ${INSTALL_DIR})
+		
 endif()
 
-message(STATUS "libSDL.so/DLL is at ${SDL_LIBRARY_SO}")
-target_link_libraries(savagewheels ${SDL_LIBRARY})
-
-add_custom_command(TARGET savagewheels POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-	${SDL_LIBRARY_SO}
-	$<TARGET_FILE_DIR:savagewheels>)  
-
-# check if sound support is available
-if (NOT SOUND STREQUAL "NO")
+## SOUND libraries
+if (SOUND STREQUAL "NO")
+    message(STATUS "Found SOUND=NO option. Compiling without sound support ...")
+else()
+    # FModEx API
 
 	# check if path to FMod is defined
 	if(NOT DEFINED ${FMOD_PATH})
@@ -161,21 +165,21 @@ if (NOT SOUND STREQUAL "NO")
 		message(STATUS "Found FModEx lib at ${FMOD_LIBRARY}. Found FModEx DLL at ${FMOD_LIBRARY_SO_PATH}.")
 		
 		add_definitions(-DWITH_FMOD)
-		target_link_libraries(savagewheels ${FMOD_LIBRARY})
 		
 		add_custom_command(TARGET savagewheels POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different 
 			${FMOD_LIBRARY_SO_PATH} 
 			$<TARGET_FILE_DIR:savagewheels>)
 			
-		INSTALL(
-		FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}" 
-		DESTINATION ${INSTALL_DIR})
+		INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}" 
+		    DESTINATION ${INSTALL_DIR})
 	endif()
 
-else()
-	message(STATUS "NO_SOUND option found! Compiling without sound support ...")
 endif()
+
+### link required libraries
+
+target_link_libraries(savagewheels ${SDL_LIBRARY} ${FMOD_LIBRARY})
 
 ### additional defines
 
@@ -183,14 +187,14 @@ if (UNIX AND NOT WIN32)
 	add_definitions(-DLINUX_BUILD)
 endif()
 
-message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	add_definitions(-g -D_DEBUG -DDEBUG)
 else()
 	add_definitions(-O3 -DNDEBUG)
 endif()
+message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 
-# set architecture
+### set architecture
 
 if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
 	add_definitions(-DARCH_X64)
@@ -211,7 +215,6 @@ configure_file (
 INSTALL(TARGETS savagewheels RUNTIME DESTINATION ${INSTALL_DIR})
 INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" DESTINATION ${INSTALL_DIR})
 INSTALL(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/${SDL_LIB_NAME}"
     "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
     "${CMAKE_CURRENT_SOURCE_DIR}/HISTORY"
     "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
@@ -243,8 +246,6 @@ set(CPACK_PACKAGE_FILE_NAME "savagewheels-${PCKVER}-${CMAKE_SYSTEM_NAME}-${APP_A
 #set(CPACK_PACKAGE_INSTALL_DIRECTORY "savagewheels-${PCKVER}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
-# Advanced settings
-
 # Debian DEB package stuff
 if (${CPACK_GENERATOR} STREQUAL "DEB")
 	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt")
@@ -261,7 +262,6 @@ set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #"^${PROJECT_SOURCE_DIR}/bin/pref"
 #"^${PROJECT_SOURCE_DIR}/bin/debug.html"
 #)
-
-set(CPACK_PACKAGE_EXECUTABLES "savagewheels" "Savage Wheels Game" "run.sh" "Startup script")
+set(CPACK_PACKAGE_EXECUTABLES "savagewheels" "Savage Wheels Game")
 
 include (CPack)
