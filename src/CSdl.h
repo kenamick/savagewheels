@@ -92,12 +92,12 @@ public:
 
 	~CSound() {};
 
-#ifdef WITH_FMOD	
-	FMOD_SOUND   *sound;
-#endif
 	bool buffered;		// buffered sound?
 	int play_channel;	// unbuffered sounds do not need separate channels
 	bool loaded;
+#ifdef WITH_FMOD
+	FMOD_SOUND   *sound;
+#endif
 	bool isMusic;		// is this a music type of sound?
 	
 	void Release();

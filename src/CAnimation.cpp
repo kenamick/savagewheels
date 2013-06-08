@@ -159,11 +159,16 @@ void CAnimations::Create( Uint16 pos_x, Uint16 pos_y, CONST_ANIMATIONS anim_type
 				ptr_anm->life = intGetRnd( MIN_SPLATSTAY_TIME, MAX_SPLATSTAY_TIME );
 			break;
 
+			default:
+				DBG("Invalid animation specified!");
+				break;
+
 			/*else if ( anim_type == ANIM_TIRETRAILS )
 			{
 				ptr_anm->frame = 0; //intGetRnd(  );
 				//ptr_anm->life = _game->Timer.Time() + intGetRnd( MIN_SPLATSTAY_TIME, MAX_SPLATSTAY_TIME );
 			}*/
+
 			}
 			
 			break;

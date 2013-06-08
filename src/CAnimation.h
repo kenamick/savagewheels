@@ -69,7 +69,12 @@ class CAnimation
 {
 public:
 	CAnimation()
-		: x(0.0f), y(0.0f), alive(false), frame(0.0f), time_created(0U), life(0U)
+		: x(0.0f), y(0.0f),
+		  frame(0.0f),
+		  alive(false),
+		  time_created(0U),
+		  life(0U),
+		  type(ANIM_ANGER)
 	{};
 
 	~CAnimation()
