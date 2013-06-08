@@ -6,11 +6,10 @@ TODOs
 
 Nice to have
 ------------------------------------------------------------------------------
-* possiblity for screen resolutions 800x600, 1024x768 with centered screen
-* create UI (win32 or preferable XWidgets SDK) for player mods to create additional vehicles
+* possiblity for full screen resolutions 1024x768+ with centered game screen
+* create UI (Qt or GTK+) for player mods to create additional vehicles
 * network play
 * make blood green (add parent control setting in mainmenu)
-
 
 Done
 ------------------------------------------------------------------------------

@@ -17,8 +17,8 @@ All drivers have background stories which are revealed when playing the campaign
 
 # Running the game
 
-  * On **Windows** - Start the game by simply running the **savagewheels.exe** file.
-  * On **Linux** - Start the game by running the **savagewheels** binary or the **run.sh** script in case you get an error that either *libfmodex.so* or *libSDL.so* shared object libraries are missing.
+  * On *Windows* - Start the game by simply running the **savagewheels.exe** file.
+  * On *Linux* - It is **reqiured** that you have 'sdl 1.2' package already installed. Start the game by running the **savagewheels** binary or the **run.sh** script in case you get an error that *libfmodex.so* is missing.
 
   You may also run the game in fullscreen mode by specifying *-fullscreen* on the command line.
 
