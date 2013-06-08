@@ -188,7 +188,7 @@ if (UNIX AND NOT WIN32)
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-	add_definitions(-g -D_DEBUG -DDEBUG)
+	add_definitions(-g -D_DEBUG -DDEBUG) # -Wextra -Wall
 else()
 	add_definitions(-O3 -DNDEBUG)
 endif()
