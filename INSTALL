@@ -59,17 +59,23 @@ This archive should contain the folders: autos/, graphics/ and  sounds/.
 	c) Create the installation package with:
 	$ cpack
 	
-3.2.1) Debian package
+3.3) Packaging
+
+	A self-extracting STGZ file will be created by default when running:
+	$ cpack
+	after the build process has finished.
+
+3.3.1) Debian
 	
 	Debian/Ubuntu users may run:
 	$ cpack -G DEB
 	This will create a .deb package that you can install with, e.g.,
 	$ dpkg -i savagewheels-1.5.0-Linux-x64.deb
 
-3.2.2) Compile 32-bit version on 64-bit Linux
+3.4) Compile 32-bit version on 64-bit Linux
 
 	This requires that you have the 'gcc-multilib' package installed on your system.
-	You will also need to have 32-bit versions of libSDL.so and fmodex.so.
+	You will also need to have 32-bit versions of libSDL.so and libfmodex.so.
 	
 	After all required packages are installed build the makefile by running:
 	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DM32=1
