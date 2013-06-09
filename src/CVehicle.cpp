@@ -1382,7 +1382,13 @@ void CVehicle::Update()
 			// PLAY SOUND
 			if (warning_time < _game->Timer.Time())
 			{
-				warning_time = _game->Timer.Time() + 1000;
+				/*
+				 * 1176sec - that's how long the warning beep sound is.
+				 * Normally we would like to play this sound looped and stop it after
+				 * the vehicle is destroyed. However, currently there is no Stop() call
+				 * implemented in the CSounds class.
+				 */
+				warning_time = _game->Timer.Time() + 1176;
 				_game->Sounds.Play(SND_WARNING, (int) x);
 			}
 		}
