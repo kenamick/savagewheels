@@ -1340,15 +1340,14 @@ void CVehicle::Update()
 		honk_status = 0;
 	}
 
-	// self-distruct if vehicle has 'stuck'
-	// XXX This is a nasty hack due to existing collision physics issue :(
-	if (vel == 0 && !self_destruct)
+	// self destruction if vehicle does not move/has 'stuck'
+	if ((int)vel == 0 && !self_destruct)
 	{
-//		if (!ai_stuck)
-//		{
-//			ai_stuck = true;
-//			ai_stucktime = _game->Timer.Time() + 4000 + (rand() % 2000);
-//		}
+		if (!ai_stuck)
+		{
+			ai_stuck = true;
+			ai_stucktime = _game->Timer.Time() + SELF_DESTRUCT_CHECK_TIME;
+		}
 	}
 	else
 	{
@@ -1364,7 +1363,7 @@ void CVehicle::Update()
 		}
 	}
 
-	// check if self-destruct is on
+	// check if sself destruction is on
 	if (self_destruct && !self_destruction)
 	{
 		self_destruction = true;

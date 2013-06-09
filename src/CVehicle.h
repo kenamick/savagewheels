@@ -40,6 +40,7 @@ class CVehicle;
 #define ANGEREXPIRE_TIME		180
 #define SPEEDEXPIRE_TIME		8000
 #define GOALEXPIRE_TIME			5000
+#define SELF_DESTRUCT_CHECK_TIME 10000
 #define NO_ATTACKER				10
 
 #define MAX_ANGER				200
