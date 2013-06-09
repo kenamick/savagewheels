@@ -1116,7 +1116,8 @@ void CVehicle::DoDamage( int damageAmount, Uint32 attackerIndex  )
 			{
 				i_self_destruct = false;
 				frags--;
-				if ( frags < 0 ) frags = 0;
+				if ( frags < 0 )
+					frags = 0;
 			}
 		}
 		else if ( attackerIndex != NO_ATTACKER && _game->Auto[attackerIndex].GetTeam() != team )

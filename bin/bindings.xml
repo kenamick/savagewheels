@@ -85,9 +85,9 @@
 	<right>SDLK_RIGHT</right>
 	<accelerate>SDLK_UP</accelerate>
 	<break>SDLK_DOWN</break>
-	<laymine>SDLK_RALT</laymine>
-	<honk>SDLK_RCTRL</honk>
-	<self-destruct>SDLK_DELETE</self-destruct>
+	<laymine>SDLK_INSERT</laymine>
+	<honk>SDLK_DELETE</honk>
+	<self-destruct>SDLK_BACKSPACE</self-destruct>
 </player1>
 
 <player2>
@@ -95,9 +95,9 @@
 	<right>SDLK_d</right>
 	<accelerate>SDLK_w</accelerate>
 	<break>SDLK_s</break>
-	<laymine>SDLK_LSHIFT</laymine>
-	<honk>SDLK_SPACE</honk>
-	<self-destruct>SDLK_TAB</self-destruct>
+	<laymine>SDLK_t</laymine>
+	<honk>SDLK_q</honk>
+	<self-destruct>SDLK_v</self-destruct>
 </player2>
 
 </bindings>
