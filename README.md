@@ -24,7 +24,7 @@ All drivers have background stories which are revealed when playing the campaign
 
 # How to play
 
-Please check the [Readme.html](bin/Readme.html) for additional game information.
+Please check the [Readme.html](http://htmlpreview.github.io/?https://github.com/petarov/savagewheels/blob/master/bin/Readme.html) for additional game information.
 
 # Used Libraries 
   * [libSDL](http://www.libsdl.org/) - Simple DirectMedia Layer is a cross-platform multimedia library.
