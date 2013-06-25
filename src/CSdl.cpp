@@ -933,18 +933,16 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 	this->_game = game;
 	ASSERT( _game != NULL );
 
-	LOG("Initializing SDL ..." );
-
-	if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 )
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		fprintf (stderr, "Couldn't initialize SDL: %s\n", SDL_GetError() );
-		LOG( "SDL Error: ...failed to open SDL :  " << SDL_GetError() );
+		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+		LOG("SDL Error: ...failed to open SDL :  " << SDL_GetError());
 		return false;
 	}
 
 	// get video capabilities
-	SDL_VideoDriverName( temp, 256 );
-	LOG( "Video Driver: " << temp );
+	SDL_VideoDriverName(temp, 256);
+	LOG("Video Driver: " << temp);
 	
 	SDL_VideoInfo *vid_info =(SDL_VideoInfo *) SDL_GetVideoInfo();
 	LOG( "Total Video Memory: " << vid_info->video_mem );
@@ -963,7 +961,7 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 // 	else
 // 		flags |= SDL_SWSURFACE;
 
-	// init na glawanata powyrhnost i video rejim
+	// initialize main video surface
 	Uint32 flags = 0 ;
 	
 	if ( bFullscreen )
@@ -1130,6 +1128,12 @@ bool CSdl::InitializeSound()
 
 #elif WITH_SDLMIXER
     LOG("Initializing SDL_mixer ..." );
+
+	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)
+	{
+		LOG( "SDL Error: ...failed to open SDL_INIT_AUDIO:  " << SDL_GetError() );
+		// XXX Should we continue?
+	}
 
     int flags_required = MIX_INIT_MOD;
     int flags_supported = Mix_Init(flags_required);
