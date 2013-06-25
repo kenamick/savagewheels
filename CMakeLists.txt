@@ -111,7 +111,7 @@ endif()
 ## SOUND libraries
 if (SOUND STREQUAL "NO")
     message(STATUS "Found SOUND=NO option. Compiling without sound support ...")
-else()
+elseif(SOUND STREQUAL "FMOD")
     # FModEx API
 
 	# check if path to FMod is defined
@@ -175,11 +175,17 @@ else()
 		    DESTINATION ${INSTALL_DIR})
 	endif()
 
+else()
+    # SDL_mixer API
+    find_package(SDL_mixer REQUIRED)
+    
+    add_definitions(-DWITH_SDLMIXER)
+    
 endif()
 
 ### link required libraries
 
-target_link_libraries(savagewheels ${SDL_LIBRARY} ${FMOD_LIBRARY})
+target_link_libraries(savagewheels ${SDL_LIBRARY} ${FMOD_LIBRARY} ${SDLMIXER_LIBRARY})
 
 ### additional defines
 
