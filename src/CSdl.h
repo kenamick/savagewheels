@@ -85,7 +85,7 @@ public:
 		: buffered(false),
 		  play_channel(-1),
 		  loaded(false),
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 		  sound(NULL),
 #endif
 		  isMusic(false) {};
@@ -96,7 +96,9 @@ public:
 	int play_channel;	// unbuffered sounds do not need separate channels
 	bool loaded;
 #ifdef WITH_FMOD
-	FMOD_SOUND   *sound;
+	FMOD_SOUND *sound;
+#elif WITH_SDLMIXER
+	Mix_Chunk *sound;
 #endif
 	bool isMusic;		// is this a music type of sound?
 	

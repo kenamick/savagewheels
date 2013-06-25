@@ -49,7 +49,8 @@ CSdl::CSdl()
 	_yJoystick( ANALOG_THRESHOLD ),
 	JoystickHatState( SDL_HAT_CENTERED ),
 	mouse_lbutton( MOUSE_BUTTON_UNPRESSED ),
-	mouse_rbutton( MOUSE_BUTTON_UNPRESSED )
+	mouse_rbutton( MOUSE_BUTTON_UNPRESSED ),
+	bsound_initialized(false)
 {
 
 	keys = SDL_GetKeyState(NULL);
@@ -70,20 +71,20 @@ void CSdl::Close()
 	LOG("Closing CSdl ...");
 
 	// free all sounds
-#ifdef WITH_FMOD	
 	if ( bsound_initialized )
 	{
-		FMOD_RESULT result;
+		LOG("Releasing game sounds... ");
 
-		LOG("FModEx: Closing...");
-		LOG("FModEx: Releasing game sounds... ");
 		for ( Uint32 i = 0; i < MAX_SOUNDS; i++ )
 		{
 			if ( sounds[i].loaded )
 				sounds[i].Release();
 		}
 
-		result = FMOD_SoundGroup_Release(fmod_groupSounds);
+#ifdef WITH_FMOD
+		LOG("FModEx: Closing...");
+
+		FMOD_RESULT result = FMOD_SoundGroup_Release(fmod_groupSounds);
 		IsFModOK(result);
 		result = FMOD_SoundGroup_Release(fmod_groupMusic);
 		IsFModOK(result);
@@ -92,8 +93,11 @@ void CSdl::Close()
 	    IsFModOK(result);
 	    result = FMOD_System_Release(fmod_system);
 	    IsFModOK(result);
-	}
+#elif WITH_SDLMIXER
+		LOG("SDL_mixer: Closing...");
+		Mix_Quit();
 #endif
+	}
 
 #ifdef FONT_TTF
 	TTF_CloseFont( font_ttf );
@@ -1080,8 +1084,6 @@ bool CSdl::InitializeSound()
 			IsFModOK(result);
 		}
 #endif
-		int mixrate = getenv("SW_SND_22KHZ") && !strcmp( getenv("SW_SND_22KHZ"), "1" ) ? 22050 : 44100;
-		// mixrate ???
 
 		result = FMOD_System_Init(fmod_system, 32, FMOD_INIT_NORMAL, NULL);
 		if(!IsFModOK(result))
@@ -1092,11 +1094,10 @@ bool CSdl::InitializeSound()
 		else
 		{
 			// Get driver information
-
 			int driver = -1;
 			result = FMOD_System_GetDriver(fmod_system, &driver);
-			if (IsFModOK(result)) {
-
+			if (IsFModOK(result))
+			{
 				char driver_name[255];
 
 				result = FMOD_System_GetDriverInfo(fmod_system, driver, driver_name, 255, NULL);
@@ -1126,6 +1127,52 @@ bool CSdl::InitializeSound()
 			volume_music = CSdl::GetDefaultVolume();
 		}
 	}
+
+#elif WITH_SDLMIXER
+    LOG("Initializing SDL_mixer ..." );
+
+    int flags_required = MIX_INIT_MOD;
+    int flags_supported = Mix_Init(flags_required);
+    if(flags_supported & flags_required != flags_required) {
+    	LOG("SDL_mixer failed to initialize! Game will start without sound.");
+    	LOG("SDL_mixer error: " << Mix_GetError());
+    }
+    else
+    {
+		int mixrate = getenv("SW_SND_22KHZ")
+				&& !strcmp( getenv("SW_SND_22KHZ"), "1" ) ? 22050 : 44100;
+
+		/* initialize sdl mixer, open up the audio device */
+		if (Mix_OpenAudio(mixrate, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+			LOG("SDL_mixer failed to initialize!.");
+			LOG("SDL_mixer error: " << Mix_GetError());
+		}
+		else
+		{
+			// Get specs information
+			int audio_rate;
+			int audio_channels;
+			Uint16 audio_format;
+
+			if (0 != Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels)) {
+				int bits = audio_format & 0xFF;
+				int sample_size = bits / 8 + audio_channels;
+				int rate = audio_rate;
+
+				LOG("SDL_mixer: Opened audio at " << audio_rate << " Hz " << bits << " bit "
+						<< (audio_channels > 1 ? "stereo" : "mono"));
+			}
+
+			LOG("SDL_mixer initialized successfully.");
+
+			bsound_initialized = true;
+
+			// set default volume
+			volume_sound = CSdl::GetDefaultVolume();
+			volume_music = CSdl::GetDefaultVolume();
+		}
+    }
+
 #else
 
 	// Nothing else is supported for sound right now.

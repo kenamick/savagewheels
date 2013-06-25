@@ -67,8 +67,10 @@
 #include "SDL.h"
 //#include "sdl/sdl_ttf.h"
 #ifdef WITH_FMOD
-  #include "fmod.h"
-  #include "fmod_errors.h"
+#	include "fmod.h"
+#	include "fmod_errors.h"
+#elif WITH_SDLMIXER
+#	include "SDL_mixer.h"
 #endif
 // ---
 
