@@ -1594,7 +1594,7 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool isMusic )
 		return -1;
 
 	static int		cur_channel	= 0;		// TODO: remove the 'static'
-	Uint32			index		= -1;
+	Uint32			index		= 0;
 	CSound			*ptr_snd	= sounds;
 	bool			bsnd_loaded	= false;
 
@@ -1646,6 +1646,8 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool isMusic )
 			FMOD_Sound_SetLoopCount(ptr_snd->sound, 0);
 
 #elif WITH_SDLMIXER
+
+			LOG("..loading sound file : " << filename);
 
 			if (isMusic)
 			{
@@ -1760,10 +1762,10 @@ Mix_Chunk* CSdl::LoadWav( char *filename, long file_offset, Uint32 file_size )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::PlaySound( int snd_index, int position )
 {
-#ifdef WITH_FMOD
 	if ( !bsound_initialized || GetSoundVolume() <= 0 )
 		return;
 
+#ifdef WITH_FMOD
 	// calculate sound position pan
 	//	A left/right pan level, from -1.0 to 1.0 inclusive.
 	// -1.0 = Full left, 0.0 = center, 1.0 = full right.
@@ -1804,6 +1806,25 @@ void CSdl::PlaySound( int snd_index, int position )
 		FMOD_System_PlaySound(fmod_system, FMOD_CHANNEL_REUSE, sounds[snd_index].sound, 0, &channel);
 		FMOD_Channel_SetPan(channel, pos);
 	}
+
+#elif WITH_SDLMIXER
+
+	float pos = 0.0f;
+
+	if ( position != -1 )
+	{
+		pos = fRangeGetXY(position, 0, 640, -1.0f, 1.0f);
+ 	}
+
+//	if ( sounds[snd_index].buffered ) {
+		int channel = Mix_PlayChannel(-1, sounds[snd_index].sound, 0);
+//	}
+//	else
+//	{
+//		Mix_HaltChannel( sounds[snd_index].play_channel );
+//		Mix_PlayChannel( sounds[snd_index].play_channel, sounds[snd_index].sound, 0 );
+//	}
+
 #endif
 }
 
@@ -1814,10 +1835,10 @@ void CSdl::PlaySound( int snd_index, int position )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::PlayMusic(int snd_index, bool looped)
 {
-#ifdef WITH_FMOD
 	if ( !bsound_initialized || GetMusicVolume() <= 0 )
 		return;
 
+#ifdef WITH_FMOD
 	FMOD_RESULT result;
 
 	DBG("Playing music idx " << snd_index);
@@ -1842,6 +1863,11 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 //	FM_OK(result);
 	result = FMOD_Channel_SetPaused(fmod_musicChannel, 0 /* FALSE */);
 	FM_OK(result);
+
+#elif WITH_SDLMIXER
+
+	Mix_PlayMusic(sounds[snd_index].music, looped ? -1 : 0);
+
 #endif
 }
 
@@ -1852,17 +1878,18 @@ void CSdl::PlayMusic(int snd_index, bool looped)
 ///////////////////////////////////////////////////////////////////////
 void CSdl::StopMusic()
 {
-#ifdef WITH_FMOD
-	DBG("StopMusic");
 	if ( !bsound_initialized )
 		return;
 
+#ifdef WITH_FMOD
 	if (fmod_musicChannel != NULL )
 	{
 		FMOD_RESULT result = FMOD_Channel_Stop(fmod_musicChannel);
 		FM_OK(result);
 //		fmod_musicChannel = NULL;
 	}
+#elif WITH_SDLMIXER
+	Mix_HaltMusic();
 #endif
 }
 
@@ -1873,10 +1900,10 @@ void CSdl::StopMusic()
 ///////////////////////////////////////////////////////////////////////
 bool CSdl::IsMusicPlaying()
 {
-#ifdef WITH_FMOD
 	if ( !bsound_initialized )
 		return false;
 
+#ifdef WITH_FMOD
 	FMOD_RESULT result;
 	FMOD_BOOL 	is_playing = 0;
 
@@ -1889,6 +1916,9 @@ bool CSdl::IsMusicPlaying()
 			return (bool) is_playing;
 		}
 	}
+
+#elif WITH_SDLMIXER
+	return Mix_PlayingMusic();
 #endif
 
 	return false;
@@ -1900,20 +1930,27 @@ bool CSdl::IsMusicPlaying()
 ///////////////////////////////////////////////////////////////////////
 void CSdl::SetMusicVolume( float new_vol )
 {
-#ifdef WITH_FMOD
 	if ( new_vol > CSdl::GetMaxVolume() )
 		new_vol = CSdl::GetMaxVolume();
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
 	volume_music = new_vol; // 0 - 256 range
-	float fineVol = fRangeGetXY(volume_music, 0.0f, CSdl::GetMaxVolume(), 0.0f, 1.0f);
 
+#ifdef WITH_FMOD
+	float fineVol = fRangeGetXY(volume_music, 0.0f, CSdl::GetMaxVolume(), 0.0f, 1.0f);
 	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
 
 	FMOD_RESULT result = FMOD_SoundGroup_SetVolume(fmod_groupMusic, fineVol);
 	FM_OK(result);
+#elif WITH_SDLMIXER
+	float fineVol = fRangeGetXY(volume_music, 0.0f, CSdl::GetMaxVolume(), 0.0f, (float)MIX_MAX_VOLUME);
+	DBG("Setting Music volume to " << volume_music << " / fine volume " << fineVol);
+
+	Mix_VolumeMusic((int)fineVol);
 #endif
+
+
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1922,15 +1959,15 @@ void CSdl::SetMusicVolume( float new_vol )
 ///////////////////////////////////////////////////////////////////////
  void CSdl::SetSoundVolume( float new_vol )
 {
-#ifdef WITH_FMOD
 	if ( new_vol > CSdl::GetMaxVolume() ) 
 		new_vol = CSdl::GetMaxVolume();
 	else if ( new_vol < 0 ) 
 		new_vol = 0;
 
 	volume_sound = new_vol;
-	float fineVol = fRangeGetXY(volume_sound, 0.0f, CSdl::GetMaxVolume(), 0.0f, 1.0f);
 
+#ifdef WITH_FMOD
+	float fineVol = fRangeGetXY(volume_sound, 0.0f, CSdl::GetMaxVolume(), 0.0f, 1.0f);
 	DBG("Setting Sound volume to " << volume_sound << " / fine volume " << fineVol);
 
 	FMOD_RESULT result = FMOD_SoundGroup_SetVolume(fmod_groupSounds, fineVol);
@@ -1942,6 +1979,11 @@ void CSdl::SetMusicVolume( float new_vol )
 //		result = FMOD_ChannelGroup_SetVolume(channelGroup, fineVol);
 //		FM_OK(result);
 //	}
+#elif WITH_SDLMIXER
+	float fineVol = fRangeGetXY(volume_sound, 0.0f, CSdl::GetMaxVolume(), 0.0f, (float)MIX_MAX_VOLUME);
+	DBG("Setting Sound volume to " << volume_sound << " / fine volume " << fineVol);
+
+	Mix_Volume(-1, (int)fineVol);
 #endif
 }
 
@@ -1953,7 +1995,7 @@ void CSdl::SetMusicVolume( float new_vol )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::ChangeSoundVolume( float s_vol ) 
 { 
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	SetSoundVolume( volume_sound + s_vol ); 
 #endif
 }
@@ -1965,7 +2007,7 @@ void CSdl::ChangeSoundVolume( float s_vol )
 ///////////////////////////////////////////////////////////////////////
 void CSdl::ChangeMusicVolume( float m_vol ) 
 { 
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	SetMusicVolume( volume_music + m_vol );
 #endif
 }
@@ -1987,26 +2029,6 @@ float CSdl::GetMaxVolume()
 {
 	return 255.0f;
 }
-
-/*///////////////////////////////////////////////////////////////////////
-// Name: PlaySound()
-// Desc:
-///////////////////////////////////////////////////////////////////////
-void CSdl::PlaySound( int snd_index )
-{
-
-	if ( !bsound_initialized ) return;
-
-	if ( sounds[snd_index].buffered )
-		Mix_PlayChannel( -1, sounds[snd_index].sound, 0 );
-	else
-	{
-		Mix_HaltChannel( sounds[snd_index].play_channel );
-		Mix_PlayChannel( sounds[snd_index].play_channel, sounds[snd_index].sound, 0 );
-	}
-}
-
-*/
 
 ///////////////////////////////////////////////////////////////////////
 // Name: Release()
