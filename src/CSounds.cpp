@@ -36,7 +36,7 @@ CSounds::CSounds()
   current_track( 0 ),
   music_stopped( false )
 {
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	memset( sounds, 0, sizeof(int) * NUM_SOUNDS );
 	memset( music, 0, sizeof(int) * NUM_MUSIX );
 #endif
@@ -48,7 +48,7 @@ CSounds::CSounds()
 //////////////////////////////////////////////////////////////////////
 bool CSounds::Initialize( CSdl *pSdl )
 {
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	this->_sdl = pSdl;
 	ASSERT( _sdl != NULL );
 
@@ -93,7 +93,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Play( CONST_SOUNDS snd_to_play )
 {
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	if ( _sdl )
 		_sdl->PlaySound( sounds[snd_to_play] );
 #endif
@@ -106,7 +106,7 @@ void CSounds::Play( CONST_SOUNDS snd_to_play )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Play( CONST_SOUNDS snd_to_play, int pos )
 {
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	if ( _sdl )
 		_sdl->PlaySound( sounds[snd_to_play], pos );
 #endif
@@ -119,7 +119,7 @@ void CSounds::Play( CONST_SOUNDS snd_to_play, int pos )
 //////////////////////////////////////////////////////////////////////
 void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 {
-#ifdef WITH_FMOD  
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 
 	if ( _sdl->GetMusicVolume() <= 0 )
 		return;
@@ -138,7 +138,7 @@ void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 //////////////////////////////////////////////////////////////////////
 void CSounds::StopMusic()
 {
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	if (music_stopped)
 		return;
 
@@ -166,7 +166,7 @@ void CSounds::StopMusic()
 //////////////////////////////////////////////////////////////////////
 void CSounds::CheckMusic()
 {
-#ifdef WITH_FMOD  
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	if ( !music_stopped )
 	{
 		if (!_sdl->IsMusicPlaying())

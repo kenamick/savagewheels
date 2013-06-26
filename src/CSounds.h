@@ -65,7 +65,7 @@ class CSounds
 private:
 	CSdl *_sdl;
 
-#ifdef WITH_FMOD
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	int sounds[NUM_SOUNDS];
 	int music[NUM_MUSIX];
 #endif
