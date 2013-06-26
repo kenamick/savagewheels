@@ -85,8 +85,11 @@ public:
 		: buffered(false),
 		  play_channel(-1),
 		  loaded(false),
-#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
+#if WITH_FMOD
 		  sound(NULL),
+#elif WITH_SDLMIXER
+		  sound(NULL),
+		  music(NULL),
 #endif
 		  isMusic(false) {};
 
@@ -99,6 +102,7 @@ public:
 	FMOD_SOUND *sound;
 #elif WITH_SDLMIXER
 	Mix_Chunk *sound;
+	Mix_Music *music;
 #endif
 	bool isMusic;		// is this a music type of sound?
 	
@@ -261,7 +265,7 @@ public:
 #ifdef WITH_FMOD
 	static bool IsFModOK(FMOD_RESULT result);
 #endif
-	int  LoadSound( const char *filename, bool buffered_sound, bool IsStream = false );
+	int  LoadSound( const char *filename, bool buffered_sound, bool isMusic = false );
 	void PlaySound( int snd_index, int position = -1 );
 	void PlayMusic( int snd_index, bool looped );
 	void StopMusic();

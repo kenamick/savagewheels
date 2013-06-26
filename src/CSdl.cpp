@@ -1588,25 +1588,27 @@ inline bool CSdl::IsFModOK(FMOD_RESULT result) {
 // Name: LoadSound()
 // Desc:
 ///////////////////////////////////////////////////////////////////////
-int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
+int CSdl::LoadSound( const char *filename, bool buffered_sound, bool isMusic )
 {
-#ifdef WITH_FMOD
 	if ( !bsound_initialized )
 		return -1;
 
 	static int		cur_channel	= 0;		// TODO: remove the 'static'
-	Uint32			index		= 0;
+	Uint32			index		= -1;
 	CSound			*ptr_snd	= sounds;
 	bool			bsnd_loaded	= false;
-	FMOD_RESULT		result;
 
 	while ( index < MAX_SOUNDS )
 	{
 		if ( !ptr_snd->loaded )
 		{
+
+#ifdef WITH_FMOD
+
+			FMOD_RESULT	result;
 			FMOD_SOUNDGROUP *bindingGroup;
 
-			if (IsStream)
+			if (isMusic)
 			{
 				// FMOD_ACCURATETIME - for accurate Sound::getLength/Channel::setPosition
 				// on VBR MP3, and MOD/S3M/XM/IT/MIDI files.
@@ -1643,11 +1645,37 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 			// disable loop by default
 			FMOD_Sound_SetLoopCount(ptr_snd->sound, 0);
 
+#elif WITH_SDLMIXER
+
+			if (isMusic)
+			{
+				// Music module
+				ptr_snd->music = Mix_LoadMUS(filename);
+				if (!ptr_snd->music) {
+					LOG("...failed to load music file : " << filename);
+					LOG("SDL_mixer error: " << Mix_GetError());
+					return -1;
+				}
+
+			}
+			else
+			{
+				// WAV file
+				ptr_snd->sound = Mix_LoadWAV(filename);
+				if (!ptr_snd->sound) {
+					LOG("...failed to load sound file : " << filename);
+					LOG("SDL_mixer error: " << Mix_GetError());
+					return -1;
+				}
+			}
+
+#endif
+
 			if ( !buffered_sound )
 			{
 				/*
 				 * FIXME:
-				 * This does not seem to work as intended since FMod Ex !
+				 * This does not seem to work as intended with FMod Ex !
 				 * Find another way to reserve a channel instead of using pure int indexes.
 				 */
 				ptr_snd->buffered = false;
@@ -1659,7 +1687,7 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 				ptr_snd->buffered = true;
 			}
 			
-			ptr_snd->isMusic = IsStream;
+			ptr_snd->isMusic = isMusic;
 			ptr_snd->loaded = true;
 
 			bsnd_loaded = true;
@@ -1670,16 +1698,13 @@ int CSdl::LoadSound( const char *filename, bool buffered_sound, bool IsStream )
 		ptr_snd++;
 	}
 
-	if ( !bsnd_loaded ) 
+	if ( !bsnd_loaded )
 	{
 		LOG("Sound load error: No slots available!");
 		return -1;
 	}
 
 	return index;
-#else
-	return -1;
-#endif
 }
 
 
@@ -1992,11 +2017,24 @@ void CSound::Release()
 #ifdef WITH_FMOD
 	if ( sound )
 	{
-		DBG( "Releasing FMod sample data ..." );
+		DBG( "Releasing FMod sound ..." );
 		FMOD_RESULT result = FMOD_Sound_Release(sound);
 		FM_OK(result);
-
 		loaded = false;
 	}
+#elif WITH_SDLMIXER
+	if ( sound )
+	{
+		DBG( "Releasing SDL_mixer sound ..." );
+		Mix_FreeChunk(sound);
+	}
+	else if ( music )
+	{
+		DBG( "Releasing SDL_mixer music ..." );
+		// Free the loaded music. If music is playing it will be halted.
+		Mix_FreeMusic(music);
+	}
+
+	loaded = false;
 #endif
 }
