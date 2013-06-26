@@ -1772,7 +1772,6 @@ void CSdl::PlaySound( int snd_index, int position )
 	// Default = 0.0.
 
 	float pos = 0.0f;
-
 	if ( position != -1 )
 	{
 		pos = fRangeGetXY(position, 0, 640, -1.0f, 1.0f);
@@ -1809,15 +1808,19 @@ void CSdl::PlaySound( int snd_index, int position )
 
 #elif WITH_SDLMIXER
 
-	float pos = 0.0f;
-
+	Uint8 left_pos = 127;
+	Uint8 right_pos = 127;
 	if ( position != -1 )
 	{
-		pos = fRangeGetXY(position, 0, 640, -1.0f, 1.0f);
+		right_pos = (Uint8)fRangeGetXY(position, 0, 640, 0.0f, 255.0);
+		left_pos = 255 - right_pos;
  	}
 
 //	if ( sounds[snd_index].buffered ) {
 		int channel = Mix_PlayChannel(-1, sounds[snd_index].sound, 0);
+		if (position != -1) {
+			Mix_SetPanning(channel, left_pos, right_pos);
+		}
 //	}
 //	else
 //	{
