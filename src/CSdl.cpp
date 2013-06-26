@@ -1076,7 +1076,7 @@ bool CSdl::InitializeSound()
 
 #ifdef LINUX_BUILD
 		// ALSA is preferred for FMod on Debian
-		if ( getenv("SW_SND_ALSA") && !strcmp( getenv("SW_SND_ALSA"), "1" ) )
+		if ( getenv("SW_SND_ALSA") && !strncmp(getenv("SW_SND_ALSA"), "1", 1) )
 		{
 			result = FMOD_System_SetOutput(fmod_system, FMOD_OUTPUTTYPE_ALSA);
 			IsFModOK(result);
@@ -1144,7 +1144,7 @@ bool CSdl::InitializeSound()
     else
     {
 		int mixrate = getenv("SW_SND_22KHZ")
-				&& !strcmp( getenv("SW_SND_22KHZ"), "1" ) ? 22050 : 44100;
+				&& !strncmp(getenv("SW_SND_22KHZ"), "1", 1) ? 22050 : 44100;
 
 		/* initialize sdl mixer, open up the audio device */
 		if (Mix_OpenAudio(mixrate, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {

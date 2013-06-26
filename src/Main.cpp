@@ -68,28 +68,28 @@ int main( int argc, char *argv[] )
 
 	if (argc > 1) {
 		for (int i = 1; i < argc; i++) {
-			if (!strcmp(argv[i], "-wnd")) {
+			if (!strncmp(argv[i], "-wnd", 4)) {
 				fullscreen = false;
 				continue;
-			} else if (!strcmp(argv[i], "-sw")) {
+			} else if (!strncmp(argv[i], "-sw", 3)) {
 				hardware_support = false;
 				continue;
 			}
 
-			if (!strcmp(argv[i], "-force-fullscreen")
-					|| !strcmp(argv[i], "-fullscreen")) {
+			if (!strncmp(argv[i], "-force-fullscreen", 17)
+					|| !strncmp(argv[i], "-fullscreen", 11)) {
 				fullscreen = true;
 				continue;
 			}
 
 #ifdef LINUX_BUILD
-			if (!strcmp(argv[i], "-snd_alsa")) {
+			if (!strncmp(argv[i], "-snd_alsa", 9)) {
 				/*
 				 * On the majority Linux distros this seems to be required !
 				 */
 				setenv("SW_SND_ALSA", "1", 0);
 				continue;
-			} else if (!strcmp(argv[i], "-snd_22khz")) {
+			} else if (!strncmp(argv[i], "-snd_22khz", 10)) {
 				/*
 				 * 44KHz somehow seems to be a problem for FMod on Linux
 				 */
