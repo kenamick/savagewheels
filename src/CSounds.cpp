@@ -48,9 +48,10 @@ CSounds::CSounds()
 //////////////////////////////////////////////////////////////////////
 bool CSounds::Initialize( CSdl *pSdl )
 {
-#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
-	this->_sdl = pSdl;
 	ASSERT( _sdl != NULL );
+	this->_sdl = pSdl;
+
+#if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 
 #define LOAD_SOUND( container, name, buffered ) if ( (sounds[container] = _sdl->LoadSound( name, buffered )) == -1 ) { \
 	LOG( "Failed to load " << name << " ! "); \
@@ -120,7 +121,6 @@ void CSounds::Play( CONST_SOUNDS snd_to_play, int pos )
 void CSounds::Play( CONST_MUSIC music_to_play, bool looped )
 {
 #if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
-
 	if ( _sdl->GetMusicVolume() <= 0 )
 		return;
 
@@ -151,15 +151,6 @@ void CSounds::StopMusic()
 #endif
 }
 
-
-//void CSounds::FadeMusic( int milliseconds )
-//{
-//#ifdef WITH_FMOD
-//	StopMusic();
-//#endif
-//}
-
-
 //////////////////////////////////////////////////////////////////////
 // Name: CheckMusic()
 // Desc: Check if (current) music has finished playing
@@ -183,19 +174,3 @@ void CSounds::CheckMusic()
 	}
 #endif
 }
-
-
-////////////////////////////////////////////////////////////////////////
-//// Name: setMusicVolume()
-//// Desc:
-////////////////////////////////////////////////////////////////////////
-//void CSounds::setMusicVolume( int volume )
-//{
-//#ifdef WITH_FMOD
-//	for ( int i = 0; i < NUM_MUSIX; i++ )
-//	{
-//		if ( music[i] )
-//			FMUSIC_SetMasterVolume( music[i], volume );
-//	}
-//#endif
-//}
