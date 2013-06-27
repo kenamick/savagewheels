@@ -110,7 +110,7 @@ endif()
 
 ## SOUND libraries
 if (SOUND STREQUAL "NO")
-    message(STATUS "Found SOUND=NO option. Compiling without sound support ...")
+    message(STATUS "Found SOUND=NO option. Compiling without sound support!")
 elseif(SOUND STREQUAL "FMOD")
     # FModEx API
 
@@ -178,9 +178,8 @@ elseif(SOUND STREQUAL "FMOD")
 else()
     # SDL_mixer API
     find_package(SDL_mixer REQUIRED)
-    
     add_definitions(-DWITH_SDLMIXER)
-    
+    set(SOUND "SDL_MIXER")
 endif()
 
 ### link required libraries
@@ -257,10 +256,14 @@ if (${CPACK_GENERATOR} STREQUAL "DEB")
 	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt")
 	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCH}) 
 	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6, libsdl1.2debian (>= 1.2.11)")
+    # require SDL_mixer if support is enabled
+    if(SOUND STREQUAL "SDL_MIXER")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libsdl-mixer1.2 (>= 1.2.12)")
+    endif()
 endif()
 
-set(CPACK_RESOURCE_FILE_LICENSE  "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_RESOURCE_FILE_README  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #set(CPACK_INSTALLED_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/bin;/.")
 #set(CPACK_IGNORE_FILES 
 #"~$"
