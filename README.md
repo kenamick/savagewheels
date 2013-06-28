@@ -27,6 +27,12 @@ All drivers have background stories which are revealed when playing the campaign
 Please check the [Readme.html](http://htmlpreview.github.io/?https://github.com/petarov/savagewheels/blob/master/bin/Readme.html) for additional game information.
 
 # Used Libraries 
-  * [libSDL](http://www.libsdl.org/) - Simple DirectMedia Layer is a cross-platform multimedia library.
-  * [TinyXML](http://www.grinninglizard.com/tinyxml/) - TinyXML is a simple, small, C++ XML parser that can be easily integrating into other programs.
-  * [FMod Ex](http://www.fmod.org/fmod-sales.html) - Audio engine : FMOD Sound System by Firelight Technologies  
+  * Graphihcs
+    * [libSDL](http://www.libsdl.org/) - Simple DirectMedia Layer is a cross-platform multimedia library.
+  * XML
+    * [TinyXML](http://www.grinninglizard.com/tinyxml/) - TinyXML is a simple, small, C++ XML parser that can be easily integrating into other programs.
+  * Sound (Compiled with SDL_mixer)
+    * [SDL_mixer](http://www.libsdl.org/projects/SDL_mixer/) - SDL_mixer is a sample multi-channel audio mixer library.
+    * [libmikmod](http://mikmod.shlomifish.org/) - Mikmod is a module player and library supporting many formats, including mod, s3m, it, and xm.
+  * Sound (Compiled with FModEx)
+    * [FMod Ex](http://www.fmod.org/fmod-sales.html) - Audio engine : FMOD Sound System by Firelight Technologies  
