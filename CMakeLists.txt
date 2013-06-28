@@ -180,6 +180,25 @@ else()
     find_package(SDL_mixer REQUIRED)
     add_definitions(-DWITH_SDLMIXER)
     set(SOUND "SDL_MIXER")
+
+	# Copy SDL_mixer.dll and libmikmod-2.dll to installation directory
+	if (WIN32)	
+		INSTALL(FILES "${SDL_MIXER_LIBRARIES}" DESTINATION ${INSTALL_DIR})	
+		
+		# Find mikmod DLL for playing music
+		find_library(SDL_MIXER_MIKMOD_LIBRARY
+			NAMES libmikmod-2
+			HINTS
+				ENV SDLMIXERDIR
+				ENV SDLDIR
+			PATH_SUFFIXES lib)
+			
+		if (NOT SDL_MIXER_MIKMOD_LIBRARY)
+			message(STATUS "SDL_mixer libmikmod-2 dependency was NOT FOUND! Game will run WITHOUT music.")
+		endif()
+		
+		INSTALL(FILES "${SDL_MIXER_MIKMOD_LIBRARY}" DESTINATION ${INSTALL_DIR})	
+	endif()
 endif()
 
 ### link required libraries
