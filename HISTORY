@@ -2,7 +2,7 @@ Savage Wheels Release HISTORY
 -----------------------------
 
 V1.6 Release
-  * added support for SDL_mixer sound library.
+  * added support for SDL_mixer sound library. It is now the default sound library used.
 
 V1.5 Release
   * improved vehicle damage balancing.
