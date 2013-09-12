@@ -1,8 +1,8 @@
 TODOs
 ------------------------------------------------------------------------------
-* fix physics (or AI) problem with blocking vehicles
-* add SDL_mixer support instead of FMod 
+* The in-game menu is only accessible via the mouse. Support for keyboard should be added.
 * implement gamepad (+feedback) support
+* fix physics (or AI) problem with blocking vehicles
 
 Nice to have
 ------------------------------------------------------------------------------
@@ -13,6 +13,7 @@ Nice to have
 
 Done
 ------------------------------------------------------------------------------
+[done] add SDL_mixer support instead of FMod 
 [done] remove pstdint.h dependency (Windows platforms)
 [done] revise game sounds
 [done] clean-up code (remove externs)
