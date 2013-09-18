@@ -1,6 +1,9 @@
 _.o0 Savage Wheels installation instructions 0o._
 
-Last updated on 28 Jun 2013
+Last updated on 22 Sep 2013
+
+Arch Linux users may use the PKGBUILD in Arch User Repository (AUR) at:
+https://aur.archlinux.org/packages/savagewheels/
 
 1) Supported platforms
   * Linux x86/x64 - Tested on Archlinux/Ubuntu/Debian
@@ -40,9 +43,9 @@ autos/, graphics/ and  sounds/.
    	$ ./build.sh
    
    	d) Go to the 'release/' subfolder. Extract the produced archive file, 
-   	e.g., savagewheels-1.5.0-Linux-x64.sh, to your (desired) Games folder.
+   	e.g., savagewheels-1.6.0-Linux-x64.sh, to a desired location.
    	
-	e) Start the game run:
+	e) To start the game run:
 	$ ./savagewheels  
 	or
 	$ ./run.sh
@@ -91,7 +94,7 @@ autos/, graphics/ and  sounds/.
 	After all required packages are installed build the makefile by running:
 	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DM32=1
 
-3.4) Packaging
+3.3) Packaging
 
 	A self-extracting STGZ file will be created by default when running:
 	$ cpack
@@ -117,7 +120,7 @@ autos/, graphics/ and  sounds/.
 	  http://www.libsdl.org/projects/SDL_mixer/.
   or
     - FMod Ex API 4.x - Download and install the FMOD Ex API installer EXE 
-	  from www.fmod.org.
+    	  from www.fmod.org.
 	
 4.2) Compile & Build
 
@@ -136,9 +139,9 @@ autos/, graphics/ and  sounds/.
 	> cpack
 
 	f) Extract the produced archive file, e.g., 
-	savagewheels-1.5.0-Windows-x86.tar.gz to your desired Games folder.
+	savagewheels-1.6.0-Windows-x86.tar.gz to your desired Games folder.
 	
-	g) Start the game with:
+	g) To start the game run:
 	> savagewheels  
 
 4.2.1) Sound libraries
@@ -161,16 +164,10 @@ autos/, graphics/ and  sounds/.
 4.2.1.3) No sound
 
 	To build without sound & music run:
-	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DSOUND=NO	
+	> cmake -G "MinGW Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DSOUND=NO	
 	
-4.2.2) Compiling a Debug version
-
-To build a Debug version to catch a bug or something use the following:
-
-	$ cmake -G "<?> Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Debug
-
 4.3) Packaging
 
 	A tar.gz file will be created by default when running:
-	$ cpack
+	> cpack
 	after the build process has finished.
