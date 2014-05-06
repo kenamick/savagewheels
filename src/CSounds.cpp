@@ -48,7 +48,7 @@ CSounds::CSounds()
 //////////////////////////////////////////////////////////////////////
 bool CSounds::Initialize( CSdl *pSdl )
 {
-	ASSERT( _sdl != NULL );
+	ASSERT( pSdl != NULL );
 	this->_sdl = pSdl;
 
 #if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
