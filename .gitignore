@@ -1,4 +1,4 @@
-# Bin folders
+# bin folders
 bin/autos/
 bin/debug.html
 bin/graphics/
@@ -6,15 +6,22 @@ bin/pref
 bin/savagewheels
 bin/sound/
 
-# Build
+# build
 debug/*
 release/*
 libs/*
 
-# Eclipse
+# ide
 .classpath
 .settings/*
 .project
+compile_commands.json
+nbproject/*
 
-# Src
+# src
 src/Config.h
+
+# others
+debug.html
+
+
