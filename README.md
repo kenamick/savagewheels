@@ -1,8 +1,6 @@
 _.o0 SavageWheels 0o._
 ==========================
 
-Savage Wheels is a 2D car crashing arcade game similar to the old classic Destruction Derby. 
-
 Savage Wheels is a 2D car crashing arcade game, where up to 2 to 4 vehicles take part in a deadly tournament.The goal is to eliminate the other derby contestants. Players may choose from a variety of vehicles, each with it's unique characteristics like speed, acceleration, armor, damage and driver. Various bonuses may be collected during the match to increase the vehicle speed and damage or to repair it.
 
 Gameplay modes includes a campaign, hot-seat mode between two players or melee mode where other vehicles are controlled by a _fearsome_ game AI ;-).
