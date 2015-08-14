@@ -33,7 +33,7 @@ Arch Linux users may use the [PKGBUILD](https://aur.archlinux.org/packages/savag
   * libSDL >= `1.2.12` - You should install it using your package manager. (`libsdl1.2-dev`)
   * For music support either of:
     - SDL_Mixer >= `1.2.12` - You should install it using your package manager (`libsdl-mixer1.2-dev`).
-    - FMod Ex API `4.x` - Install using your package manager or get the package from FMod's website.
+    - FMod Ex API `4.x` - Install using your package manager or get the package from [FMod's website](fmod.org/download/).
 
 ## Compile & Build
 
@@ -125,10 +125,10 @@ This will create a `.deb` package that you can laster install. E.g.,
 
   * MinGW (Minimalist GNU for Windows). I have only tested with [Mingw32](http://www.mingw.org/).
   * CMake >= `2.8.x`
-  * libSDL >= `1.2.12` - Download the Development Libraries archive from http://www.libsdl.org/download-1.2.php.
+  * libSDL >= `1.2.12` - Download the [Development Libraries](http://www.libsdl.org/download-1.2.php) archive.
   * For music support either of:
-    - SDL_Mixer >= `1.2.12` - Download the binary `SDL_mixer-1.2.x-win32.zip` package and the source `SDL_mixer-1.2.x.zip` package from http://www.libsdl.org/projects/SDL_mixer/.
-    - FMod Ex API 4.x - Download and install the FMOD Ex API installer EXE from www.fmod.org.
+    - SDL_Mixer >= `1.2.12` - Download the binary [SDL_mixer-1.2.x-win32.zip](http://www.libsdl.org/projects/SDL_mixer/) package and the source [SDL_mixer-1.2.x.zip](http://www.libsdl.org/projects/SDL_mixer/) packages.
+    - FMod Ex API 4.x - Download and install the [FMOD Ex API](fmod.org/download/) installer EXE file.
 	
 ## Compile & Build
 
