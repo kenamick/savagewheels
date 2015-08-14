@@ -14,8 +14,7 @@ Get the latest source code from GitHub:
 
     git clone git://github.com/petarov/savagewheels.git savagewheels
 
-Get the data files archive `savagewheels-gamedata.tar.gz` from 
-https://code.google.com/p/savagewheels. 
+Get the data files archive [savagewheels-gamedata.tar.gz](https://github.com/petarov/savagewheels/releases/download/v1.4/savagewheels-gamedata.tar.gz).
 
 Extract the downloaded archive into the `bin/` folder. The archive should contain the following folders: 
   * autos/
