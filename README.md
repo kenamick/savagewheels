@@ -24,6 +24,7 @@ Please check the [Readme.html](http://htmlpreview.github.io/?https://github.com/
 # Developers
 
 Please check [HISTORY](HISTORY) for latest changes.
+
 Please check [INSTALL](INSTALL.md) for how to compile the game.
 
 # Open Source Libraries
