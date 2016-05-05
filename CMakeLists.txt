@@ -5,7 +5,7 @@ project(savagewheels)
 set(APP_ARCH "")
 set(APP_VER_MAJ "1")
 set(APP_VER_MIN "6")
-set(APP_VER_PATCH "0")
+set(APP_VER_PATCH "1")
 
 ### check for required libs
 find_package(SDL REQUIRED)
