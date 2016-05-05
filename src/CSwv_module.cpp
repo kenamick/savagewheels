@@ -206,8 +206,6 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 // 				<< " name: " << swv_file->pfiles[i].filename);
 //	}
 	
-	// set module filename
-	sprintf( swv_file->filename, "%s", filename );
 
 	if ( fp != NULL )
 	  fclose( fp );

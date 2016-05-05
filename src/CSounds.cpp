@@ -52,14 +52,31 @@ bool CSounds::Initialize( CSdl *pSdl )
 	this->_sdl = pSdl;
 
 #if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
+	String tmp (sys_datadir);
+        
+#define LOAD_SOUND( container, name, buffered)					\
+	do {									\
+		tmp.append("/").append(name);					\
+		sounds[container] =						\
+			_sdl->LoadSound( tmp.c_str(), buffered );		\
+		if ( sounds[container] == -1 ) {				\
+			LOG( "Failed to load " << name << " ! " );		\
+			return false;						\
+		}								\
+		tmp.resize(strlen(sys_datadir));				\
+	} while(0)        
 
-#define LOAD_SOUND( container, name, buffered ) if ( (sounds[container] = _sdl->LoadSound( name, buffered )) == -1 ) { \
-	LOG( "Failed to load " << name << " ! "); \
-	return false; }
-
-#define LOAD_MUSIC( container, name ) if ( (music[container] = _sdl->LoadSound( name, false, true )) == -1 ) { \
-	LOG( "Failed to load music " << name << " ! "); \
-	return false; }
+#define LOAD_MUSIC( container, name)						\
+	do {									\
+		tmp.append("/").append(name);					\
+		music[container] =						\
+			_sdl->LoadSound( tmp.c_str(), false, true );		\
+		if ( music[container] == -1 ) {					\
+			LOG( "Failed to load music " << name << " ! " );	\
+			return false;						\
+		}								\
+		tmp.resize(strlen(sys_datadir));				\
+	} while(0)
 
 	LOAD_SOUND( SND_CRASHLIGHT1, "sound/crash3.wav", true );
 	LOAD_SOUND( SND_CRASHLIGHT2, "sound/crash2.wav", true );

@@ -1300,9 +1300,6 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, Uint32 color_key, Uint8 alp
 	
 	SDL_Surface *sdl_surf = NULL;
 
-	char filename_buf[255];
-	sprintf( filename_buf, "../%s", filename );
-
 	if ( ( sdl_surf = SDL_LoadBMP( filename_buf )) == NULL )
 	{
 		LOG("...failed to load graphics from : " << filename_buf );
@@ -1341,8 +1338,21 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 	SDL_Surface  *sdl_surf	= NULL;						// temp surface
 	FILE		 *fp		= NULL;						// file pointer
 	SDL_RWops	 *sdl_rw	= NULL;						// sdl_read_write_operations
+	String tmp;
 
-	if ( ( fp = fopen( filename, "rb")) == NULL ) 
+#ifdef LINUX_BUILD
+	if ( filename[0] != '/' )
+	{
+	    tmp = String(sys_datadir).append("/autos/").append(filename);
+	}
+	else
+	{
+		tmp = String(filename);
+	}
+#else
+	tmp = String(filename);
+#endif
+	if ( ( fp = fopen( tmp.c_str(), "rb")) == NULL ) 
 	{
 		LOG("...failed to open file : " << filename );
 		return NULL;

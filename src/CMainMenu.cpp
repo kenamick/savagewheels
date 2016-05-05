@@ -1123,8 +1123,9 @@ void CMainMenu::SaveSettings()
 
 	FILE *fp = NULL;
 	char  header[3] = { 'S', 'W', 'P' };
+	String strPref(String(usr_cfgdir) + "/pref");
 
-	if ( ( fp = fopen( "pref", "wb" ) ) == NULL )
+	if ( ( fp = fopen( strPref.c_str(), "wb" ) ) == NULL )
 	{
 		AppendToLog( "Error writing to /pref file !" );
 		return;
@@ -1169,8 +1170,9 @@ void CMainMenu::LoadSettings()
 	FILE  *fp = NULL;
 	char  header[3];
 	bool  success = true;
+	String strPref(String(usr_cfgdir) + "/pref");
 
-	if ( ( fp = fopen( "pref", "rb" ) ) == NULL )
+	if ( ( fp = fopen( strPref.c_str(), "wb" ) ) == NULL )
 	{
 		AppendToLog( "Error opening /pref file !" );
 		success = false;
