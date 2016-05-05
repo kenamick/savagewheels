@@ -11,17 +11,28 @@ set(APP_VER_PATCH "0")
 find_package(SDL REQUIRED)
 
 ### Install targets (see: http://www.cmake.org/Wiki/CMake_RPATH_handling)
-if (NOT INSTALL_DIR)
-    set(INSTALL_DIR "./")
+if (UNIX)
+	include (GNUInstallDirs)
+else()
+	if (NOT INSTALL_DIR)
+		set(INSTALL_DIR "./")
+	endif()
+	set(CMAKE_INSTALL_BINDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_SBINDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LIBEXECDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_SYSCONFDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_SHAREDSTATEDIR	"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LOCALSTATEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LIBDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_INCLUDEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_OLDINCLUDEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_DATAROOTDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_DATADIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_INFODIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LOCALEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_MANDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_DOCDIR		"${INSTALL_DIR}")
 endif()
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
-
-# add the automatically determined parts of the RPATH
-SET(CMAKE_INSTALL_RPATH "${INSTALL_DIR}/")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 ### sources
 include_directories(src/)
@@ -115,7 +126,7 @@ elseif(SOUND STREQUAL "FMOD")
     # FModEx API
 
 	# check if path to FMod is defined
-	if(NOT DEFINED ${FMOD_PATH})
+	if(NOT DEFINED FMOD_PATH)
 		set(FMOD_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/fmod/api")
 	endif()
 
@@ -166,13 +177,15 @@ elseif(SOUND STREQUAL "FMOD")
 		
 		add_definitions(-DWITH_FMOD)
 		
-		add_custom_command(TARGET savagewheels POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-			${FMOD_LIBRARY_SO_PATH} 
-			$<TARGET_FILE_DIR:savagewheels>)
-			
-		INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}" 
-		    DESTINATION ${INSTALL_DIR})
+		if (WIN32)
+			add_custom_command(TARGET savagewheels POST_BUILD
+				COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+				"${FMOD_LIBRARY_SO_PATH}"
+				"$<TARGET_FILE_DIR:savagewheels>")
+
+			INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}"
+				DESTINATION "${INSTALL_DIR}")
+		endif()
 	endif()
 
 else()
@@ -236,15 +249,32 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/Config.h.in"
   "${PROJECT_SOURCE_DIR}/src/Config.h")
   
-INSTALL(TARGETS savagewheels RUNTIME DESTINATION ${INSTALL_DIR})
-INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" DESTINATION ${INSTALL_DIR})
+
+INSTALL(TARGETS savagewheels RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}")
+if (WIN32 AND NOT UNIX)
+	INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" DESTINATION "${INSTALL_DIR}")
+else()
+	configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/savagewheels.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/savagewheels.sh"
+		@ONLY)
+	INSTALL(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/savagewheels.sh"
+		DESTINATION "${CMAKE_INSTALL_BINDIR}" RENAME savagewheels)
+endif()
+
 INSTALL(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
     "${CMAKE_CURRENT_SOURCE_DIR}/HISTORY"
     "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
-    DESTINATION ${INSTALL_DIR})
-INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
-    DESTINATION ${INSTALL_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/LICENSE.mikmod.txt"
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/Readme.html"
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/README-SDL_mixer.txt"
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/README-SDL.txt"
+	DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+INSTALL(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/bindings.xml"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}")
+INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/help"
+    DESTINATION "${CMAKE_INSTALL_DOCDIR}/help"
     PATTERN "debug.html" EXCLUDE
     PATTERN "pref" EXCLUDE)
     
