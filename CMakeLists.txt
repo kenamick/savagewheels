@@ -310,7 +310,7 @@ include (InstallRequiredSystemLibraries)
 if (NOT CPACK_GENERATOR AND (UNIX AND NOT WIN32))
 	set(CPACK_GENERATOR "STGZ")
 else()
-	set(CPACK_GENERATOR "TGZ")
+	set(CPACK_GENERATOR "ZIP")
 endif()
 
 set(CPACK_PACKAGE_NAME "SavageWheels")
