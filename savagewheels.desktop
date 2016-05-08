@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=SavageWheels
+GenericName=Action/Arcade Game
+Version=1.6
+Type=Application
+Categories=Game;ActionGame;Racing;
+Keywords=Game;Arcade;2D;Cars;Racing
+Comment=2D car crashing game similar to the old classic Destruction Derby
+TryExec=savagewheels
+Exec=savagewheels
+Terminal=false
+Icon=sw1
