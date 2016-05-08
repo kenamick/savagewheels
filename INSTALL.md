@@ -1,12 +1,17 @@
-_.o0 Savage Wheels installation instructions 0o._
+.o0 Savage Wheels Installation Instructions 0o.
 ===================================================
 
-_Last updated on 14 Sep 2015_
+_Last updated on 08 May 2016_
 
 # Supported platforms
 
-  * Linux x86 or x64 - Tested on Archlinux, Ubuntu and Debian.
+  * Linux x86 or x64 - Tested on Arch Linux, Ubuntu and Debian.
   * Windows x86 or x64 - Tested on Windows XP, Vista and 2008R2.
+
+# Installation on Linux platforms
+
+  * **Arch Linux** users may install from [AUR](https://aur.archlinux.org/packages/savagewheels/).
+  * **Gentoo** users may install from the [packages repository](https://packages.gentoo.org/packages/games-arcade/savagewheels).
 
 # Required files
 
@@ -20,10 +25,6 @@ Extract the downloaded archive into the `bin/` folder. The archive should contai
   * autos/
   * graphics/
   * sounds/
-
-# Installation on Linux platforms
-
-Arch Linux users may use the [PKGBUILD](https://aur.archlinux.org/packages/savagewheels/) in Arch User Repository (AUR).
 
 ## Requirements
 
@@ -48,10 +49,6 @@ Arch Linux users may use the [PKGBUILD](https://aur.archlinux.org/packages/savag
  - To start the game run:
 
 ```bash	
-	$ ./savagewheels  
-```	
-or
-```bash	
 	$ ./run.sh
 ````
 	
@@ -62,7 +59,7 @@ If you experience problems with the automated `build.sh` script or you would lik
  - Go to the release/ sub folder and run:
 	
 ```bash	
-	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
+	$ cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_BUILD_STATIC=1
 ```
 
  - Build with:
