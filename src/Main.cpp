@@ -45,6 +45,13 @@
 
 #include "Main.h"
 
+const char *sys_datadir;
+const char *usr_cfgdir;
+const char *usr_datadir;
+
+char *ART_FILE;
+char *BINDINGS_FILE;
+
 int main( int argc, char *argv[] )
 {
 	bool hardware_support = true;
@@ -59,12 +66,88 @@ int main( int argc, char *argv[] )
 	 * ATI Mobility type of video cards.
 	 */
 	bool fullscreen = false;
+	String tmp;
 
 #ifdef LINUX_BUILD
+	sys_datadir = getenv("SAVAGEWHEELS_SYS_DATADIR");
+	if (sys_datadir == NULL)
+	{
+	    fprintf(stderr, "SAVAGEWHEELS_SYS_DATADIR not set.\n");
+	    return 1;
+	}
+	sys_datadir = strdup(sys_datadir);
+
+	usr_cfgdir = getenv("SAVAGEWHEELS_USR_CONFDIR");
+	if (usr_cfgdir == NULL)
+	{
+	    fprintf(stderr, "SAVAGEWHEELS_USR_CONFDIR not set.\n");
+	    return 1;
+	}
+	usr_cfgdir = strdup(usr_cfgdir);
+
+	usr_datadir = getenv("SAVAGEWHEELS_USR_DATADIR");
+	if (usr_datadir == NULL)
+	{
+	    fprintf(stderr, "SAVAGEWHEELS_USR_DATADIR not set.\n");
+	    return 1;
+	}
+	usr_datadir = strdup(usr_datadir);
+
+	if (sys_datadir == NULL || usr_cfgdir == NULL || usr_datadir == NULL)
+	{
+	    fprintf(stderr, "Insufficient memory.  Execution aborted.\n");
+	    return 1;
+	}
+
 	setenv("SDL_VIDEO_CENTERED", "1", 1);
 #else
+	sys_datadir = usr_cfgdir = usr_datadir = "./";
 	_putenv("SDL_VIDEO_CENTERED=1");
 #endif
+	int len;
+	len = snprintf(NULL, 0, "%s/graphics/gfxdata.kdf", sys_datadir);
+	if (len < 0)
+	{
+		fprintf(stderr,
+			"Unable to store '%s/graphics/gfxdata.kdf': %s\n",
+			sys_datadir, strerror(errno));
+		return 1;
+	}
+	if (len == INT_MAX)
+	{
+		fprintf(stderr, "Unable to store '%s/graphics/gfxdata.kdf': "
+			"Path too log\n", sys_datadir);
+		return 1;
+	}
+	ART_FILE = new (std::nothrow) char[len + 1];
+	if (ART_FILE == NULL)
+	{
+		fprintf(stderr, "Insufficent memory.  Execution aborted.\n");
+		return 1;
+	}
+	sprintf(ART_FILE, "%s/graphics/gfxdata.kdf", sys_datadir);
+
+	len = snprintf(NULL, 0, "%s/bindings.xml", usr_cfgdir);
+	if (len < 0)
+	{
+		fprintf(stderr,
+			"Unable to store '%s/bindings.xml': %s\n", usr_cfgdir,
+			strerror(errno));
+		return 1;
+	}
+	if (len == INT_MAX)
+	{
+		fprintf(stderr, "Unable to store '%s/bindings.xml': "
+			"Path too log\n", usr_cfgdir);
+		return 1;
+	}
+	BINDINGS_FILE = new (std::nothrow) char[len + 1];
+	if (BINDINGS_FILE == NULL)
+	{
+		fprintf(stderr, "Insufficent memory.  Execution aborted.\n");
+		return 1;
+	}
+	sprintf(BINDINGS_FILE, "%s/bindings.xml", usr_cfgdir);
 
 	if (argc > 1) {
 		for (int i = 1; i < argc; i++) {
@@ -106,7 +189,8 @@ int main( int argc, char *argv[] )
 	 * Load & Start Game
 	 */
 	  
-	OpenLog("debug.html");
+	tmp = String(usr_datadir).append("/debug.html");
+	OpenLog(tmp.c_str());
 	
 	CGame game;
 	game.Execute(fullscreen, hardware_support);

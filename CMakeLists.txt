@@ -1,67 +1,77 @@
 cmake_minimum_required (VERSION 2.8)
-project(savagewheels) 
+project(savagewheels)
 
 ### Defaults
 set(APP_ARCH "")
 set(APP_VER_MAJ "1")
 set(APP_VER_MIN "6")
-set(APP_VER_PATCH "0")
+set(APP_VER_PATCH "1")
 
 ### check for required libs
 find_package(SDL REQUIRED)
 
-### Install targets (see: http://www.cmake.org/Wiki/CMake_RPATH_handling)
-if (NOT INSTALL_DIR)
-    set(INSTALL_DIR "./")
+### Install targets
+if (UNIX)
+	include (GNUInstallDirs)
+else()
+	if (NOT INSTALL_DIR)
+		set(INSTALL_DIR "./")
+	endif()
+	set(CMAKE_INSTALL_BINDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_SBINDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LIBEXECDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_SYSCONFDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_SHAREDSTATEDIR	"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LOCALSTATEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LIBDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_INCLUDEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_OLDINCLUDEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_DATAROOTDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_DATADIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_INFODIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_LOCALEDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_MANDIR		"${INSTALL_DIR}")
+	set(CMAKE_INSTALL_DOCDIR		"${INSTALL_DIR}")
 endif()
-
-# when building, don't use the install RPATH already
-# (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
-
-# add the automatically determined parts of the RPATH
-SET(CMAKE_INSTALL_RPATH "${INSTALL_DIR}/")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 ### sources
 include_directories(src/)
 include_directories(tinyxml/)
 
 set(
-	SOURCES 
+	SOURCES
 	src/CBufferedReader.cpp
-	src/Bindings.cpp 
-	src/CDeadToy.cpp 
-	src/CKdf.cpp 
-	src/CSdl.cpp 
-	src/CSwv_module.cpp 
-	src/CVehicle.cpp 
-	src/Utils.cpp 
-	src/CAnimation.cpp 
-	src/CGame.cpp 
-	src/CMainMenu.cpp 
+	src/Bindings.cpp
+	src/CDeadToy.cpp
+	src/CKdf.cpp
+	src/CSdl.cpp
+	src/CSwv_module.cpp
+	src/CVehicle.cpp
+	src/Utils.cpp
+	src/CAnimation.cpp
+	src/CGame.cpp
+	src/CMainMenu.cpp
 	src/CSounds.cpp
 	src/CTimer.cpp
 	src/Main.cpp
 	tinyxml/tinystr.cpp
 	tinyxml/tinyxml.cpp
 	tinyxml/tinyxmlerror.cpp
-	tinyxml/tinyxmlparser.cpp	
+	tinyxml/tinyxmlparser.cpp
 )
 
 ### specify executable
-
 set(RES_FILES "")
 if(MINGW)
-    # include a Windows resource file
+        # include a Windows resource file
 	set(RES_FILES "src/res.rc")
 	set(CMAKE_RC_COMPILER_INIT windres)
 	ENABLE_LANGUAGE(RC)
 	SET(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-	
-	add_executable(savagewheels ${SOURCES} ${RES_FILES})	
+
+	add_executable(savagewheels ${SOURCES} ${RES_FILES})
 else()
-	add_executable(savagewheels ${SOURCES})	
+	add_executable(savagewheels ${SOURCES})
 endif()
 
 ### add required libarires
@@ -77,7 +87,7 @@ endif()
 ## SDL
 if (UNIX AND NOT WIN32)
 	# Linux
-	
+
 #	set(SDL_LIB_NAME "libSDL.so")
 #	find_library(
 #		SDL_LIBRARY_SO
@@ -85,27 +95,27 @@ if (UNIX AND NOT WIN32)
 #		PATHS "/usr/lib" "/usr/local/lib/"
 #		HINTS $ENV{SDLDIR} ${SDL_LIBRARY} "${CMAKE_CURRENT_SOURCE_DIR}/libs")
     add_definitions(`sdl-config --cflags`)
-    add_definitions(`sdl-config --libs`)	
+    add_definitions(`sdl-config --libs`)
 else()
 	# Windows
-	
+
 	set(SDL_LIB_NAME "SDL.dll")
-	
+
 	add_definitions(-lpthread)
 	include_directories(${SDL_INCLUDE_DIR})
 	link_directories($ENV{SDLDIR}\\lib)
 	set(SDL_LIBRARY_SO $ENV{SDLDIR}\\bin\\SDL.dll)
-	
+
 	message(STATUS "Found libSDL.so/DLL at ${SDL_LIBRARY}")
-	
+
     # copy the SDL DLL file to the install dir
     add_custom_command(TARGET savagewheels POST_BUILD
-    	COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+    	COMMAND ${CMAKE_COMMAND} -E copy_if_different
     	${SDL_LIBRARY_SO}
-    	$<TARGET_FILE_DIR:savagewheels>)  
-    	
+    	$<TARGET_FILE_DIR:savagewheels>)
+
     INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL.dll" DESTINATION ${INSTALL_DIR})
-		
+
 endif()
 
 ## SOUND libraries
@@ -114,99 +124,100 @@ if (SOUND STREQUAL "NO")
 elseif(SOUND STREQUAL "FMOD")
     # FModEx API
 
-	# check if path to FMod is defined
-	if(NOT DEFINED ${FMOD_PATH})
-		set(FMOD_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/fmod/api")
-	endif()
+    # check if path to FMod is defined
+    if(NOT DEFINED FMOD_PATH)
+            set(FMOD_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libs/fmod/api")
+    endif()
 
     add_definitions(-I${FMOD_PATH}/inc)
     link_directories(${FMOD_PATH}/lib)
 
-	if (UNIX AND NOT WIN32)
-		# Linux
-		
-		if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
-			set(FMOD_LIB_NAME "libfmodex64.so")
-			set(FMOD_SO_NAME "libfmodex64.so")
-		else()
-			set(FMOD_LIB_NAME "libfmodex.so")
-			set(FMOD_SO_NAME "libfmodex.so")
-		endif()		
-		
-		# just in case check also in the system folders
-		add_definitions(-I/usr/include/fmodex)
-	else()
-		# Windows
-		
-		set(FMOD_LIB_NAME "libfmodex.a")
-		if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
-			set(FMOD_SO_NAME "fmodex64.dll")
-		else()
-			set(FMOD_SO_NAME "fmodex.dll")
-		endif()
-	endif()
+    if (UNIX AND NOT WIN32)
+        # Linux
 
-	# add FMod Ex (if present)
-	find_library( 
-		FMOD_LIBRARY
-		NAMES ${FMOD_LIB_NAME}
-		PATHS "/usr/lib" "/usr/local/lib/"
-		HINTS "${FMOD_PATH}/lib")
-	
-	find_library(
-		FMOD_LIBRARY_SO_PATH
-		NAMES ${FMOD_SO_NAME}	
-		PATHS "/usr/lib" "/usr/local/lib/"
-		HINTS "${FMOD_PATH}" "${FMOD_PATH}/lib")
+        if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
+                set(FMOD_LIB_NAME "libfmodex64.so")
+                set(FMOD_SO_NAME "libfmodex64.so")
+        else()
+                set(FMOD_LIB_NAME "libfmodex.so")
+                set(FMOD_SO_NAME "libfmodex.so")
+        endif()
 
-	if (NOT FMOD_LIBRARY)
-		message(STATUS "FModEx lib - ${FMOD_LIB_NAME} not found! Will compile without sound support.")
-	else()
-		message(STATUS "Found FModEx lib at ${FMOD_LIBRARY}. Found FModEx DLL at ${FMOD_LIBRARY_SO_PATH}.")
-		
-		add_definitions(-DWITH_FMOD)
-		
-		add_custom_command(TARGET savagewheels POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-			${FMOD_LIBRARY_SO_PATH} 
-			$<TARGET_FILE_DIR:savagewheels>)
-			
-		INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}" 
-		    DESTINATION ${INSTALL_DIR})
-	endif()
+        # just in case check also in the system folders
+        add_definitions(-I/usr/include/fmodex)
+    else()
+        # Windows
+
+        set(FMOD_LIB_NAME "libfmodex.a")
+        if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
+                set(FMOD_SO_NAME "fmodex64.dll")
+        else()
+                set(FMOD_SO_NAME "fmodex.dll")
+        endif()
+    endif()
+
+    # add FMod Ex (if present)
+    find_library(
+            FMOD_LIBRARY
+            NAMES ${FMOD_LIB_NAME}
+            PATHS "/usr/lib" "/usr/local/lib/"
+            HINTS "${FMOD_PATH}/lib")
+
+    find_library(
+            FMOD_LIBRARY_SO_PATH
+            NAMES ${FMOD_SO_NAME}
+            PATHS "/usr/lib" "/usr/local/lib/"
+            HINTS "${FMOD_PATH}" "${FMOD_PATH}/lib")
+
+    if (NOT FMOD_LIBRARY)
+            message(STATUS "FModEx lib - ${FMOD_LIB_NAME} not found! Will compile without sound support.")
+    else()
+            message(STATUS "Found FModEx lib at ${FMOD_LIBRARY}. Found FModEx DLL at ${FMOD_LIBRARY_SO_PATH}.")
+
+            add_definitions(-DWITH_FMOD)
+
+            if (WIN32)
+                    add_custom_command(TARGET savagewheels POST_BUILD
+                            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                            "${FMOD_LIBRARY_SO_PATH}"
+                            "$<TARGET_FILE_DIR:savagewheels>")
+
+                    INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/${FMOD_SO_NAME}"
+                            DESTINATION "${INSTALL_DIR}")
+            endif()
+    endif()
 
 else()
+
     # SDL_mixer API
     find_package(SDL_mixer REQUIRED)
     add_definitions(-DWITH_SDLMIXER)
     set(SOUND "SDL_MIXER")
 
-	# Copy SDL_mixer.dll and libmikmod-2.dll to installation directory
-	if (WIN32)	
-		INSTALL(FILES "${SDL_MIXER_LIBRARIES}" DESTINATION ${INSTALL_DIR})	
-		
-		# Find mikmod DLL for playing music
-		find_library(SDL_MIXER_MIKMOD_LIBRARY
-			NAMES libmikmod-2
-			HINTS
-				ENV SDLMIXERDIR
-				ENV SDLDIR
-			PATH_SUFFIXES lib)
-			
-		if (NOT SDL_MIXER_MIKMOD_LIBRARY)
-			message(STATUS "SDL_mixer libmikmod-2 dependency was NOT FOUND! Game will run WITHOUT music.")
-		endif()
-		
-		INSTALL(FILES "${SDL_MIXER_MIKMOD_LIBRARY}" DESTINATION ${INSTALL_DIR})	
-	endif()
+    # Copy SDL_mixer.dll and libmikmod-2.dll to installation directory
+    if (WIN32)
+            INSTALL(FILES "${SDL_MIXER_LIBRARIES}" DESTINATION ${INSTALL_DIR})
+
+            # Find mikmod DLL for playing music
+            find_library(SDL_MIXER_MIKMOD_LIBRARY
+                    NAMES libmikmod-2
+                    HINTS
+                            ENV SDLMIXERDIR
+                            ENV SDLDIR
+                    PATH_SUFFIXES lib)
+
+            if (NOT SDL_MIXER_MIKMOD_LIBRARY)
+                    message(STATUS "SDL_mixer libmikmod-2 dependency was NOT FOUND! Game will run WITHOUT music.")
+            endif()
+
+            INSTALL(FILES "${SDL_MIXER_MIKMOD_LIBRARY}" DESTINATION ${INSTALL_DIR})
+    endif()
 endif()
 
 ### link required libraries
-
 target_link_libraries(savagewheels ${SDL_LIBRARY} ${FMOD_LIBRARY} ${SDLMIXER_LIBRARY})
 
 ### additional defines
-
 if (UNIX AND NOT WIN32)
 	add_definitions(-DLINUX_BUILD)
 endif()
@@ -219,7 +230,6 @@ endif()
 message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 
 ### set architecture
-
 if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
 	add_definitions(-DARCH_X64)
 	set(APP_ARCH "x64")
@@ -231,23 +241,69 @@ else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 endif()
 
-### Configure compile time header file 
+### Configure compile time header file
 configure_file (
   "${PROJECT_SOURCE_DIR}/Config.h.in"
   "${PROJECT_SOURCE_DIR}/src/Config.h")
-  
-INSTALL(TARGETS savagewheels RUNTIME DESTINATION ${INSTALL_DIR})
-INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" DESTINATION ${INSTALL_DIR})
+
+INSTALL(TARGETS savagewheels RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}")
+if (UNIX AND NOT WIN32)
+	# address Arch Linux packaging by explicitly specifying data dirs
+	if (NOT INSTALL_DATADIR)
+		set(INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}")
+	endif()
+	if (NOT INSTALL_LIBEXECDIR)
+		set(INSTALL_LIBEXECDIR "${CMAKE_INSTALL_LIBEXECDIR}")
+	endif()
+
+	configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/savagewheels.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/savagewheels.sh"
+		@ONLY)
+
+	INSTALL(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/savagewheels.sh"
+		DESTINATION "${CMAKE_INSTALL_BINDIR}" RENAME savagewheels)
+
+        # add run.sh if building a static distro
+        if (CMAKE_BUILD_STATIC)
+            INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" 
+                DESTINATION "./")
+        endif()
+endif()
+
 INSTALL(FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
     "${CMAKE_CURRENT_SOURCE_DIR}/HISTORY"
     "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
-    DESTINATION ${INSTALL_DIR})
-INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/"
-    DESTINATION ${INSTALL_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/LICENSE.mikmod.txt"
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/Readme.html"
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/README-SDL_mixer.txt"
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/README-SDL.txt"
+	DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+INSTALL(FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/bin/bindings.xml"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}")
+INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/help"
+    DESTINATION "${CMAKE_INSTALL_DOCDIR}"
     PATTERN "debug.html" EXCLUDE
     PATTERN "pref" EXCLUDE)
-    
+
+# add data folders only if they are already present
+if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/autos")
+    INSTALL(DIRECTORY
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/autos"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}")
+endif()
+if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/sound")
+    INSTALL(DIRECTORY
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/sound"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}")
+endif()
+if (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/graphics")
+    INSTALL(DIRECTORY
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/graphics"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}")
+endif()
+
 ### build a CPack driven installer package
 include (InstallRequiredSystemLibraries)
 
@@ -273,7 +329,7 @@ set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 # Debian DEB package stuff
 if (${CPACK_GENERATOR} STREQUAL "DEB")
 	set(CPACK_PACKAGING_INSTALL_PREFIX "/opt")
-	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCH}) 
+	set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${DEB_ARCH})
 	set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, libstdc++6, libsdl1.2debian (>= 1.2.11)")
     # require SDL_mixer if support is enabled
     if(SOUND STREQUAL "SDL_MIXER")
@@ -284,7 +340,7 @@ endif()
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 #set(CPACK_INSTALLED_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/bin;/.")
-#set(CPACK_IGNORE_FILES 
+#set(CPACK_IGNORE_FILES
 #"~$"
 #"^.*/.git/"
 #"^${PROJECT_SOURCE_DIR}/bin/pref"

@@ -1,6 +1,9 @@
 Savage Wheels Release HISTORY
 -----------------------------
 
+V1.6.1 Patch
+  * added Linux configurable game data directories
+
 V1.6 Release
   * added support for SDL_mixer sound library. It is now the default sound library used.
 

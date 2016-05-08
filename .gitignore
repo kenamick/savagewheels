@@ -20,8 +20,9 @@ nbproject/*
 
 # src
 src/Config.h
+*.orig
+*.rej
 
 # others
 debug.html
-
-
+*.patch

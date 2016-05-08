@@ -263,7 +263,7 @@ bool OpenLog ( const char* filename )
     String time( GetFormattedTime() );
 
     // open debug file
-    debug_file.open ( "debug.html", std::ios::out ); //ios::ate );
+    debug_file.open ( filename, std::ios::out ); //ios::ate );
     if ( ! debug_file.good() )
       return false;
 

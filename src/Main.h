@@ -37,6 +37,7 @@
 #include <cstdarg>
 #include <cassert>
 #include <exception>
+#include <cerrno>
 
 #include <ctime>
 #include <sys/stat.h>
@@ -86,8 +87,6 @@
 #include "Config.h"
 
 // --- global game defines
-#define ART_FILE	"graphics/gfxdata.kdf"
-#define BINDINGS_FILE	"bindings.xml"
 #define LOAD_OK         (-1)
 #define LOAD_FAILED     (0)
 #define HRESULT(x)	( (x) == NULL : LOAD_OK ? LOAD_FAILED )
@@ -102,6 +101,12 @@
 typedef std::string			String;
 typedef std::ostringstream	OutputSStream;
 
+extern const char *sys_datadir;
+extern const char *usr_cfgdir;
+extern const char *usr_datadir;
+
+extern char *ART_FILE;
+extern char *BINDINGS_FILE;
 //#include "pstdint.h" // portable types
 #include "Utils.h"
 #include "CKdf.h"

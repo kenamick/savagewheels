@@ -118,6 +118,7 @@ bool CGame::LoadGame()
 {
 	char buf[255];
 	int  i = 0;
+	String tmp (sys_datadir);
 
 	AppendToLog( LOG_DASH );
 	AppendToLog("Loading Game...");
@@ -163,7 +164,10 @@ bool CGame::LoadGame()
 	UpdateSplash();  // UPDATESPLASH... 
 
 	// search for vehicles
-	if ( Swv.SearchAndLoad( "autos" ) != SWV_SUCCESS ) return false;
+	tmp.resize(strlen(sys_datadir));
+	tmp.append("/autos");
+	if ( Swv.SearchAndLoad( tmp.c_str() ) != SWV_SUCCESS )
+		return false;
 
 	// check for vehicle number
 	if ( Swv.GetVehicles() < 4 ) 
