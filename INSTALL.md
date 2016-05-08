@@ -120,11 +120,11 @@ This will create a `.deb` package that you can laster install. E.g.,
 
 ## Requirements
 
-  * MinGW (Minimalist GNU for Windows). I have only tested with [Mingw32](http://www.mingw.org/).
+  * [Mingw32](http://www.mingw.org/) (Minimalist GNU for Windows).
   * CMake >= `2.8.x`
-  * libSDL >= `1.2.12` - Download the [Development Libraries](http://www.libsdl.org/download-1.2.php) archive.
+  * libSDL >= `1.2.12` - Download the ` (Mingw32)` [Development Libraries](http://www.libsdl.org/download-1.2.php) archive.
   * For music support either of:
-    - SDL_Mixer >= `1.2.12` - Download the binary [SDL_mixer-1.2.x-win32.zip](http://www.libsdl.org/projects/SDL_mixer/) package and the source [SDL_mixer-1.2.x.zip](http://www.libsdl.org/projects/SDL_mixer/) packages.
+    - SDL_Mixer >= `1.2.12` - Download the binary [SDL_mixer-1.2.x-win32.zip](http://www.libsdl.org/projects/SDL_mixer/) and the source [SDL_mixer-1.2.x.zip](http://www.libsdl.org/projects/SDL_mixer/) packages.
     - FMod Ex API 4.x - Download and install the [FMOD Ex API](fmod.org/download/) installer EXE file.
 	
 ## Compile & Build
@@ -156,7 +156,7 @@ This will create a `.deb` package that you can laster install. E.g.,
 	
 Copy the contents of the `SDL_mixer-1.2.x-win32` binary package to `<SDL-directory-in-libs>/lib`.
 	
-Copy the `SDL_mixer.h header` file from `SDL_mixer-1.2.x.zip` sources package to `<SDL-directory-in-libs>/include`. 
+Copy the `SDL_mixer.h header` file from `SDL_mixer-1.2.x.zip` sources package to `<SDL-directory-in-libs>/include/SDL`. 
 	
 #### FMod Ex
 
