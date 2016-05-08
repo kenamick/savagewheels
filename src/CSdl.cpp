@@ -1340,6 +1340,7 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 	SDL_RWops	 *sdl_rw	= NULL;						// sdl_read_write_operations
 	String tmp;
 
+        // TODO: Temp fix. Refactor this block below.
 #ifdef LINUX_BUILD
 	if ( filename[0] != '/' )
 	{
@@ -1350,8 +1351,16 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 		tmp = String(filename);
 	}
 #else
-	tmp = String(filename);
+	if ( String(filename).find("swv", 0) != std::string::npos ) 
+	{
+		tmp = String(sys_datadir).append("/autos/").append(filename);
+	}  
+	else 
+	{
+		tmp = String(filename);	
+	}
 #endif
+        
 	if ( ( fp = fopen( tmp.c_str(), "rb")) == NULL ) 
 	{
 		LOG("...failed to open file : " << filename );
