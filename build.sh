@@ -12,14 +12,6 @@ CPACK="$(which cpack)"
 VERMAJ=`perl -nle 'print $1 if /.*VER_MAJ\s(\d+).*/' src/Main.h`
 VERMIN=`perl -nle 'print $1 if /.*VER_MIN\s(\d+).*/' src/Main.h`
 VERSION="$VERMAJ.$VERMIN"
-#ARCH="$(uname -m)"
-#TMP_PATH="$CUR_DIR/build/savagewheels-$VERSION-linux"
-
-#if [ $ARCH = "x86_64" ]; then
-#	TMP_PATH="$TMP_PATH-x64"
-#else
-#	TMP_PATH="$TMP_PATH-$ARCH"
-#fi
 
 usage() {
 	echo "dist-build.sh - Savage Wheels ${VERMAJ}.${VERMIN} distributable package build script"
@@ -32,10 +24,6 @@ usage() {
 cleanup() {
 	echo "Cleaning up old files ..."
 
-	#if [ -e $TMP_PATH ]; then
-	#	rm -rf $TMP_PATH
-	#fi
-
 	cd $BUILD_PATH
 	make clean
 	cd ..
@@ -47,12 +35,6 @@ cleanup() {
 
 build() {
 	echo "Building package ..."
-
-	mkdir $TMP_PATH
- 	if [ ! -e $TMP_PATH ]; then
-		echo "Dist path could not be created - $TMP_PATH"
-		exit
-	fi
 	
 	if [ ! -e $CMAKE ]; then
 		echo "CMake was not found - $CMAKE"
@@ -64,7 +46,9 @@ build() {
 	fi	
 	
 	cd $BUILD_PATH
-	$CMAKE cmake -G "Unix Makefiles" ../ -DCMAKE_BUILD_TYPE:STRING=Release
+	$CMAKE cmake -G "Unix Makefiles" ../ \
+            -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_BUILD_STATIC=1
 	make -j$CPU_CORES
 	
 	$CPACK
@@ -77,10 +61,9 @@ build() {
 
 if [ "$1" = "clean" ]; then
 	cleanup
-#elif [ "$1" = "build" ]; then
-else
+elif [ "$1EMPTY" = "EMPTY" ]; then
 	cleanup
 	build
-#else
-#	usage
+else
+	usage
 fi

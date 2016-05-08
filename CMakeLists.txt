@@ -247,9 +247,7 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/src/Config.h")
 
 INSTALL(TARGETS savagewheels RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}")
-if (WIN32 AND NOT UNIX)
-	INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" DESTINATION "${INSTALL_DIR}")
-else()
+if (UNIX AND NOT WIN32)
 	# address Arch Linux packaging by explicitly specifying data dirs
 	if (NOT INSTALL_DATADIR)
 		set(INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}")
@@ -261,8 +259,15 @@ else()
 	configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/savagewheels.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/savagewheels.sh"
 		@ONLY)
+
 	INSTALL(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/savagewheels.sh"
 		DESTINATION "${CMAKE_INSTALL_BINDIR}" RENAME savagewheels)
+
+        # add run.sh if building a static distro
+        if (CMAKE_BUILD_STATIC)
+            INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" 
+                DESTINATION "./")
+        endif()
 endif()
 
 INSTALL(FILES
