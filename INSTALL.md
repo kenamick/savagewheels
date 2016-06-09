@@ -8,12 +8,6 @@ _Last updated on 08 May 2016_
   * Linux x86 or x64 - Tested on Arch Linux, Ubuntu and Debian.
   * Windows x86 or x64 - Tested on Windows XP, Vista and 2008R2.
 
-# Installation on Linux platforms
-
-  * **Arch Linux** users may install from [AUR](https://aur.archlinux.org/packages/savagewheels/).
-  * **Gentoo** users may install from the [packages repository](https://packages.gentoo.org/packages/games-arcade/savagewheels).
-  * An [Open Pandora](https://repo.openpandora.org/?page=detail&app=SavageWheels-Loic2003) build is also available.
-
 # Required files
 
 Get the latest source code from GitHub:
