@@ -9,16 +9,18 @@ All drivers have background stories which are uncovered in the campaign mode.
 
 ![alt text](http://i.imgur.com/09h8j1M.jpg "Gameplay screenshot")
 
-# Running the game
+# Install
 
-  * On *Windows* - Start the game by simply running the `savagewheels.exe` file.
-  * On *Linux* - It is reqiured that you have `sdl 1.2` and `sdl_mixer 1.2` packages already installed. Start the game by running the `savagewheels` binary.
+  * **ArchLinux** users may install from [AUR](https://aur.archlinux.org/packages/savagewheels/).
+  * **Gentoo** users may install from the [packages repository](https://packages.gentoo.org/packages/games-arcade/savagewheels).
+  * An [Open Pandora](https://repo.openpandora.org/?page=detail&app=SavageWheels-Loic2003) build is also available.
 
-  You may also run the game in fullscreen mode by specifying `-fullscreen` on the command line.
+  * On **Windows**, just unpack the [ZIP](https://github.com/petarov/savagewheels/releases) file and start the game by running `savagewheels.exe`.
+  * Other *Linux* platforms. First, make sure you've got `sdl 1.2` and `sdl_mixer 1.2` installed. Run the [sh install script](https://github.com/petarov/savagewheels/releases) and start the game with `savagewheels`.
 
 # How to play
 
-Please check the [Readme.html](http://htmlpreview.github.io/?https://github.com/petarov/savagewheels/blob/master/bin/Readme.html) for additional game information.
+It's all in the [Readme.html](http://htmlpreview.github.io/?https://github.com/petarov/savagewheels/blob/master/bin/Readme.html) for additional. Yay! :bomb:
 
 # Build
 
@@ -27,14 +29,10 @@ Please check [HISTORY](HISTORY) for latest changes.
 Please check [INSTALL](INSTALL.md) for how to compile the game.
 
 # Open Source Libraries
-  * Graphihcs
     * [libSDL](http://www.libsdl.org/) - Simple DirectMedia Layer is a cross-platform multimedia library.
-  * XML
     * [TinyXML](http://www.grinninglizard.com/tinyxml/) - TinyXML is a simple, small, C++ XML parser that can be easily integrating into other programs.
-  * Sound (Compiled with SDL_mixer)
     * [SDL_mixer](http://www.libsdl.org/projects/SDL_mixer/) - SDL_mixer is a sample multi-channel audio mixer library.
     * [libmikmod](http://mikmod.shlomifish.org/) - Mikmod is a module player and library supporting many formats, including mod, s3m, it, and xm.
-  * Sound (Compiled with FMod Ex, Optional)
     * [FMod Ex](http://www.fmod.org/fmod-sales.html) - Audio engine : FMOD Sound System by Firelight Technologies  
 
 # License
