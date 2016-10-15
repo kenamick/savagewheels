@@ -37,4 +37,4 @@ Please check [INSTALL](INSTALL.md) for how to compile the game.
 
 # License
 
-Read the [LICENSE](LICENSE) file.
+[MIT LICENSE](LICENSE)
