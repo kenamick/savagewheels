@@ -171,3 +171,56 @@ To build without sound & music run:
 After the build process has finished, a self-extracting STGZ file may be created by running:
 
 	> cpack
+
+# EMScript Build
+
+Savage Wheels can be compiled to WebAssembly with [Emscripten](https://emscripten.org/) and run directly in a browser.
+
+## Requirements
+
+  * [emsdk](https://emscripten.org/docs/getting_started/downloads.html) - install and activate the latest SDK, then source the environment script:
+```bash
+    $ git clone https://github.com/emscripten-core/emsdk.git
+    $ cd emsdk && ./emsdk install latest && ./emsdk activate latest
+    $ source ./emsdk_env.sh
+```
+  * CMake >= `3.5`
+  * The game data files extracted into `bin/` - see `Required files` above.
+  * For music support: `libopenmpt` and `ffmpeg`, used to convert the bundled `.it` tracker music to `.ogg` (browsers cannot decode `.it` files natively). On macOS:
+```bash
+    $ brew install libopenmpt ffmpeg
+```
+
+## Compile & Build
+
+ - Convert the `.it` music tracks to `.ogg` (only needs to be done once, or whenever the game data is re-extracted):
+```bash
+    $ ./tools/convert-music-web.sh
+```
+   The CMake configure step below will fail with an error telling you to run this script if it's skipped.
+
+ - Configure and build:
+```bash
+    $ mkdir -p build-web && cd build-web
+    $ emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
+    $ emmake make -j4
+```
+   This produces `savagewheels.html`, `savagewheels.js`, `savagewheels.wasm` and `savagewheels.data` in `build-web/`.
+
+ - Serve the folder with any static HTTP server and open `savagewheels.html` in a browser, e.g.:
+```bash
+    $ cd build-web && python3 -m http.server 8000
+```
+   Then browse to `http://localhost:8000/savagewheels.html`.
+
+### Sound libraries
+#### No sound
+
+To build without sound & music, and skip the `.ogg` conversion requirement entirely, run:
+
+	$ emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DSOUND=NO
+
+### Notes
+
+  * Background music only starts after the first click/keypress on the page - this is a browser autoplay-policy restriction (audio contexts require a user gesture to start), not a bug.
+  * Rebuilding after a source change only requires re-running `emmake make -j4` in `build-web/`.

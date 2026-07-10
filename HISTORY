@@ -1,6 +1,9 @@
 Savage Wheels Release HISTORY
 -----------------------------
 
+V1.7.0 Release
+  * ported to web using Emscripten
+
 V1.6.1 Patch
   * added Linux configurable game data directories
 
@@ -11,7 +14,7 @@ V1.5 Release
   * improved vehicle damage balancing.
   * changed all ingame sound effects.
   * changed sound support library. Game now uses FMod Ex sound library to play sound fx and music.
-  * added Linux startup script - 'run.sh'. 
+  * added Linux startup script - 'run.sh'.
   * fixed crashes and game assets loading issues under 64-bit platforms.
   * minor fixes in game AI and physics that caused vehicles to stuck.
   * fixed bug that caused UI buttons to be constantly pressed.
@@ -29,7 +32,7 @@ V1.4 Release
   * fixed - one of the background available was not being selected from the random map selector
   * changed - To prevent problems on Linux systems the game will start in windowed mode by default. Use F11 when playing to toggle fullscreen mode or start the game with a command line parameter '-force-fullscreen'. NOTE: Fullscreen may crash your Linux desktop. So, far problems where detected only on KDE.
   * changed - the game will now always try to go for hardware surface for better performace. If you want to run with software surfaces use the '-sw' command line parameter.
-  * added support for Linux systems. The game can now be compiled and run on Linux. 
+  * added support for Linux systems. The game can now be compiled and run on Linux.
   * added - escape key now exists the game when in main menu
   * updated - Readme html document (English version only). Check the document for more Q&A info.
 
@@ -37,14 +40,14 @@ V1.03 Patch
   * fixed sound-conflicts that caused the game to crash under win2k and XP systems
   * changed - game now uses Fmod(c) sound engine
   * added '-hw' command line for greater video cards
- 
+
 V1.02 Patch
-  * fixed a bug that caused campaigns to start from level 2  
+  * fixed a bug that caused campaigns to start from level 2
   * fixed a bug that caused vehicles going back to do enormous damage
   * fixed time-left blitting
   * changed - when playing 2v2 teams for 'Time-limit' the winning score is now determined by the sum of the frags of the team members instead of just the member with the highest score
   * changed - The frag-giving bug now has to be kept 6 seconds instead of 8
-  * changed - Landmines now do more damage 
+  * changed - Landmines now do more damage
 
 V1.0 Release
   * fixed impact physics
@@ -56,7 +59,7 @@ V1.0 Release
   * added timer
   * added more vehicles
   * added gamemodes
-  * added one more track to the soundtrack 
+  * added one more track to the soundtrack
 
 V0.9 (beta)
   * fixed menu-game prelude

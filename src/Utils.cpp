@@ -26,7 +26,7 @@
 
 #include "Main.h"
 
-#ifdef LINUX_BUILD
+#if defined(LINUX_BUILD) || defined(__EMSCRIPTEN__)
 #include <sys/timeb.h>
 #include <time.h>
 #define _ftime	ftime
@@ -235,7 +235,7 @@ inline String GetFormattedTime()
 {
     char buf[255];
 
-#ifdef LINUX_BUILD
+#if defined(LINUX_BUILD) || defined(__EMSCRIPTEN__)
     time_t cur_time;
     tm *ptm = NULL;
 

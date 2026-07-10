@@ -10,6 +10,7 @@ bin/sound/
 debug/*
 release/*
 libs/*
+build-web
 
 # ide
 .classpath

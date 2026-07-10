@@ -1,14 +1,16 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 project(savagewheels)
 
 ### Defaults
 set(APP_ARCH "")
 set(APP_VER_MAJ "1")
-set(APP_VER_MIN "6")
-set(APP_VER_PATCH "1")
+set(APP_VER_MIN "7")
+set(APP_VER_PATCH "0")
 
 ### check for required libs
-find_package(SDL REQUIRED)
+if (NOT EMSCRIPTEN)
+	find_package(SDL REQUIRED)
+endif()
 
 ### Install targets
 if (UNIX)
@@ -85,7 +87,9 @@ if (WIN32)
 endif()
 
 ## SDL
-if (UNIX AND NOT WIN32)
+if (EMSCRIPTEN)
+	# SDL is provided by the Emscripten port (-sUSE_SDL=1), set further below.
+elseif (UNIX AND NOT WIN32)
 	# Linux
 
 #	set(SDL_LIB_NAME "libSDL.so")
@@ -187,6 +191,12 @@ elseif(SOUND STREQUAL "FMOD")
             endif()
     endif()
 
+elseif (EMSCRIPTEN)
+
+    # SDL_mixer is provided by the Emscripten port (-sUSE_SDL_MIXER=2), set further below.
+    add_definitions(-DWITH_SDLMIXER)
+    set(SOUND "SDL_MIXER")
+
 else()
 
     # SDL_mixer API
@@ -217,8 +227,51 @@ endif()
 ### link required libraries
 target_link_libraries(savagewheels ${SDL_LIBRARY} ${FMOD_LIBRARY} ${SDLMIXER_LIBRARY})
 
+### Emscripten (WebAssembly) build flags
+if (EMSCRIPTEN)
+	# NOTE: do NOT add -sUSE_SDL_MIXER=2 -- it links SDL2 and breaks the SDL1 port; libsdl.js already implements Mix_* itself.
+	set(EM_PORT_FLAGS "-sUSE_SDL=1")
+
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EM_PORT_FLAGS}")
+
+	set(EM_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+
+	# Browsers can't decode .it (Impulse Tracker) music, so CSounds.cpp loads
+	# .ogg counterparts instead when built for Emscripten
+	foreach(MUSIC_TRACK seek inertia desert vixens)
+		if (NOT EXISTS "${EM_DATA_DIR}/sound/${MUSIC_TRACK}.ogg")
+			message(FATAL_ERROR "Missing ${EM_DATA_DIR}/sound/${MUSIC_TRACK}.ogg -- run tools/convert-music-web.sh first")
+		endif()
+	endforeach()
+
+	# NOTE: a fixed (non-growable) heap is used intentionally: with
+	# -sALLOW_MEMORY_GROWTH=1 the wasm memory becomes a resizable
+	# ArrayBuffer, which current Chrome's TextDecoder.decode() refuses
+	# ("must not be resizable"), crashing on the first UTF8 string
+	# conversion. A generously-sized static heap avoids that browser/
+	# Emscripten interaction entirely.
+	# STB_IMAGE=1: the game loads BMPs out of in-memory buffers sliced from
+	# the KDF art container (see CSdl::LoadBitmap), not from named/preloaded
+	# files. The Emscripten SDL1 port's default image loader decodes via an
+	# async <img> element keyed by a preloaded filename, which cannot see
+	# these anonymous in-memory buffers ("Only file names that have been
+	# preloaded are supported for IMG_Load_RW"). STB_IMAGE switches to a
+	# synchronous, buffer-based decoder that works with any RWops.
+	set(EM_LINK_FLAGS
+		"${EM_PORT_FLAGS} -sASYNCIFY -sINITIAL_MEMORY=268435456 -sEXIT_RUNTIME=1 -sSTB_IMAGE=1 \
+		--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/tools/shell_minimal_itch.html \
+		--preload-file ${EM_DATA_DIR}/graphics@/graphics \
+		--preload-file ${EM_DATA_DIR}/autos@/autos \
+		--preload-file ${EM_DATA_DIR}/sound@/sound \
+		--preload-file ${EM_DATA_DIR}/bindings.xml@/bindings.xml")
+	set_target_properties(savagewheels PROPERTIES
+		LINK_FLAGS "${EM_LINK_FLAGS}"
+		OUTPUT_NAME "index"
+		SUFFIX ".html")
+endif()
+
 ### additional defines
-if (UNIX AND NOT WIN32)
+if (UNIX AND NOT WIN32 AND NOT EMSCRIPTEN)
 	add_definitions(-DLINUX_BUILD)
 endif()
 
@@ -230,7 +283,10 @@ endif()
 message(STATUS "Build type is ${CMAKE_BUILD_TYPE}")
 
 ### set architecture
-if (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
+if (EMSCRIPTEN)
+	add_definitions(-DARCH_X86)
+	set(APP_ARCH "wasm32")
+elseif (CMAKE_SIZEOF_VOID_P MATCHES "8" AND NOT M32)
 	add_definitions(-DARCH_X64)
 	set(APP_ARCH "x64")
 	set(DEB_ARCH "amd64")
@@ -264,7 +320,7 @@ if (UNIX AND NOT WIN32)
 
         # add run.sh if building a static distro
         if (CMAKE_BUILD_STATIC)
-            INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" 
+            INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh"
                 DESTINATION "./")
         endif()
 endif()
