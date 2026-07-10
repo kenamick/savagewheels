@@ -229,14 +229,21 @@ target_link_libraries(savagewheels ${SDL_LIBRARY} ${FMOD_LIBRARY} ${SDLMIXER_LIB
 
 ### Emscripten (WebAssembly) build flags
 if (EMSCRIPTEN)
+	# NOTE: do NOT add -sUSE_SDL_MIXER=2 -- it links SDL2 and breaks the SDL1 port; libsdl.js already implements Mix_* itself.
 	set(EM_PORT_FLAGS "-sUSE_SDL=1")
-	if (SOUND STREQUAL "SDL_MIXER")
-		set(EM_PORT_FLAGS "${EM_PORT_FLAGS} -sUSE_SDL_MIXER=2")
-	endif()
 
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EM_PORT_FLAGS}")
 
 	set(EM_DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+
+	# Browsers can't decode .it (Impulse Tracker) music, so CSounds.cpp loads
+	# .ogg counterparts instead when built for Emscripten
+	foreach(MUSIC_TRACK seek inertia desert vixens)
+		if (NOT EXISTS "${EM_DATA_DIR}/sound/${MUSIC_TRACK}.ogg")
+			message(FATAL_ERROR "Missing ${EM_DATA_DIR}/sound/${MUSIC_TRACK}.ogg -- run tools/convert-music-web.sh first")
+		endif()
+	endforeach()
+
 	# NOTE: a fixed (non-growable) heap is used intentionally: with
 	# -sALLOW_MEMORY_GROWTH=1 the wasm memory becomes a resizable
 	# ArrayBuffer, which current Chrome's TextDecoder.decode() refuses
@@ -311,7 +318,7 @@ if (UNIX AND NOT WIN32)
 
         # add run.sh if building a static distro
         if (CMAKE_BUILD_STATIC)
-            INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh" 
+            INSTALL(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/run.sh"
                 DESTINATION "./")
         endif()
 endif()

@@ -53,7 +53,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 
 #if defined(WITH_FMOD) || defined(WITH_SDLMIXER)
 	String tmp (sys_datadir);
-        
+
 #define LOAD_SOUND( container, name, buffered)					\
 	do {									\
 		tmp.append("/").append(name);					\
@@ -64,7 +64,7 @@ bool CSounds::Initialize( CSdl *pSdl )
 			return false;						\
 		}								\
 		tmp.resize(strlen(sys_datadir));				\
-	} while(0)        
+	} while(0)
 
 #define LOAD_MUSIC( container, name)						\
 	do {									\
@@ -91,10 +91,19 @@ bool CSounds::Initialize( CSdl *pSdl )
 //	LOAD_SOUND( SND_MENU_OVERBUTTON, "sound/mmh3.wav", false );
 	LOAD_SOUND( SND_MENU_CLICK, "sound/mmh.wav", true );
 
+#ifdef __EMSCRIPTEN__
+	// Browsers cannot decode Impulse Tracker (.it) modules. These .ogg files
+	// are the same tracks pre-rendered to Ogg/Opus (via openmpt123 + ffmpeg).
+	LOAD_MUSIC( MUS_MENU, "sound/seek.ogg" );
+	LOAD_MUSIC( MUS_INGAME1, "sound/inertia.ogg" );
+	LOAD_MUSIC( MUS_INGAME2, "sound/desert.ogg" );
+	LOAD_MUSIC( MUS_INGAME3, "sound/vixens.ogg" );
+#else
 	LOAD_MUSIC( MUS_MENU, "sound/seek.it" );
 	LOAD_MUSIC( MUS_INGAME1, "sound/inertia.it" );
 	LOAD_MUSIC( MUS_INGAME2, "sound/desert.it" );
 	LOAD_MUSIC( MUS_INGAME3, "sound/vixens.it" );
+#endif
 
 	music_stopped = false;
 

@@ -1195,7 +1195,12 @@ bool CSdl::InitializeSound()
 		}
 		else
 		{
+#ifndef __EMSCRIPTEN__
 			// Get specs information
+			// NOTE: skipped under Emscripten -- its SDL1 JS shim implements
+			// Mix_QuerySpec as a hard abort() stub ("Mix_QuerySpec: TODO"),
+			// not a graceful failure return, and this call is purely
+			// informational (logging), so it's simplest to just not call it.
 			int audio_rate;
 			int audio_channels;
 			Uint16 audio_format;
@@ -1208,6 +1213,7 @@ bool CSdl::InitializeSound()
 				LOG("SDL_mixer: Opened audio at " << audio_rate << " Hz " << bits << " bit "
 						<< (audio_channels > 1 ? "stereo" : "mono"));
 			}
+#endif
 
 			LOG("SDL_mixer initialized successfully.");
 
