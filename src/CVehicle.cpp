@@ -84,7 +84,7 @@ CVehicle::CVehicle()
 ///////////////////////////////////////////////////////////////////////
 void CVehicle::Release()
 {
-	if ( released ) 
+	if ( released )
 		return;
 
 	AppendToLog( "Closing CVehicle() class..." );
@@ -222,18 +222,18 @@ void CVehicle::SetAttirbs( CONST_DIFFICULTY difficulty )
 
 	case DIFF_NORMAL:
 		diff_perc = 1.0f;
-		return; 
+		return;
 		break;
 
 	case DIFF_HARD:
 		diff_perc	= 1.3f;
 		break;
-	
-	default: 
+
+	default:
 		LOG("Invalid difficulty attribute!");
 		return;
 	}
-	
+
 	// change attribs
 	acc				= (int)( (float)acc * diff_perc);
 	dec_acc			= (int)( (float)dec_acc * diff_perc);
@@ -254,7 +254,7 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
  int   cn;
  char  cardir[255];
  char  carname[16];
- 
+
  myIndex = carIndex;
  me = vtype;
  frags = 0;
@@ -264,13 +264,13 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
       case VT_KAMION:
 		sprintf ( carname, "%s", "v4" );
 	    max_tire_frames = 1;
-	  break;   
-   
+	  break;
+
 	  case VT_FERRARI:
 		sprintf ( carname, "%s", "fera" );
    	    max_tire_frames = 1;
 	  break;
-	  
+
 	  case VT_MERCEDES:
 		sprintf ( carname, "%s", "merc" );
 		max_tire_frames = 1;
@@ -290,13 +290,13 @@ int CVehicle::Initialize( CONST_VEHICLE_TYPE vtype, Uint16 carIndex )
 
 
 
- // load animation 
+ // load animation
  for( cn = 0; cn < MAX_ROTATION_FRAMES * max_tire_frames; cn++ )
  {
-		 // normal 
+		 // normal
 		 sprintf ( cardir, "gfx/%s/ok/%d.bmp", carname, cn );
 		 if ( (sprite_norm[cn] = _game->Sdl.LoadBitmap( cardir, MAGENTA )) == NULL ) return 0;
-		 
+
 		 // crashed
 		 sprintf ( cardir, "gfx/%s/crash/%d.bmp", carname, cn+1 );
    		 if ( (sprite_crash[cn] = _game->Sdl.LoadBitmap( cardir, 0U )) == NULL ) return 0;
@@ -366,7 +366,7 @@ void CVehicle::Create()
 	x = pos_warp[warpPos].x;
 	y = pos_warp[warpPos].y;
 	velocity_bonus = 0;
- 
+
 	if ( warpPos == 2 || warpPos == 3 )
 	{
 		motion_frame = 18;
@@ -397,7 +397,7 @@ void CVehicle::Create()
 	visible = true;
 	self_destruct = self_destruction = false;
 	warning_time = 0;
-	
+
 	hit_points = max_hitpoints;
 
 	honk_status = 0;
@@ -416,7 +416,7 @@ void CVehicle::Create()
 void CVehicle::SetControl( CONST_VEHICLE_CONTROL vcontrol )
 {
 	control = vcontrol;
-	
+
 	// AI type selection
 	waypoint.reached = true;
 	if ( control == VC_AI )
@@ -479,9 +479,9 @@ void CVehicle::DoMotion()
 
 		tmp_maxvel = max_vel; //ai_maxvel;
 
-		if ( ai_final_frame > display_frame ) 
+		if ( ai_final_frame > display_frame )
 			vrot = VR_LEFT;
-		else if ( ai_final_frame < display_frame ) 
+		else if ( ai_final_frame < display_frame )
 			vrot = VR_RIGHT;
 		else
 			vrot = VR_NONE;
@@ -598,7 +598,7 @@ void CVehicle::DoMotion()
 	if (max_tire_frames > 1 && abs_vel > 0.0f)
 	{
 		tire_frame += 10 * _game->getMpf();
-		
+
 		if ( tire_frame >= max_tire_frames )
 			tire_frame = 0;
 	}
@@ -619,7 +619,7 @@ void CVehicle::DoMotion()
 	{
 		x += g_dirx[(int)motion_frame] * mpf_vel + x_acc * mpf_hitvel;
 		y -= g_diry[(int)motion_frame] * mpf_vel + y_acc * mpf_hitvel;
-		//x += (g_dirx[(int)motion_frame] * vel + x_acc * hit_vel ) * _game->getMpf(); 
+		//x += (g_dirx[(int)motion_frame] * vel + x_acc * hit_vel ) * _game->getMpf();
 		//y -= (g_diry[(int)motion_frame] * vel + y_acc * hit_vel ) * _game->getMpf();
 	}
 
@@ -633,7 +633,7 @@ void CVehicle::DoMotion()
 	CVehicle *ptr_veh = _game->Auto;
 
     GetFrameRect( &rMine );
-	
+
 	for ( Uint32 j = 0; j < _game->game_num_cars; j++ )
 	{
 		if ( j != myIndex )
@@ -644,7 +644,7 @@ void CVehicle::DoMotion()
 
 			// setup rectangles
 			ptr_veh->GetFrameRect( &rPrey );
-	
+
 			//if ( _game->Sdl.Collide( NULL, &rMine, &rPrey ) )
 			if ( _game->Sdl.Collide(&rMine, GetCurrentFrameMask(), &rPrey, ptr_veh->GetCurrentFrameMask()) )
 			{
@@ -679,9 +679,9 @@ void CVehicle::DoMotion()
 							//Repulse( (int)GetMotionFrameMirror(), 100 );
 							x = ptr_veh->GetX() + 50;
 							y = ptr_veh->GetY() + 50;
-							
+
 						}*/
-						//ptr_veh->Repulse( (int)motion_frame, 60 ); // !!!!!!!!! 
+						//ptr_veh->Repulse( (int)motion_frame, 60 ); // !!!!!!!!!
 						//ptr_veh->SetVelocity( 0 );
 						//no_damage = true;
 					}
@@ -707,7 +707,7 @@ void CVehicle::DoMotion()
 
 					anger -= tmp_anger;
 					anger = anger < 0 ? 0 : anger;
-					
+
 					float speed_damage = (float)damage + 0.12f * abs_vel;
 					float armour_absorb = (0.10f * (float)ptr_veh->GetHitPoints());
 					DBG( "[DODAMAGE] speed_damage=" << speed_damage << " armour_absorb=" << armour_absorb);
@@ -717,7 +717,7 @@ void CVehicle::DoMotion()
 					DBG( "[DODAMAGE] fulldamage=" << fulldmg << " damage=" << damage << " anger=" << anger << " tmpanger=" << tmp_anger << " tmp_vel=" << tmp_vel << "  enemyHP=" << ptr_veh->GetHitPoints() );
 
 					ptr_veh->DoDamage( fulldmg, myIndex );
-				
+
 					// PLAY RANDOM CRASH SOUND
 					int sound = intGetRnd(0, 3);
 					DBG("crash sound = " << sound);
@@ -768,7 +768,7 @@ void CVehicle::DoMotion()
 
 				DBG( "[COLLIDE] newvelocity=" << vel << " ACC is " << acc);
 			}
-		} 
+		}
 
 		ptr_veh++;
 	}
@@ -803,18 +803,18 @@ void CVehicle::DoMotion()
 	{
  		tire_trails = VTT_NONE;
 	}
-	
+
 	// reset move var
 	vmove = VM_NONE;
-	
+
 	// Game arena bounding
 
     if ( rMine.x < 24 )
 	{
 		x = 25;
-		if ( abs(vel) > 50 ) 
+		if ( abs(vel) > 50 )
 		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
+			if ( intGetRnd( 0, 50 ) > 25 )
 				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
@@ -822,12 +822,12 @@ void CVehicle::DoMotion()
 
 		vel = 0;
 	}
-    else if ( rMine.w > 614 ) 
+    else if ( rMine.w > 614 )
 	{
 		x = 613 - (rMine.w - x);
-		if ( abs(vel) > 50 ) 
+		if ( abs(vel) > 50 )
 		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
+			if ( intGetRnd( 0, 50 ) > 25 )
 				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
@@ -835,13 +835,13 @@ void CVehicle::DoMotion()
 
 		vel = 0;
 	}
-    
-	if ( y < 19) 
+
+	if ( y < 19)
 	{
 		y = 20;
-		if ( abs(vel) > 50 ) 
+		if ( abs(vel) > 50 )
 		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
+			if ( intGetRnd( 0, 50 ) > 25 )
 				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
@@ -849,12 +849,12 @@ void CVehicle::DoMotion()
 
 		vel = 0;
 	}
-    else if ( rMine.h > 400 ) 
+    else if ( rMine.h > 400 )
 	{
 		y = 399 - (rMine.h - y);
-		if ( abs(vel) > 50 ) 
+		if ( abs(vel) > 50 )
 		{
-			if ( intGetRnd( 0, 50 ) > 25 ) 
+			if ( intGetRnd( 0, 50 ) > 25 )
 				_game->Sdl.PlaySound( SND_TIRES1, rMine.x );
 			else
 				_game->Sdl.PlaySound( SND_TIRES2, rMine.x );
@@ -862,7 +862,7 @@ void CVehicle::DoMotion()
 
 		vel = 0;
 	}
-	
+
 	/*
 	 * Bonuses hit tests
 	 */
@@ -879,7 +879,7 @@ void CVehicle::DoMotion()
 		if ( _game->Dtoys.GetToyVisible( i ) )
 		{
 
-		 _game->Dtoys.GetToyRect( i, &rToy );		
+		 _game->Dtoys.GetToyRect( i, &rToy );
 
 		 if ( _game->Sdl.Collide( NULL, &rMe, &rToy ) )
 		 {
@@ -887,11 +887,11 @@ void CVehicle::DoMotion()
 //			 {
 				// PLAY SOUND
 				_game->Sdl.PlaySound( SND_SPLAT1, rMe.x );
-				
+
 				// compute position of blood spill
 				dx = rToy.x + (( rToy.w - rToy.x ) / 2);
 				dy = rToy.y + (( rToy.h - rToy.y ) / 2);
-				
+
   			    switch( _game->Dtoys.GetToyKind( i ) )
 				{
 				   case DT_BEARGOAL:
@@ -929,14 +929,14 @@ void CVehicle::DoMotion()
 				   case DT_BEARHP:
 
 					hit_points += _game->Dtoys.GetToyValue( i );
-					
+
 					if ( hit_points >= hit_points_crash && crashed_look )
 					{
 						sprite = sprite_norm;
 						mask = mask_norm;
 						crashed_look = false;
 					}
-					if ( hit_points > max_hitpoints ) 
+					if ( hit_points > max_hitpoints )
 						hit_points = max_hitpoints;
 
 					_game->Anims.Create( dx, dy, ANIM_BLOOD );
@@ -951,7 +951,7 @@ void CVehicle::DoMotion()
 						_game->Anims.Create( ANIM_REPAIR, PS_RIGHT );
 
 				   break;
-				 
+
 				   case DT_BEARANGER:
 					anger += _game->Dtoys.GetToyValue( i );
 					if ( anger > MAX_ANGER )
@@ -998,10 +998,10 @@ void CVehicle::DoMotion()
 //				x = tmp_x;
 //				y = tmp_y;
 //			 }
-			 
+
 		 }
 		} // vis_check...
-	} 
+	}
 
 	/*
 	 * landmines_count hit test
@@ -1037,7 +1037,7 @@ void CVehicle::Repulse( int frame_angle, float speed )
 	y_acc = g_diry[frame_angle];
 	//vel = vel + (float)hit_vel;
 
-	if ( control == VC_AI ) 
+	if ( control == VC_AI )
 		waypoint.do_precalculate = true;
 }
 
@@ -1087,7 +1087,7 @@ float CVehicle::GetMotionFrameMirror()
 	tmp_frame += HALF_ROTATION_FRAMES;
 	if ( tmp_frame > MAX_ROTATION_FRAMES )
 		tmp_frame -= MAX_ROTATION_FRAMES;
-	
+
 	return tmp_frame;
 }
 
@@ -1212,10 +1212,17 @@ void CVehicle::Update()
 
 	_game->Sdl.DrawNum(pos_frag[myIndex].x, pos_frag[myIndex].y, buf);
 	_game->scales[0]->w = (Uint32) ( /*(130.0f / 100.0f )*/1.3f * perc);
-	_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0]);
+	// pass the shrunk width as an explicit srcrect
+	{
+		SDL_Rect r_hp = { 0, 0, _game->scales[0]->w, _game->scales[0]->h };
+		_game->Sdl.BlitNow(pos_hp[myIndex].x, pos_hp[myIndex].y, _game->scales[0], &r_hp);
+	}
 	// bound anger value to match surface width of 130px
 	_game->scales[1]->w = RangeGetXY(anger, 0, MAX_ANGER, 0, 130);
-	_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y,_game->scales[1]);
+	{
+		SDL_Rect r_anger = { 0, 0, _game->scales[1]->w, _game->scales[1]->h };
+		_game->Sdl.BlitNow(pos_anger[myIndex].x, pos_anger[myIndex].y, _game->scales[1], &r_anger);
+	}
 
 	switch (control) {
 
@@ -1442,7 +1449,7 @@ void CVehicle::Update()
 	}
 
 
-} 
+}
 
 // TODO: Remove
 //void CVehicle::UpdateStops()
@@ -1472,7 +1479,7 @@ void CVehicle::AI_Update()
 		// 25% chacne to put a landmine when moving backwards
 		if ( intGetRnd( 0, 100 ) < 25 )
 			ai_putmine = false;
-		
+
 		if (waypoint.do_reverseTime < _game->Timer.Time())
 		{
 			waypoint.do_reverse = false;
@@ -1499,7 +1506,7 @@ void CVehicle::AI_Update()
 
 	// check if waypoint has been reached
 	float distance = fGetDistanceNSR( GetCX(), GetCY(), waypoint.x, waypoint.y );
-	if ( distance <= WAYPOINT_RADIUS ) 
+	if ( distance <= WAYPOINT_RADIUS )
 		waypoint.reached = true;
 
 	// get a new waypoint
@@ -1508,7 +1515,7 @@ void CVehicle::AI_Update()
 		AI_GenerateWaypoint();
 		return;
 	}
-	
+
 	// we need to recalculate the destination every now and then
 	if ( !waypoint.static_pos || waypoint.do_precalculate )
 	{
@@ -1533,10 +1540,10 @@ void CVehicle::AI_GenerateWaypoint()
 {
 
 	Uint16    action		= 0U;
-	Uint32	  bonus_index	= 0U, 
+	Uint32	  bonus_index	= 0U,
   			  car_index		= 0U;
 	Uint32	  i				= 0U;
-	Uint32	  distance		= 0L, 
+	Uint32	  distance		= 0L,
 			  tmp_dist		= 0L;
 	bool	  bonus_found	= false;
 	Uint32	  bonus_list_index[DT_MAX_CHILDS];
@@ -1544,7 +1551,7 @@ void CVehicle::AI_GenerateWaypoint()
 	Uint32	  bonus_list_warrior[DT_MAX_DEADTOYS]	= { 30, 25, 15, 10, 20 };
 	Uint32	  bonus_list_explorer[DT_MAX_DEADTOYS]	= { 45, 15, 25, 12, 8 };
 	CVehicle  *ptr_veh = NULL;
-	
+
 	memset( bonus_list_index, 0U, DT_MAX_CHILDS * sizeof(Uint32) );
 	memset( bonus_list, 0U, DT_MAX_DEADTOYS * sizeof(Uint32) );
 
@@ -1607,11 +1614,11 @@ void CVehicle::AI_GenerateWaypoint()
 	switch( action )
 	{
 	case ACTION_ATTACK:
-		
+
 		// distance to closest enemy vehicle
 		i = car_index = 0;
 		distance = UINT_MAX;
-		
+
 		ptr_veh = _game->Auto;
 
 		while( i < _game->game_num_cars )
@@ -1619,26 +1626,26 @@ void CVehicle::AI_GenerateWaypoint()
 			if ( i != myIndex )
 			{
 				// Get nearest (non-team) car
-				
+
 				//tmp_dist = GetDistance( GetX(), GetY(), ptr_veh->GetX(), ptr_veh->GetY() );
 				tmp_dist = GetDistanceNSR( GetCX(), GetCY(), ptr_veh->GetCX(), ptr_veh->GetCY() );
-				
-				if ( ( distance > tmp_dist || ptr_veh->GetPossessTheGoal() ) 
-					&& ptr_veh->GetVisible() 
-					&& ( ptr_veh->GetTeam() != team ) ) 
+
+				if ( ( distance > tmp_dist || ptr_veh->GetPossessTheGoal() )
+					&& ptr_veh->GetVisible()
+					&& ( ptr_veh->GetTeam() != team ) )
 				{
 					car_index	= i;
-					distance	= tmp_dist; 
+					distance	= tmp_dist;
 				}
 			}
 
 			ptr_veh++;
 			i++;
 		}
-		
+
 		// fill-in new waypoint information
 		ptr_veh = &_game->Auto[car_index];
-		
+
 		waypoint.x				 = ptr_veh->GetCX();
 		waypoint.y				 = ptr_veh->GetCY();
 		waypoint.reached		 = false;
@@ -1650,19 +1657,19 @@ void CVehicle::AI_GenerateWaypoint()
 
 	break;
 
-	
+
 	case ACTION_DROPMINE:
 		ai_putmine = true;
 	break;
 
 
 	case ACTION_TAKEBONUS:
-		
+
 		// take random bonus from the list
 		bonus_index = bonus_list_index[AI_doFSM( bonus_list, DT_MAX_DEADTOYS )];
 
 		_game->Dtoys.GetToyRect( bonus_index, &rBonus );
-		
+
 		waypoint.x = rBonus.x;
 		waypoint.y = rBonus.y;
 		waypoint.reached = false;
@@ -1674,11 +1681,11 @@ void CVehicle::AI_GenerateWaypoint()
 
 	break;
 
-	
+
 	default:
 		LOG( "GAME_AI_ERROR: " << __FILE__ << " at line: " << __LINE__ );
 	break;
-	
+
 	}
 
 	// Adjust waypoint coordinates
@@ -1695,8 +1702,8 @@ void CVehicle::AI_ProcessWaypoint()
 	// get angle to the next waypoint
 	float x_dist = (waypoint.x - x);
 	float y_dist = (waypoint.y - y);
-		
-	if ( y_dist > 0 ) 
+
+	if ( y_dist > 0 )
 	{
 		ai_dest_angle = (float)(atan( x_dist / y_dist ) - PI_2);
 	}
@@ -1727,7 +1734,7 @@ void CVehicle::AI_ProcessWaypoint()
 	{
 		ai_turning = VR_RIGHT;
 	}
-	else 
+	else
 	{
 		ai_turning = VR_LEFT;
 	}
@@ -1743,10 +1750,10 @@ void CVehicle::AI_ProcessWaypoint()
 	{
 		la += 360.0f;
 	}
-	
+
 	if ( la > 360.0f )
 		la -= 90.0f;
-	
+
 	ai_final_frame = la * 0.1f; //la / 10;
 
 	//display_frame = la/10;
@@ -1771,7 +1778,7 @@ int CVehicle::AI_doFSM( Uint32 *proActions, Uint32 max_actions )
 	while ( val == 0 || val < 10 || !found )
 	{
 		val = rand() % 100;
-		
+
 		// at least one value that is higher than rnd
 		for ( i = 0; i < max_actions; i++ )
 		{
@@ -1797,7 +1804,7 @@ int CVehicle::AI_doFSM( Uint32 *proActions, Uint32 max_actions )
 	for ( i = j; i < max_actions; i++ )
 	{
 		tmp_val = val - proActions[i];
-		
+
 		if ( tmp_val >= 0 && tmp_val < ( val - proActions[index] ) && proActions[i] != 0 )
 			index = i;
 	}
