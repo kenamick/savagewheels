@@ -30,7 +30,7 @@
 #	include "Main.h"
 #endif
 
-#ifdef LINUX_BUILD
+#if defined(LINUX_BUILD) || defined(__EMSCRIPTEN__)
 #	include <dirent.h>
 #	include <sys/stat.h>
 #	include <stdio.h>
@@ -221,10 +221,10 @@ int CSwv_module::Load( char *filename, SWV_HEADER *swv_file )
 ///////////////////////////////////////////////////////////////////////////////
 int CSwv_module::SearchAndLoad( const char *search_dir )
 {
-#ifdef LINUX_BUILD
+#if defined(LINUX_BUILD) || defined(__EMSCRIPTEN__)
 	struct stat file_stat;
 	struct dirent *pDirEntry = NULL;
-	DIR	*pDir = NULL;	
+	DIR	*pDir = NULL;
 #else
 	struct _finddata_t  ffile;
 	long   hFile;
@@ -238,7 +238,7 @@ int CSwv_module::SearchAndLoad( const char *search_dir )
 		
 	vehicles = new SWV_HEADER[16];
 
-#ifndef LINUX_BUILD
+#if !defined(LINUX_BUILD) && !defined(__EMSCRIPTEN__)
 	sprintf( buf, "%s/%s", search_dir, "*.swv" );
 
 	if ( ( hFile = _findfirst( buf, &ffile ) ) != -1L )
@@ -248,7 +248,7 @@ int CSwv_module::SearchAndLoad( const char *search_dir )
 #endif
 	{
 
-#ifndef LINUX_BUILD
+#if !defined(LINUX_BUILD) && !defined(__EMSCRIPTEN__)
 		sprintf( buf, "%s/%s", search_dir, ffile.name );
 
 		//AppendToMultiLog( "Loading ...", buf, NULL );

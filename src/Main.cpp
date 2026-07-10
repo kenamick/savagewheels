@@ -102,7 +102,9 @@ int main( int argc, char *argv[] )
 	setenv("SDL_VIDEO_CENTERED", "1", 1);
 #else
 	sys_datadir = usr_cfgdir = usr_datadir = "./";
+#if defined(_WIN32)
 	_putenv("SDL_VIDEO_CENTERED=1");
+#endif
 #endif
 	int len;
 	len = snprintf(NULL, 0, "%s/graphics/gfxdata.kdf", sys_datadir);

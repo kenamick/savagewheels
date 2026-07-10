@@ -26,6 +26,10 @@
 
 #include "Main.h"
 
+#ifdef __EMSCRIPTEN__
+#	include <emscripten.h>
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////
 // Name: CSdl()
@@ -53,7 +57,14 @@ CSdl::CSdl()
 	bsound_initialized(false)
 {
 
-	keys = SDL_GetKeyState(NULL);
+	// NOTE: keys is fetched in Initialize(), after SDL_Init() has run --
+	// not here. Emscripten's SDL1 port only allocates its keyboard state
+	// buffer inside SDL_Init(), so fetching it before that (as this
+	// constructor runs, well before Initialize()) captures a NULL pointer
+	// that's never refreshed, silently breaking every IsKeyPressed() call.
+	// Native SDL returns a valid static array regardless of init order,
+	// which is why this only shows up under Emscripten.
+	keys = NULL;
 	_JoystickButtons = udtButtonsBuffer(30);
 
 #ifndef FONT_TTF
@@ -218,6 +229,12 @@ void CSdl::Flip()
 	{
 		FMOD_System_Update(fmod_system);
 	}
+#endif
+
+#ifdef __EMSCRIPTEN__
+	// yield to the browser event loop once per presented frame; the game's
+	// main loop otherwise blocks, which is not allowed on the web
+	emscripten_sleep(0);
 #endif
 }
 
@@ -481,7 +498,7 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, Uint32 *mask, SDL_Rect *rsurf )
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint32		i = 0U, j = 0U;
+	Uint32		i = 0U, j = 0U;
 	Uint32				*mask_val = NULL;
 
 	Slock( screen );
@@ -534,7 +551,7 @@ void CSdl::BlitShadow16( Sint32 x, Sint32 y, SDL_Surface *surf )
 	if ( ! _game->game_shadows ) 
 		return;
 
-	register Uint16 i = 0U, j = 0U;
+	Uint16 i = 0U, j = 0U;
 	Uint16 *pixel1 = NULL, *pixel2 = NULL;
 	SDL_Rect rSurf1;
 
@@ -603,7 +620,19 @@ void CSdl::BlitShadow32( Sint32 x, Sint32 y, SDL_Surface *surf )
 	{
 		for ( i = rSurf1.x; i < rSurf1.w; i++ )
 		{
+			// NOTE: on Emscripten, LoadBitmap()'s colorkey emulation already
+			// zeroes out RGBA for every keyed (background) pixel -- see the
+			// __EMSCRIPTEN__ block there -- so MAGENTA_888 no longer exists
+			// anywhere in this surface to compare against; every pixel would
+			// mismatch and the whole bounding box would be treated as
+			// opaque (solid rectangular shadow). The alpha byte set by that
+			// same colorkey pass is the correct signal instead: 0 means
+			// "this was a keyed-out background pixel".
+#ifdef __EMSCRIPTEN__
+			if ( ( (*pixel2 >> 24) & 0xFF ) != 0 )
+#else
 			if ( *pixel2 != MAGENTA_888 )
+#endif
 				*pixel1 = (*pixel1 & SHADOW_MASK888) >> 1;
 				//*pixel1 =  ((src_color & 0xF7DE) >> 1) + ((dst_color & 0xF7DE) >> 1);
 
@@ -726,7 +755,14 @@ void CSdl::MakeBoolMask32( SDL_Surface *surf, Uint32 *&mask )
 		for ( Uint32 i = 0; i < width; i++, pixel++ )
 		{
 			Uint32 pos = width * j + i;
+			// see the __EMSCRIPTEN__ note in BlitShadow32() above: check the
+			// alpha byte the colorkey emulation set, not the (by now erased)
+			// RGB key value.
+#ifdef __EMSCRIPTEN__
+			mask[pos] = ( ( (*pixel >> 24) & 0xFF ) != 0 ) ? 1 : 0;
+#else
 			mask[pos] = ( *pixel != MAGENTA ) ? 1 : 0;
+#endif
 		}
 
 		// y-padding offset
@@ -939,6 +975,12 @@ bool CSdl::Initialize( CGame *game, int nWidth, int nHeight, int nBpp, bool bFul
 		LOG("SDL Error: ...failed to open SDL :  " << SDL_GetError());
 		return false;
 	}
+
+#ifdef __EMSCRIPTEN__
+	keys = SDL_GetKeyboardState(NULL);
+#else
+	keys = SDL_GetKeyState(NULL);
+#endif
 
 	// get video capabilities
 	SDL_VideoDriverName(temp, 256);
@@ -1369,15 +1411,39 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 
 	fseek( fp, file_offset, SEEK_CUR );
 
-//	if ( ( sdl_rw = SDL_RWFromMem( pimg, file_size )) == NULL )
-	if ( ( sdl_rw = SDL_RWFromFP( fp, 1 )) == NULL )
+#ifdef __EMSCRIPTEN__
+	// Emscripten's SDL1 port does not implement SDL_RWFromFP; read the
+	// embedded bitmap into memory instead and wrap that in an RWops.
+	void *buf = malloc( file_size );
+	if ( buf == NULL || fread( buf, 1, file_size, fp ) != file_size )
+	{
+		LOG("...failed to read bitmap data for : " << filename );
+		fclose( fp );
+		if ( buf ) free( buf );
+		return NULL;
+	}
+	fclose( fp );
+
+	// NOTE: Emscripten's SDL_RWFromMem returns an index into an internal
+	// array (not a real pointer), so a return value of 0 is a valid RWops,
+	// not a failure -- unlike native SDL, this call has no failure sentinel
+	// to check here.
+	sdl_rw = SDL_RWFromMem( buf, file_size );
+
+	sdl_surf = SDL_LoadBMP_RW( sdl_rw, 1 );
+	free( buf );
+
+	if ( sdl_surf == NULL )
+#else
+	if ( ( sdl_rw = SDL_RWFromFP( fp, (SDL_bool)1 )) == NULL )
 	{
 		LOG("...failed to create RWops with : " << filename << " Error: " << SDL_GetError());
 		return NULL;
 	}
 
 	// load bitmap from memory handler
-	if ( ( sdl_surf = SDL_LoadBMP_RW( sdl_rw, 1 )) == NULL ) 
+	if ( ( sdl_surf = SDL_LoadBMP_RW( sdl_rw, 1 )) == NULL )
+#endif
 	{
 		LOG("...failed to load surface into memory from : " << filename
 				<< " Error: " << SDL_GetError());
@@ -1386,7 +1452,60 @@ SDL_Surface* CSdl::LoadBitmap( const char *filename, int32_t file_offset, Uint32
 
 	// set color key & alpha BEFORE setting DisplayFormat!
 	if ( color_key != NO_COLORKEY )
+	{
 		SDL_SetColorKey( sdl_surf, SDL_SRCCOLORKEY, color_key );
+
+#ifdef __EMSCRIPTEN__
+		// Emscripten's SDL1 port makes SDL_SetColorKey a no-op (its canvas
+		// backend has no notion of a keyed-transparent color). Punch the
+		// same transparency in manually, directly on the decoded RGBA8888
+		// surface (see SDL.makeSurface in the Emscripten SDL1 port -- all
+		// surfaces there are 32bpp RGBA, R in the lowest byte). This runs
+		// once per bitmap load, before SDL_DisplayFormat/blitting, and
+		// SDL_UnlockSurface below syncs the change back into the surface's
+		// backing canvas so later blits respect it.
+		//
+		// Two things beyond a plain exact-match key are needed here:
+		//  1. A color-distance tolerance, not exact equality: the source
+		//     BMPs are anti-aliased against the key color, so edge pixels
+		//     are a blend that rarely lands on the exact key value and
+		//     would otherwise survive as a speckled halo.
+		//  2. Zeroing the RGB channels too, not just alpha: a matched
+		//     pixel that keeps its magenta RGB with alpha=0 renders fine
+		//     under software/no-GPU canvas compositing (alpha=0 means the
+		//     color is ignored), but a real GPU-accelerated canvas can
+		//     still leak a trace of that stored color at edges. Zeroing
+		//     RGB leaves nothing to leak.
+		SDL_LockSurface( sdl_surf );
+
+		int key_r = (int)( (color_key >> 16) & 0xFF );
+		int key_g = (int)( (color_key >> 8) & 0xFF );
+		int key_b = (int)( color_key & 0xFF );
+
+		Uint8 *pixels = (Uint8 *)sdl_surf->pixels;
+		int num_pixels = sdl_surf->w * sdl_surf->h;
+
+		const int COLORKEY_TOLERANCE2 = 90 * 90; // squared distance in RGB space
+
+		for ( int p = 0; p < num_pixels; p++ )
+		{
+			Uint8 *px = pixels + p * 4;
+			int dr = (int)px[0] - key_r;
+			int dg = (int)px[1] - key_g;
+			int db = (int)px[2] - key_b;
+
+			if ( dr*dr + dg*dg + db*db <= COLORKEY_TOLERANCE2 )
+			{
+				px[0] = 0;
+				px[1] = 0;
+				px[2] = 0;
+				px[3] = 0;
+			}
+		}
+
+		SDL_UnlockSurface( sdl_surf );
+#endif
+	}
 
 	if ( alpha_value != NO_ALPHA )
 		SDL_SetAlpha( sdl_surf, SDL_SRCALPHA, (Uint8)alpha_value );
@@ -1424,7 +1543,7 @@ SDL_Surface* CSdl::CreateEmptySurface( int width, int height )
 ///////////////////////////////////////////////////////////////////////
 SDL_Color CreateColor( int r, int g, int b, int a )
 {
-	SDL_Color clr = { r, g, b, a};
+	SDL_Color clr = { (Uint8)r, (Uint8)g, (Uint8)b, (Uint8)a};
 	return clr;
 }
 
@@ -1435,7 +1554,7 @@ SDL_Color CreateColor( int r, int g, int b, int a )
 ///////////////////////////////////////////////////////////////////////
 SDL_Color CreateColor( int r, int g, int b )
 {
-	SDL_Color clr = { r, g, b, 0};
+	SDL_Color clr = { (Uint8)r, (Uint8)g, (Uint8)b, 0};
 	return clr;
 }
 

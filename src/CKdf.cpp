@@ -26,7 +26,7 @@
 
 #include "Main.h"
 
-#ifdef LINUX_BUILD
+#if defined(LINUX_BUILD) || defined(__EMSCRIPTEN__)
 #	include <dirent.h>
 #	include <sys/stat.h>
 #else
@@ -122,12 +122,12 @@ int CKdf_Packeger::Open( const char *kdf_pathname )
 ///////////////////////////////////////////////////////////////////////////////////////
 int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name ) 
 {
-#ifndef LINUX_BUILD
+#if !defined(LINUX_BUILD) && !defined(__EMSCRIPTEN__)
 	struct   _finddata_t  ffile;
 	long     hFile;
 #else
 	DIR      *pDir = NULL;
-        struct dirent *pDirEntry = NULL;  
+        struct dirent *pDirEntry = NULL;
 	struct stat file_stat;
 #endif
 
@@ -145,18 +145,18 @@ int CKdf_Packeger::CreateFromDir( const char *kdf_name, char *dir_name )
 	//paths = (char **) new char[600][128];
 
 
-#ifdef LINUX_BUILD
+#if defined(LINUX_BUILD) || defined(__EMSCRIPTEN__)
 	pDir = opendir( dir_name );
 	if ( pDir != NULL )
 #else
-	sprintf( filemask, "%s/%s", dir_name, "*.bmp" );	
+	sprintf( filemask, "%s/%s", dir_name, "*.bmp" );
 
 	// get total files and fill info
 	if ( ( hFile = _findfirst( filemask, &ffile ) ) != -1L )
 #endif
 	{
 
-#ifndef LINUX_BUILD
+#if !defined(LINUX_BUILD) && !defined(__EMSCRIPTEN__)
 
 		filenumber++;
 		strcpy( pfiles[filenumber-1].filename, ffile.name );

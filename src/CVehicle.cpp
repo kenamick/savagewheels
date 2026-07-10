@@ -1173,7 +1173,7 @@ void CVehicle::Update()
 	center_x = x + (width >> 1);
 	center_y = y + (height >> 1);
 
-	SDL_Rect rect = {0, 0, width, height};
+	SDL_Rect rect = {0, 0, (int)width, (int)height};
 
 	/*
 	 * Update bonuses states
