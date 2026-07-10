@@ -259,12 +259,14 @@ if (EMSCRIPTEN)
 	# synchronous, buffer-based decoder that works with any RWops.
 	set(EM_LINK_FLAGS
 		"${EM_PORT_FLAGS} -sASYNCIFY -sINITIAL_MEMORY=268435456 -sEXIT_RUNTIME=1 -sSTB_IMAGE=1 \
+		--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/tools/shell_minimal_itch.html \
 		--preload-file ${EM_DATA_DIR}/graphics@/graphics \
 		--preload-file ${EM_DATA_DIR}/autos@/autos \
 		--preload-file ${EM_DATA_DIR}/sound@/sound \
 		--preload-file ${EM_DATA_DIR}/bindings.xml@/bindings.xml")
 	set_target_properties(savagewheels PROPERTIES
 		LINK_FLAGS "${EM_LINK_FLAGS}"
+		OUTPUT_NAME "index"
 		SUFFIX ".html")
 endif()
 
