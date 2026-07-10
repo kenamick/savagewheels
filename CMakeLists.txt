@@ -4,8 +4,8 @@ project(savagewheels)
 ### Defaults
 set(APP_ARCH "")
 set(APP_VER_MAJ "1")
-set(APP_VER_MIN "6")
-set(APP_VER_PATCH "1")
+set(APP_VER_MIN "7")
+set(APP_VER_PATCH "0")
 
 ### check for required libs
 if (NOT EMSCRIPTEN)

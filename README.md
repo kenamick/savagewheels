@@ -7,6 +7,7 @@ Savage Wheels is a 2D car crashing arcade game. You take part of a deadly tourna
 
 # Install
 
+  * **Web**: The easiest way is to play in the browser on [itch.io](https://kenamick.itch.io/savage-wheels).
   * **ArchLinux** users may install from [AUR](https://aur.archlinux.org/packages/savagewheels/).
   * **Gentoo** users may install from the [packages repository](https://packages.gentoo.org/packages/games-arcade/savagewheels).
   * An [Open Pandora](https://repo.openpandora.org/?page=detail&app=SavageWheels-Loic2003) build is also available.
