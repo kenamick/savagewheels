@@ -30,7 +30,7 @@
 // Name: CGame()
 // Desc:
 //////////////////////////////////////////////////////////////////////
-CGame::CGame() 
+CGame::CGame()
 :	mpf( 0.0f ),
 	bRunning( true ),
     quit_dialog( false ),
@@ -49,7 +49,7 @@ CGame::CGame()
 	Gamemode( GM_1BOT_MELEE ),
 	Gamestate( GS_MENU ),
 	game_hitmode( false )
-{ 
+{
 
 	for( int i = 0; i < NUM_BACKGROUNDS; i++ )
 		back[i] = NULL;
@@ -152,7 +152,7 @@ bool CGame::LoadGame()
 	for ( i = 1; i < 31; i++ )
 	{
 		sprintf( buf, "gfx/swlogo/sw%d.bmp", i );
-		if ( ( splash_logo[i - 1] = Sdl.LoadBitmap( buf, BLACK ) ) == NULL ) 
+		if ( ( splash_logo[i - 1] = Sdl.LoadBitmap( buf, BLACK ) ) == NULL )
 			return false;
 	}
 
@@ -161,7 +161,7 @@ bool CGame::LoadGame()
 	// randomize seed
 	srand( (unsigned)SDL_GetTicks() );
 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 
 	// search for vehicles
 	tmp.resize(strlen(sys_datadir));
@@ -170,14 +170,14 @@ bool CGame::LoadGame()
 		return false;
 
 	// check for vehicle number
-	if ( Swv.GetVehicles() < 4 ) 
+	if ( Swv.GetVehicles() < 4 )
 	{
 		AppendToLog( "Not enough vehicles in the /auto dir!" );
 		AppendToLog( "At leaset 4 vehicle-files needed." );
 		return false;
 	}
 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 
 	// load sounds & music
 	if ( ! Sounds.Initialize( &Sdl ) )
@@ -190,62 +190,62 @@ bool CGame::LoadGame()
 		AppendToLog( "Loading sfx...successful!" );
 	}
 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 
 	/*// load menu
-	if ( !Menu.Initialize() ) 
+	if ( !Menu.Initialize() )
 	{
 	AppendToLog( "...failed to initialize CMainMenu() class!" );
 	return false;
 	}*/
 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 
 	this->Gamestate	= GS_MENU;
 	this->game_shadows = true;
 
 	// {! -> to add}
-	if ( ( getready = Sdl.LoadBitmap( "gfx/interf/getready.bmp" )) == NULL ) return 0;  
+	if ( ( getready = Sdl.LoadBitmap( "gfx/interf/getready.bmp" )) == NULL ) return 0;
 	UpdateSplash();
 
-	// if ( (sprite_tire[0] = Sdl.LoadBitmap( "gfx/tire/tire0.bmp", MAGENTA )) == NULL ) return 0; 
-	// UpdateSplash();  // UPDATESPLASH... 
+	// if ( (sprite_tire[0] = Sdl.LoadBitmap( "gfx/tire/tire0.bmp", MAGENTA )) == NULL ) return 0;
+	// UpdateSplash();  // UPDATESPLASH...
 
 	// {!}
 
 	if ( (back[0] = Sdl.LoadBitmap( "gfx/interf/back.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (back[1] = Sdl.LoadBitmap( "gfx/interf/map1.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (back[2] = Sdl.LoadBitmap( "gfx/interf/map2.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (back[3] = Sdl.LoadBitmap( "gfx/interf/map3.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (back[4] = Sdl.LoadBitmap( "gfx/interf/map5.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (scales[0] = Sdl.LoadBitmap( "gfx/interf/sk1.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (scales[1] = Sdl.LoadBitmap( "gfx/interf/sk2.bmp" )) == NULL ) return false;
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 	//if ( (but_quit = Sdl.LoadBitmap( "gfx/interf/butquit.bmp" )) == NULL ) return false;
 	for ( i = 0; i < 5; i++)
 	{
 		sprintf( buf, "gfx/interf/qg%d.bmp", i );
 		if ( (but_quit[i] = Sdl.LoadBitmap( buf, MAGENTA )) == NULL ) return false;
 	}
-	UpdateSplash();  // UPDATESPLASH... 
-	if ( (but_pause = Sdl.LoadBitmap( "gfx/interf/butpaz.bmp", MAGENTA )) == NULL ) return false; 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
+	if ( (but_pause = Sdl.LoadBitmap( "gfx/interf/butpaz.bmp", MAGENTA )) == NULL ) return false;
+	UpdateSplash();  // UPDATESPLASH...
 	if ( (winneris = Sdl.LoadBitmap( "gfx/interf/winner.bmp", BLACK )) == NULL ) return false;
 	UpdateSplash();  // UPDATESPLASH...  16
 	if ( (self_dest = Sdl.LoadBitmap( "gfx/interf/selfd.bmp", BLACK )) == NULL ) return false;
 
 	pause_surf = Sdl.CreateEmptySurface( 640, 480 );
 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
 
 	// inicializirai Clasovete
-	if ( !Dtoys.Initialize( this ) ) 
+	if ( !Dtoys.Initialize( this ) )
 	{
 		AppendToLog( "...failed to initialize CDeadToys() class!" );
 		return false;
@@ -253,12 +253,12 @@ bool CGame::LoadGame()
 	else
 		AppendToLog( "Initializing CDeadToys() class...successful." );
 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
 
-	if ( !Anims.Initialize( this ) ) 
+	if ( !Anims.Initialize( this ) )
 	{
 		AppendToLog( "...failed to initialize CAnimations() class!" );
 		return false;
@@ -266,12 +266,12 @@ bool CGame::LoadGame()
 	else
 		AppendToLog( "Initializing CAnimations() class...successful." );
 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
 
-	if ( !Mines.Initialize( this ) ) 
+	if ( !Mines.Initialize( this ) )
 	{
 		AppendToLog( "...failed to initialize CLandMines() class!" );
 		return false;
@@ -279,22 +279,22 @@ bool CGame::LoadGame()
 	else
 		AppendToLog( "Initializing CLandMines() class...successful." );
 
-	UpdateSplash();  // UPDATESPLASH... 21 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
+	UpdateSplash();  // UPDATESPLASH... 21
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
 
-	/*UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH...  
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
-	UpdateSplash();  // UPDATESPLASH... 
+	/*UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
+	UpdateSplash();  // UPDATESPLASH...
 	UpdateSplash();  // UPDATESPLASH... */
 
-	/*    // Za GAMEPLAY_only  
+	/*    // Za GAMEPLAY_only
 	game_frags = 43;
 	Gameplayers = GP_1PLAYER;
 	game_bots = true;
@@ -309,7 +309,7 @@ bool CGame::LoadGame()
 		RELEASE_SURF( splash_logo[i] );
 
 	// load menu
-	if ( ! Menu.Initialize( this ) ) 
+	if ( ! Menu.Initialize( this ) )
 	{
 		AppendToLog( "...failed to initialize CMainMenu() class!" );
 		return false;
@@ -318,13 +318,13 @@ bool CGame::LoadGame()
 	Menu.LoadSettings();
 
 	// Turn off music if muted
-	if (Sdl.GetMusicVolume() <= 0) 
+	if (Sdl.GetMusicVolume() <= 0)
 	{
 		Sounds.StopMusic();
 	}
-	else 
+	else
 	{
-		Sounds.Play( MUS_MENU, true );	
+		Sounds.Play( MUS_MENU, true );
 	}
 
 	return true;
@@ -339,7 +339,7 @@ bool CGame::LoadGame()
 void CGame::UpdateSplash()
 {
 	static int cur_frame = 0;
- 
+
 	Sdl.BlitNow( 0, 0, splash );
 	Sdl.BlitNow( 250, 90, splash_logo[cur_frame] );
 	Sdl.Flip();
@@ -356,17 +356,17 @@ void CGame::UpdateSplash()
 ///////////////////////////////////////////////////////////////////////
 void CGame::Execute( bool bFullScreen, bool bHardware )
 {
-  
+
   float    ftimer	= 0.0f;
   float    ftimediff = 0.0f;
   float    ffpstime	= 0.0f;
-  int	   fps		= 0, 
+  int	   fps		= 0,
 		   frames	= 0;
   char	   szfps[3]	= { '0', '0' };
   int      i		= 0;
-  int	   dx		= 0, 
+  int	   dx		= 0,
 		   dy		= 0;
-  Uint32   winner_index		= 0U, 
+  Uint32   winner_index		= 0U,
 		   winner_index2	= 0U;
   Uint32   time_destroyem	= 0U;
   Uint32   time_showwinner	= 0U;
@@ -383,14 +383,14 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
   bool	   game_end		= false;
   float    qg_frame		= 0.0f;
   bool	   wait_key		= false;
-  Uint32   time_round	= 0U, 
+  Uint32   time_round	= 0U,
 		   tv		= 0U;
   bool	   at_exit	= false;
   CVehicle *ptr_veh	= NULL;
 
   p1_auto_index = 99;
   p2_auto_index = 99;
-  
+
   // init engine
   bRunning = Sdl.Initialize( this, 640, 480, 16, bFullScreen, bHardware );
 
@@ -402,7 +402,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	  bRunning = LoadGame();
 
 	  LOG("Starting Game loop...");
-	  
+
 	  ftimer = (float)SDL_GetTicks();
   }
 
@@ -421,9 +421,9 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	}
 	frames++;
 	//fps = 1.0 / mpf;
-  
-	// get input  
-	Sdl.GetInput(); 
+
+	// get input
+	Sdl.GetInput();
 	//if ( Sdl.IsKeyPressed(SDLK_ESCAPE] )
 	//bRunning = false;
 
@@ -432,7 +432,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	{
 		change_map_key = true;
 		change_map = true;
-	
+
 		if ( change_map )
 		{
 			cur_map++;
@@ -448,20 +448,20 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	{
 		change_shadows_key = true;
 		change_shadows = true;
-	
+
 		if ( change_shadows )
 		{
-			if ( game_shadows ) 
+			if ( game_shadows )
 				game_shadows = false;
 			else
 				game_shadows = true;
-			
+
 			change_shadows = false;
 		}
 	}
 	if ( !Sdl.IsKeyPressed(SDLK_F9) )
 		change_shadows_key = false;
-	
+#ifndef __EMSCRIPTEN__
 	if ( Sdl.IsKeyPressed(SDLK_F11) && !toggle_fullscreen )
 	{
 	  toggle_fullscreen = true;
@@ -469,20 +469,20 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 	}
 	if ( !Sdl.IsKeyPressed(SDLK_F11) )
 	  toggle_fullscreen = false;
-
+#endif
 	// music on/off
 	if ( Sdl.IsKeyPressed(SDLK_F4) && !music_off_key )
 	{
 		music_off_key = true;
 		music_off = true;
-	
+
 		if ( music_off )
 		{
-			if ( Sounds.IsMusicPlaying() ) 
+			if ( Sounds.IsMusicPlaying() )
 				Sounds.StopMusic();
 			else
 				Sounds.ResumeMusic();
-			
+
 			music_off = false;
 		}
 	}
@@ -490,7 +490,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		music_off_key = false;
 
 	if ( Sdl.IsKeyPressed(SDLK_F6) )
-		show_fps = !show_fps;	
+		show_fps = !show_fps;
 
 #ifdef _DEBUG
 	if ( Sdl.IsKeyPressed(SDLK_F12) )
@@ -513,15 +513,15 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		{
 			at_exit = true;
 
-			if ( ( splash = Sdl.LoadBitmap( "gfx/interf/advert.bmp" )) == NULL ) 
-				at_exit = false;  
-	
+			if ( ( splash = Sdl.LoadBitmap( "gfx/interf/advert.bmp" )) == NULL )
+				at_exit = false;
+
 			time_destroyem = Timer.Time() + 15000;
 		}
 
 		if ( !at_exit || time_destroyem > Timer.Time() )
 		{
-			Sdl.BlitNow( 0, 0, splash ); 
+			Sdl.BlitNow( 0, 0, splash );
 
 			for ( i = 0; i < 255; i++ )
 			{
@@ -553,11 +553,11 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		}
 
 		// play once volume is > 0
-		if ( !Sounds.IsMusicPlaying() ) 
+		if ( !Sounds.IsMusicPlaying() )
 		{
 			if (Sdl.GetMusicVolume() > 0)
 				Sounds.Play( MUS_MENU, true );
-		}		
+		}
 
 	break;
 
@@ -566,8 +566,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 
 		if ( wait_key )
 		{
-			Sdl.BlitNow( 0, 0, getready );			
-			
+			Sdl.BlitNow( 0, 0, getready );
+
 			for ( i = 0; i < 255; i++ )
 			{
 				if ( Sdl.IsKeyPressed(i) )
@@ -616,7 +616,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		{
 			game_paused_key = true;
 
-			if ( game_paused ) 
+			if ( game_paused )
 			{
 				game_paused = false;
 				Timer.Unpause(); // unpause timer
@@ -634,18 +634,18 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		  game_paused_key = false;
 
 
-		if ( !game_paused && !quit_dialog ) 
+		if ( !game_paused && !quit_dialog )
 		{
 			// blit background
 			Sdl.BlitNow( 0, 0, back[0] );
 			Sdl.BlitNow( 6, 2, back[cur_map] );
-	
+
 			// update animations
 			Anims.Update();
 			// update toys
 			Dtoys.Update();
 			Mines.Update();
-	
+
 			// update vehicles
 			ptr_veh = Auto;
 			for ( i = 0; i < game_num_cars; i++, ptr_veh++ )
@@ -662,19 +662,19 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 					Sdl.BlitNow( 172, 429, ptr_veh->GetDriverNameSurface() );
 					break;
 
-				case 2:					
+				case 2:
 					Sdl.BlitNow( 333, 429, ptr_veh->GetDriverNameSurface() );
 					break;
 
-				case 3:					
+				case 3:
 					Sdl.BlitNow( 493, 429, ptr_veh->GetDriverNameSurface() );
 					break;
 				}
-			
+
 				// check for frag-winner
 				if ( Gametype == GT_FRAGS )
 				{
-					if ( ptr_veh->GetFrags() >= game_frags ) 
+					if ( ptr_veh->GetFrags() >= game_frags )
 					{
 						winner_index = i;
 						game_end = true;
@@ -735,7 +735,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 						{
 							if ( ptr_veh->GetFrags() > Auto[winner_index].GetFrags() )
 								winner_index = i;
-							else if ( ptr_veh->GetFrags() == Auto[winner_index].GetFrags() 
+							else if ( ptr_veh->GetFrags() == Auto[winner_index].GetFrags()
 									  && ptr_veh->GetTeam() != Auto[winner_index].GetTeam() )
 							{
 								winner_index = 9999; // game is draw
@@ -761,7 +761,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 							{
 								winner_index2 = i;
 								break;
-							}	
+							}
 					}
 				}
 
@@ -789,7 +789,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			if ( Sdl.IsKeyPressed(SDLK_y) )
 			{
 				// reset campaign level
-				if ( ( Gameplayers == GP_JUDY_CAMPAIGN || Gameplayers == GP_KEETH_CAMPAIGN ) ) 
+				if ( ( Gameplayers == GP_JUDY_CAMPAIGN || Gameplayers == GP_KEETH_CAMPAIGN ) )
 					player_level = 1;
 
 				quit_dialog = false;
@@ -829,9 +829,9 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 				Sounds.StopMusic();
 				Sounds.Play( MUS_MENU, true );
 			}
-			
+
 			// advance campaign level if player won
-			if ( ( Gameplayers == GP_JUDY_CAMPAIGN || Gameplayers == GP_KEETH_CAMPAIGN ) ) 
+			if ( ( Gameplayers == GP_JUDY_CAMPAIGN || Gameplayers == GP_KEETH_CAMPAIGN ) )
 			{
 				if ( winner_index == 0 )
 					player_level++;
@@ -857,8 +857,8 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 			// update toys
 			Dtoys.Update();
 			Mines.Update();
-	
-			// update vehicles	
+
+			// update vehicles
 			ptr_veh = Auto;
 			for ( i = 0; i < game_num_cars; i++, ptr_veh++ )
 			{
@@ -874,14 +874,14 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 					Sdl.BlitNow( 172, 429, ptr_veh->GetDriverNameSurface() );
 					break;
 
-				case 2:					
+				case 2:
 					Sdl.BlitNow( 333, 429, ptr_veh->GetDriverNameSurface() );
 					break;
 
-				case 3:					
+				case 3:
 					Sdl.BlitNow( 493, 429, ptr_veh->GetDriverNameSurface() );
 					break;
-			
+
 				}
 
 				// destroy looser-vehicles
@@ -893,7 +893,7 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 				}
 			}
 
-			if ( time_destroyem == 0 ) 
+			if ( time_destroyem == 0 )
 			  time_destroyem = Timer.Time() + intGetRnd( 1800, 3000 );
 
 			if ( Gamemode == GM_2V2 )
@@ -969,10 +969,10 @@ void CGame::Execute( bool bFullScreen, bool bHardware )
 		Sdl.DrawNum( SCREEN_WIDTH - 40, 430, szfps );
 		//Sdl.DrawNum( 500, 400, szfps );
 	}
-	
+
 	// flip buffers
-	Sdl.Flip();   
-    
+	Sdl.Flip();
+
   }
 
 
@@ -1031,12 +1031,12 @@ void CGame::SetupVehicles()
 		// setup 2-PLAYER_GAME with bots
 		// ------------------------------
 
-		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[p1_auto_index]), 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[p1_auto_index]), 0 ) )
 		{
 			AppendToLog( "Error initializing vehicle #0 !" );
 			return;
 		}
-		if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[p2_auto_index]), 1 ) ) 
+		if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[p2_auto_index]), 1 ) )
 		{
 			AppendToLog( "Error initializing vehicle #1 !" );
 			return;
@@ -1065,7 +1065,7 @@ void CGame::SetupVehicles()
 
 			for ( i = 2; i < game_num_cars; i++ )
 			{
-				if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-2]]), i ) ) 
+				if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-2]]), i ) )
 				{
 					AppendToLog( "Error initializing vehicle [2P]!" );
 					return;
@@ -1080,7 +1080,7 @@ void CGame::SetupVehicles()
 			Auto[0].Create();
 			Auto[0].SetTeam( 1 );
 			Auto[0].SetControl( VC_PLAYER1 );
-			Auto[1].Create(); 
+			Auto[1].Create();
 			Auto[1].SetControl( VC_PLAYER2 );
 			Auto[1].SetTeam( 2 );
 
@@ -1105,7 +1105,7 @@ void CGame::SetupVehicles()
 
 			for ( i = 2; i < game_num_cars; i++ )
 			{
-				if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-2]]), i ) ) 
+				if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-2]]), i ) )
 				{
 					AppendToLog( "Error initializing vehicle [2P]!" );
 					return;
@@ -1121,7 +1121,7 @@ void CGame::SetupVehicles()
 			Auto[0].Create();
 			Auto[0].SetTeam( 0 );
 			Auto[0].SetControl( VC_PLAYER1 );
-			Auto[1].Create(); 
+			Auto[1].Create();
 			Auto[1].SetControl( VC_PLAYER2 );
 			Auto[1].SetTeam( 0 );
 		}
@@ -1131,7 +1131,7 @@ void CGame::SetupVehicles()
 			Auto[0].Create();
 			Auto[0].SetTeam( 1 );
 			Auto[0].SetControl( VC_PLAYER1 );
-			Auto[1].Create(); 
+			Auto[1].Create();
 			Auto[1].SetControl( VC_PLAYER2 );
 			Auto[1].SetTeam( 2 );
 		}
@@ -1142,7 +1142,7 @@ void CGame::SetupVehicles()
 	}
 	else if ( Gameplayers == GP_1PLAYER )
 	{
-		// setup 1-PLAYER_GAME 
+		// setup 1-PLAYER_GAME
 		// ------------------------------
 
 		// get 3 dif vehicles indices
@@ -1164,7 +1164,7 @@ void CGame::SetupVehicles()
 		}
 
 
-		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[p1_auto_index]), 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[p1_auto_index]), 0 ) )
 		{
 			AppendToLog( "Error initializing vehicle #0 !" );
 			return;
@@ -1180,7 +1180,7 @@ void CGame::SetupVehicles()
 
 		for ( int i = 1; i < game_num_cars; i++ )
 		{
-			if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-1]]), i ) ) 
+			if ( !Auto[i].Initialize( this, &(Swv.GetVehiclesData()[ai_car[i-1]]), i ) )
 			{
 				AppendToLog( "Error initializing vehicle!" );
 				return;
@@ -1190,7 +1190,7 @@ void CGame::SetupVehicles()
 			Auto[i].SetAttirbs( Gamediff );
 			Auto[i].Create();
 		}
-		
+
 		Auto[0].SetControl( VC_PLAYER1 );
 		//Auto[0].SetControl( VC_AI  );
 		Auto[0].Create();
@@ -1198,22 +1198,22 @@ void CGame::SetupVehicles()
 	}
 	else if ( Gameplayers == GP_JUDY_CAMPAIGN )	  /* CAMPAIGNS - JUDY */
 	{
-		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DIABLO]]), 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DIABLO]]), 0 ) )
 		{
 			AppendToLog( "Error initializing vehicle JUDY vehicle !" );
 			return;
 		}
-		
+
 		Auto[0].SetControl( VC_PLAYER1 ); // player 1 controls
-		
+
 		switch( player_level )
 		{
 
 		case 1:  // LEVEL 1
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 1 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #1 !" );
 				return;
@@ -1222,15 +1222,15 @@ void CGame::SetupVehicles()
 			Auto[1].SetAttirbs( Gamediff );
 			Auto[0].Create();
 			Auto[1].Create();
-			
+
 			break;
 
-		
+
 		case 2:  // LEVEL 2
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 1 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #2 !" );
 				return;
@@ -1239,15 +1239,15 @@ void CGame::SetupVehicles()
 			Auto[1].SetAttirbs( Gamediff );
 			Auto[0].Create();
 			Auto[1].Create();
-			
+
 			break;
 
-		
+
 		case 3:  // LEVEL 3
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 1 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #3 !" );
 				return;
@@ -1258,17 +1258,17 @@ void CGame::SetupVehicles()
 			Auto[1].Create();
 			break;
 
-		
+
 		case 4:  // LEVEL 4
 			game_num_cars = 3;
 			game_time = 300;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 2 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.2 !" );
 				return;
@@ -1287,18 +1287,18 @@ void CGame::SetupVehicles()
 		case 5:  // LEVEL 5
 			game_num_cars = 4;
 			game_time = 300;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DODGE]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DODGE]]), 1 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 2 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.2 !" );
 				return;
 			}
-			if ( !Auto[3].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 3 ) ) 
+			if ( !Auto[3].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 3 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #4.3 !" );
 				return;
@@ -1312,15 +1312,15 @@ void CGame::SetupVehicles()
 			Auto[3].SetAttirbs( Gamediff );
 			Auto[0].Create(); Auto[1].Create();
 			Auto[2].Create(); Auto[3].Create();
-			
+
 			break;
 
 
 		case 6:  // LEVEL 6
 			game_num_cars = 2;
 			game_time = 300;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DTRUCK]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DTRUCK]]), 1 ) )
 			{
 				AppendToLog( "Error initializing JUDY OPPONENT #6 !" );
 				return;
@@ -1329,7 +1329,7 @@ void CGame::SetupVehicles()
 			Auto[1].SetAttirbs( Gamediff );
 			Auto[0].Create();
 			Auto[1].Create();
-			
+
 			break;
 
 		case 7: // WINER - JUDY
@@ -1340,22 +1340,22 @@ void CGame::SetupVehicles()
 	}
 	else if ( Gameplayers == GP_KEETH_CAMPAIGN )	  /* CAMPAIGNS - KEETH */
 	{
-		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DODGE]]), 0 ) ) 
+		if ( !Auto[0].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DODGE]]), 0 ) )
 		{
 			AppendToLog( "Error initializing vehicle KEETH vehicle !" );
 			return;
 		}
-		
+
 		Auto[0].SetControl( VC_PLAYER1 ); // player 1 controls
-		
+
 		switch( player_level )
 		{
 
 		case 1:  // LEVEL 1
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #1 !" );
 				return;
@@ -1364,15 +1364,15 @@ void CGame::SetupVehicles()
 			Auto[1].SetAttirbs( Gamediff );
 			Auto[0].Create();
 			Auto[1].Create();
-			
+
 			break;
 
-		
+
 		case 2:  // LEVEL 2
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 1 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #2 !" );
 				return;
@@ -1381,20 +1381,20 @@ void CGame::SetupVehicles()
 			Auto[1].SetAttirbs( Gamediff );
 			Auto[0].Create();
 			Auto[1].Create();
-			
+
 			break;
 
-		
+
 		case 3:  // LEVEL 4
 			game_num_cars = 3;
 			game_time = 300;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_MERCEDES]]), 1 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_BMW]]), 2 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.2 !" );
 				return;
@@ -1412,8 +1412,8 @@ void CGame::SetupVehicles()
 		case 4:  // LEVEL 3
 			game_num_cars = 2;
 			game_time = 180;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DJUGAN]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DJUGAN]]), 1 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #3 !" );
 				return;
@@ -1427,18 +1427,18 @@ void CGame::SetupVehicles()
 		case 5:  // LEVEL 5
 			game_num_cars = 4;
 			game_time = 300;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DIABLO]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DIABLO]]), 1 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.1 !" );
 				return;
 			}
-			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 2 ) ) 
+			if ( !Auto[2].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_F1]]), 2 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.2 !" );
 				return;
 			}
-			if ( !Auto[3].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 3 ) ) 
+			if ( !Auto[3].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_JEEP]]), 3 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #4.3 !" );
 				return;
@@ -1452,15 +1452,15 @@ void CGame::SetupVehicles()
 			Auto[3].SetAttirbs( Gamediff );
 			Auto[0].Create(); Auto[1].Create();
 			Auto[2].Create(); Auto[3].Create();
-			
+
 			break;
 
 
 		case 6:  // LEVEL 6
 			game_num_cars = 2;
 			game_time = 300;	// game-round-time
-			
-			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DTRUCK]]), 1 ) ) 
+
+			if ( !Auto[1].Initialize( this, &(Swv.GetVehiclesData()[v_array[CV_DTRUCK]]), 1 ) )
 			{
 				AppendToLog( "Error initializing KEETH OPPONENT #6 !" );
 				return;
@@ -1469,7 +1469,7 @@ void CGame::SetupVehicles()
 			Auto[1].SetAttirbs( Gamediff );
 			Auto[0].Create();
 			Auto[1].Create();
-			
+
 			break;
 
 		case 7: // WINER - KEETH
