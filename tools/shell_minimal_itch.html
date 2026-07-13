@@ -30,6 +30,20 @@
     <script type="text/javascript">
       var canvasElement = document.getElementById('canvas');
 
+      // Keyboard input dies when this page is embedded in a cross-origin
+      // iframe (e.g. itch.io) and the host page's own fullscreen button
+      // requests fullscreen on the iframe: no keydown/keyup ever reaches SDL.
+      // Re-grab focus on the canvas whenever we get a user gesture inside
+      // it and maybe on resize/focus (not guaranteed).
+      function focusCanvas() {
+        try { canvasElement.focus(); } catch (e) {}
+      }
+      ['pointerdown', 'mousedown', 'touchstart'].forEach((e) =>
+        canvasElement.addEventListener(e, focusCanvas));
+      window.addEventListener('resize', focusCanvas);
+      window.addEventListener('focus', focusCanvas);
+      focusCanvas();
+
 #if MODULARIZE && !EXPORT_ES6
       var moduleArgs = {
 #else
