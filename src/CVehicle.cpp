@@ -1228,25 +1228,25 @@ void CVehicle::Update()
 
 	case VC_PLAYER1:
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_LEFT)))
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_LEFT))
 			Rotate(VR_LEFT);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_RIGHT)))
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_RIGHT))
 			Rotate(VR_RIGHT);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_ACC)))
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_ACC))
 			Move(VM_FORWARD);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_BREAK)))
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_BREAK))
 			Move(VM_BACKWARD);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_HONK))) {
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_HONK)) {
 			honk_status = 1;
 		} else {
 			honk_status = honk_status == 1 ? 2 : 0;
 		}
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_BLOWUP))) {
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_BLOWUP)) {
 			self_destruct = true;
 			i_self_destruct = true;
 		}
@@ -1261,10 +1261,10 @@ void CVehicle::Update()
 		if (_game->Sdl.GetJoystickButtonPressed(2))
 			Move(VM_BACKWARD);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_MINE))) {
+		if (_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_MINE)) {
 			if (!bputmine)
 				bputminekey = true;
-		} else if (!_game->Sdl.IsKeyPressed(_game->Bindings.GetP1Key(CBindings::BK_MINE))) {
+		} else if (!_game->Bindings.IsP1KeyPressed(&_game->Sdl, CBindings::BK_MINE)) {
 			bputminekey = false;
 			bputmine = false;
 		}
@@ -1273,33 +1273,33 @@ void CVehicle::Update()
 
 	case VC_PLAYER2:
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_LEFT)))
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_LEFT))
 			Rotate(VR_LEFT);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_RIGHT)))
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_RIGHT))
 			Rotate(VR_RIGHT);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_ACC)))
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_ACC))
 			Move(VM_FORWARD);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_BREAK)))
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_BREAK))
 			Move(VM_BACKWARD);
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_BLOWUP))) {
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_BLOWUP)) {
 			self_destruct = true;
 			i_self_destruct = true;
 		}
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_HONK))) {
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_HONK)) {
 			honk_status = 1;
 		} else {
 			honk_status = honk_status == 1 ? 2 : 0;
 		}
 
-		if (_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_MINE))) {
+		if (_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_MINE)) {
 			if (!bputmine)
 				bputminekey = true;
-		} else if (!_game->Sdl.IsKeyPressed(_game->Bindings.GetP2Key(CBindings::BK_MINE))) {
+		} else if (!_game->Bindings.IsP2KeyPressed(&_game->Sdl, CBindings::BK_MINE)) {
 			bputminekey = false;
 			bputmine = false;
 		}

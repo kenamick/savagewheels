@@ -29,6 +29,7 @@
 
 #include "tinyxml.h"
 #include <map>
+#include <vector>
 
 #define BIND_PLAYER1			0
 #define BIND_PLAYER2			1
@@ -43,6 +44,8 @@
 #define BIND_NODE_KEY_MINE 		"laymine"
 #define BIND_NODE_KEY_HONK		"honk"
 #define BIND_NODE_KEY_BLOWUP	"self-destruct"
+
+class CSdl;
 
 class CBindings
 {
@@ -66,20 +69,23 @@ public:
 
 	bool	Load( const String strFilepath );
 	void	Release();
-	int	GetP1Key( CBindings::BindKeys Key );
-	int	GetP2Key( CBindings::BindKeys Key );
+
+	bool	IsP1KeyPressed( CSdl *pSdl, CBindings::BindKeys Key );
+	bool	IsP2KeyPressed( CSdl *pSdl, CBindings::BindKeys Key );
 
 protected:
 
-	String	_GetValues( const char* strSection, const char* strKey );
-	int	_FindKeyName( const String strKeyName );
+	String			_GetValues( const char* strSection, const char* strKey );
+	int				_FindKeyName( const String strKeyName );
+	std::vector<int>	_ParseKeyList( const String strCsv );
+	bool			_IsKeyPressed( int nPlayer, CBindings::BindKeys Key, CSdl *pSdl );
 
 protected:
 
 	bool			_bLoadSuccess;
 	TiXmlDocument*	_xmlDoc;
 	udtKeyNames	_vKeyNames;
-	int		_DefaultKeys[2][ BIND_PLAYER_MAX_KEYS ];
+	std::vector<int>	_DefaultKeys[2][ BIND_PLAYER_MAX_KEYS ];
 
 };
 

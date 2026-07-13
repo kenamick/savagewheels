@@ -76,8 +76,15 @@
 	SDLK_LSHIFT			
 	SDLK_RCTRL			
 	SDLK_LCTRL			
-	SDLK_RALT			
-	SDLK_LALT			
+	SDLK_RALT
+	SDLK_LALT
+-->
+
+<!--
+	Each key node accepts a comma-separated list of key names, e.g.
+	<accelerate>SDLK_w,SDLK_z</accelerate>. All listed keys trigger the
+	action; this is how player2 covers both QWERTY/QWERTZ (US/German, WASD)
+	and AZERTY (French, ZQSD) keyboards from a single file below.
 -->
 
 <player1>
@@ -85,19 +92,19 @@
 	<right>SDLK_RIGHT</right>
 	<accelerate>SDLK_UP</accelerate>
 	<break>SDLK_DOWN</break>
-	<laymine>SDLK_INSERT</laymine>
-	<honk>SDLK_DELETE</honk>
+	<laymine>SDLK_RSHIFT</laymine>
+	<honk>SDLK_RALT</honk>
 	<self-destruct>SDLK_BACKSPACE</self-destruct>
 </player1>
 
 <player2>
-	<left>SDLK_a</left>
+	<left>SDLK_a,SDLK_q</left>
 	<right>SDLK_d</right>
-	<accelerate>SDLK_w</accelerate>
+	<accelerate>SDLK_w,SDLK_z</accelerate>
 	<break>SDLK_s</break>
-	<laymine>SDLK_t</laymine>
-	<honk>SDLK_q</honk>
-	<self-destruct>SDLK_v</self-destruct>
+	<laymine>SDLK_LSHIFT</laymine>
+	<honk>SDLK_LALT</honk>
+	<self-destruct>SDLK_TAB</self-destruct>
 </player2>
 
 </bindings>

@@ -127,30 +127,36 @@ bool CBindings::Load( const String strFilepath )
 	// joystick
 	//_vKeyNames[ "SDLK_LALT" ]			= SDLK_LALT;
 
-	// default player keys
-	_DefaultKeys[BIND_PLAYER1][BK_LEFT]	= SDLK_LEFT;
-	_DefaultKeys[BIND_PLAYER1][BK_RIGHT]	= SDLK_RIGHT;
-	_DefaultKeys[BIND_PLAYER1][BK_ACC]	= SDLK_UP;
-	_DefaultKeys[BIND_PLAYER1][BK_BREAK]	= SDLK_DOWN;
-	_DefaultKeys[BIND_PLAYER1][BK_MINE]	= SDLK_RCTRL;
-	_DefaultKeys[BIND_PLAYER1][BK_HONK]	= SDLK_RALT;
-	_DefaultKeys[BIND_PLAYER1][BK_BLOWUP]	= SDLK_DELETE;
+	// default player keys (also the fallback whenever bindings.xml doesn't
+	// override an action).
+	_DefaultKeys[BIND_PLAYER1][BK_LEFT].push_back( SDLK_LEFT );
+	_DefaultKeys[BIND_PLAYER1][BK_RIGHT].push_back( SDLK_RIGHT );
+	_DefaultKeys[BIND_PLAYER1][BK_ACC].push_back( SDLK_UP );
+	_DefaultKeys[BIND_PLAYER1][BK_BREAK].push_back( SDLK_DOWN );
+	_DefaultKeys[BIND_PLAYER1][BK_MINE].push_back( SDLK_RSHIFT );
+	_DefaultKeys[BIND_PLAYER1][BK_HONK].push_back( SDLK_RALT );
+	_DefaultKeys[BIND_PLAYER1][BK_BLOWUP].push_back( SDLK_BACKSPACE );
 
-	_DefaultKeys[BIND_PLAYER2][BK_LEFT]	= SDLK_d;
-	_DefaultKeys[BIND_PLAYER2][BK_RIGHT]	= SDLK_g;
-	_DefaultKeys[BIND_PLAYER2][BK_ACC]	= SDLK_r;
-	_DefaultKeys[BIND_PLAYER2][BK_BREAK]	= SDLK_f;
-	_DefaultKeys[BIND_PLAYER2][BK_MINE]	= SDLK_LCTRL;
-	_DefaultKeys[BIND_PLAYER2][BK_HONK]	= SDLK_LALT;
-	_DefaultKeys[BIND_PLAYER2][BK_BLOWUP]	= SDLK_TAB;
+	// P2 movement binds both the QWERTY/QWERTZ letter and its AZERTY
+	// equivalent (WASD / ZQSD) so a single bindings.xml covers US, German
+	// and French keyboards.
+	_DefaultKeys[BIND_PLAYER2][BK_LEFT].push_back( SDLK_a );
+	_DefaultKeys[BIND_PLAYER2][BK_LEFT].push_back( SDLK_q );
+	_DefaultKeys[BIND_PLAYER2][BK_RIGHT].push_back( SDLK_d );
+	_DefaultKeys[BIND_PLAYER2][BK_ACC].push_back( SDLK_w );
+	_DefaultKeys[BIND_PLAYER2][BK_ACC].push_back( SDLK_z );
+	_DefaultKeys[BIND_PLAYER2][BK_BREAK].push_back( SDLK_s );
+	_DefaultKeys[BIND_PLAYER2][BK_MINE].push_back( SDLK_LSHIFT );
+	_DefaultKeys[BIND_PLAYER2][BK_HONK].push_back( SDLK_LALT );
+	_DefaultKeys[BIND_PLAYER2][BK_BLOWUP].push_back( SDLK_TAB );
 
 	_bLoadSuccess = _xmlDoc->LoadFile();
 
 #define READ_KEY( pnode, knode, pid, pkey ) { \
 	String strKeyTemp = _GetValues( pnode, knode ); \
 	if ( strKeyTemp.size() ) { \
-		int key_const = _FindKeyName( strKeyTemp ); \
-		if ( -1 != key_const ) _DefaultKeys[pid][pkey] = key_const; } \
+		std::vector<int> vParsedKeys = _ParseKeyList( strKeyTemp ); \
+		if ( !vParsedKeys.empty() ) _DefaultKeys[pid][pkey] = vParsedKeys; } \
 	}
 
 	READ_KEY( BIND_NODE_PLAYER1, BIND_NODE_KEY_LEFT, BIND_PLAYER1, BK_LEFT );
@@ -173,9 +179,19 @@ bool CBindings::Load( const String strFilepath )
 
 #ifdef _DEBUG
 	for( int i = 0; i < BIND_PLAYER_MAX_KEYS; i++ )
-		DBG( "Player 1 key[" << i << "]=" << _DefaultKeys[BIND_PLAYER1][i] );
+	{
+		OutputSStream ssKeys;
+		for( size_t k = 0; k < _DefaultKeys[BIND_PLAYER1][i].size(); k++ )
+			ssKeys << _DefaultKeys[BIND_PLAYER1][i][k] << " ";
+		DBG( "Player 1 key[" << i << "]=" << ssKeys.str() );
+	}
 	for( int i = 0; i < BIND_PLAYER_MAX_KEYS; i++ )
-		DBG( "Player 2 key[" << i << "]=" << _DefaultKeys[BIND_PLAYER2][i] );
+	{
+		OutputSStream ssKeys;
+		for( size_t k = 0; k < _DefaultKeys[BIND_PLAYER2][i].size(); k++ )
+			ssKeys << _DefaultKeys[BIND_PLAYER2][i][k] << " ";
+		DBG( "Player 2 key[" << i << "]=" << ssKeys.str() );
+	}
 #endif
 
 	LOG( "Loading bindings...done" );
@@ -183,14 +199,25 @@ bool CBindings::Load( const String strFilepath )
 	return _bLoadSuccess;
 }
 
-int	CBindings::GetP1Key( CBindings::BindKeys Key )
+bool CBindings::_IsKeyPressed( int nPlayer, CBindings::BindKeys Key, CSdl *pSdl )
 {
-	return _DefaultKeys[BIND_PLAYER1][ (int)Key ];
+	const std::vector<int> &vKeys = _DefaultKeys[nPlayer][ (int)Key ];
+	for( size_t i = 0; i < vKeys.size(); i++ )
+	{
+		if ( pSdl->IsKeyPressed( vKeys[i] ) )
+			return true;
+	}
+	return false;
 }
 
-int	CBindings::GetP2Key( CBindings::BindKeys Key )
+bool CBindings::IsP1KeyPressed( CSdl *pSdl, CBindings::BindKeys Key )
 {
-	return _DefaultKeys[BIND_PLAYER2][ (int)Key ];
+	return _IsKeyPressed( BIND_PLAYER1, Key, pSdl );
+}
+
+bool CBindings::IsP2KeyPressed( CSdl *pSdl, CBindings::BindKeys Key )
+{
+	return _IsKeyPressed( BIND_PLAYER2, Key, pSdl );
 }
 
 void CBindings::Release()
@@ -230,7 +257,7 @@ String	CBindings::_GetValues( const char *strSection, const char* strKey )
 
 int CBindings::_FindKeyName( const String strKeyName )
 {
-	for( CBindings::udtKeyNames::iterator it = _vKeyNames.begin(); 
+	for( CBindings::udtKeyNames::iterator it = _vKeyNames.begin();
 		it != _vKeyNames.end();
 		it++ )
 	{
@@ -239,4 +266,39 @@ int CBindings::_FindKeyName( const String strKeyName )
 	}
 
 	return -1;
+}
+
+// Splits a comma-separated key-name list (e.g. "SDLK_w,SDLK_z") so a single
+// action can be bound to more than one physical key
+std::vector<int> CBindings::_ParseKeyList( const String strCsv )
+{
+	std::vector<int> vKeys;
+	String strToken;
+	size_t nStart = 0;
+
+	while ( nStart <= strCsv.size() )
+	{
+		size_t pos = strCsv.find( ',', nStart );
+		if ( pos == String::npos )
+			pos = strCsv.size();
+
+		strToken = strCsv.substr( nStart, pos - nStart );
+
+		size_t nFirst = strToken.find_first_not_of( " \t\r\n" );
+		size_t nLast = strToken.find_last_not_of( " \t\r\n" );
+		if ( nFirst != String::npos )
+		{
+			strToken = strToken.substr( nFirst, nLast - nFirst + 1 );
+
+			int key_const = _FindKeyName( strToken );
+			if ( -1 != key_const )
+				vKeys.push_back( key_const );
+			else
+				LOG( "Bindings: unknown key name '" << strToken << "' ignored." );
+		}
+
+		nStart = pos + 1;
+	}
+
+	return vKeys;
 }
