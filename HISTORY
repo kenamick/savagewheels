@@ -1,6 +1,19 @@
 Savage Wheels Release HISTORY
 -----------------------------
 
+V1.7.1 Patch
+  * web version now scales to fill the browser window/fullscreen while
+    keeping the game's 4:3 aspect ratio, instead of staying fixed at 640x480
+  * fixed mouse input capture when the web version's page is embedded in a
+    cross-origin iframe (e.g. itch.io) and fullscreen is enabled
+  * disabled the in-game F11 fullscreen toggle on the web version (fullscreen
+    there is handled by the browser/host page instead)
+  * bindings.xml can now bind multiple keys to the same action (comma-separated
+    key list), and default controls changed to work across US/German/French
+    keyboards and avoid keys missing on Mac keyboards
+  * fixed vehicles rotating around their sprite center instead of a pivot
+    near the front of the vehicle
+
 V1.7.0 Release
   * ported to web using Emscripten
 
