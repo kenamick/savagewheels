@@ -1,7 +1,7 @@
 _.o0 SavageWheels 0o._
 ==========================
 
-Savage Wheels is a 2D car crashing arcade game. You take part of a deadly tournament, the goal of which, is to eliminate all other derby contestants. Players may choose from a variety of vehicles, each vehicle has an unique driver and characteristics like speed, acceleration, armor and damage. Various bonuses may be collected during each match to increase your vehicle's speed, damage or to repair it. Gameplay modes include a campaign, hot-seat mode between two players or a melee mode where vehicles are controlled by _fearsome_ AI opponents. All vehicle drivers have background stories which are uncovered in the campaign mode.
+Savage Wheels is a 2D car crashing arcade game. You take part in a deadly tournament, the goal of which is to eliminate all other derby contestants. Players may choose from a variety of vehicles, each with a unique driver and characteristics like speed, acceleration, armor and damage. Various bonuses may be collected during each match to increase your vehicle's speed, damage or to repair it. Gameplay modes include a campaign, hot-seat mode between two players or a melee mode where vehicles are controlled by _fearsome_ AI opponents. All vehicle drivers have background stories which are uncovered in the campaign mode.
 
 ![alt text](http://i.imgur.com/09h8j1M.jpg "Gameplay screenshot")
 
