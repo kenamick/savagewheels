@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en-us">
+<html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Savage Wheels</title>
+    <title>Savage Wheels - 2D car crashing game armageddon</title>
     <style>
       html, body {
         margin: 0;
@@ -20,8 +20,8 @@
         border: 0 none;
         outline: none;
         display: block;
-        max-width: 100vw;
-        max-height: 100vh;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
       }
     </style>
   </head>
@@ -43,6 +43,37 @@
       window.addEventListener('resize', focusCanvas);
       window.addEventListener('focus', focusCanvas);
       focusCanvas();
+
+      // Scale the canvas up to fill the available space (fullscreen or
+      // windowed) while keeping the game's fixed 4:3 aspect ratio. This
+      // sets the canvas's actual CSS box size (not object-fit), so
+      // getBoundingClientRect() -- which Emscripten's SDL mouse handler
+      // uses to map click coordinates back to the 640x480 backbuffer --
+      // matches the visible image 1:1.
+      var GAME_ASPECT = 640 / 480;
+      function resizeCanvasBox() {
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        if (w / h > GAME_ASPECT) {
+          canvasElement.style.height = h + 'px';
+          canvasElement.style.width = Math.round(h * GAME_ASPECT) + 'px';
+        } else {
+          canvasElement.style.width = w + 'px';
+          canvasElement.style.height = Math.round(w / GAME_ASPECT) + 'px';
+        }
+      }
+      window.addEventListener('resize', resizeCanvasBox);
+      document.addEventListener('fullscreenchange', resizeCanvasBox);
+      resizeCanvasBox();
+
+      // SDL_SetVideoMode (called from within main(), after this script has
+      // already run once) sets canvas.width/height and resets the canvas's
+      // style, wiping the sizing above. Reapply once that happens instead
+      // of relying on the user triggering a window resize afterwards.
+      new MutationObserver(resizeCanvasBox).observe(canvasElement, {
+        attributes: true,
+        attributeFilter: ['width', 'height']
+      });
 
 #if MODULARIZE && !EXPORT_ES6
       var moduleArgs = {
