@@ -60,6 +60,13 @@ static float g_diry[] = { 0.0000f, 0.1736f, 0.3420f, 0.5000f, 0.6428f, 0.7660f,
     -0.9848f, -0.9397f, -0.8660f, -0.7660f, -0.6428f, -0.5000f, -0.3420f,
     -0.1736f };
 
+ /*
+  * Steering pivot offset from sprite center, in pixels, along the car's
+  * heading. Positive = toward the front (tail slides out on turns); negative
+  * would put the pivot toward the rear (nose leads, planted)
+  */
+static const float PIVOT_OFFSET = 10.0f;
+
 
 ///////////////////////////////////////////////////////////////////////
 // Name: CVehicle()
@@ -468,6 +475,7 @@ void CVehicle::DoMotion()
 	float tmp_vel 		= vel;
 	float abs_vel 		= fabsf(vel);
 	float rot_m			= 1.0f;
+	float ai_old_angle	= ai_cur_angle;
 
 	/*
 	 * AI steering
@@ -512,6 +520,8 @@ void CVehicle::DoMotion()
 	 * Rotation
 	 */
 
+	int pivot_old_frame = (int)display_frame;
+
 	if ( vrot == VR_LEFT && vel != 0 )
     {
 	    display_frame += (rot_speed * rot_m * _game->getMpf());
@@ -539,6 +549,26 @@ void CVehicle::DoMotion()
 
 	vrot = VR_NONE;
 	motion_frame = display_frame;
+
+	// shift the body so steering pivots near the front axle (tail swings wide)
+	// instead of the sprite center
+	if ( control != VC_AI )
+	{
+		int pivot_new_frame = (int)display_frame;
+		if ( pivot_new_frame != pivot_old_frame )
+		{
+			x += PIVOT_OFFSET * ( g_dirx[pivot_old_frame] - g_dirx[pivot_new_frame] );
+			y += PIVOT_OFFSET * ( g_diry[pivot_new_frame] - g_diry[pivot_old_frame] );
+		}
+	}
+	else if ( vel != 0.0f && ai_cur_angle != ai_old_angle )
+	{
+		// the pivot is keyed to cosf/sinf(ai_cur_angle) instead of the display_frame
+		// there is also vel != 0 guard, because ai_cur_angle keeps updating while
+		// AI cars do not move (stay in-place)
+		x += PIVOT_OFFSET * ( cosf(ai_old_angle) - cosf(ai_cur_angle) );
+		y += PIVOT_OFFSET * ( sinf(ai_cur_angle) - sinf(ai_old_angle) );
+	}
 
 	/*
 	 * Acceleration
